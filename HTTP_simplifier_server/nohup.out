@@ -1,0 +1,6 @@
+127.0.0.1 - - [10/Jan/2017 18:12:20] "GET /?type=lexical&word=orthodox&sentence=His%20technique%20is%20orthodox%20.&index=3 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jan/2017 18:12:38] "GET /?type=lexical&target=orthodox&sentence=His%20technique%20is%20orthodox%20.&index=3 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jan/2017 18:19:22] "GET /?type=lexical&target=orthodox&sentence=His%20fighting%20technique%20is%20very%20orthodox%20.&index=3 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jan/2017 18:19:44] "GET /?type=lexical&target=orthodox&sentence=His%20fighting%20technique%20is%20very%20orthodox%20.&index=5 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jan/2017 18:19:54] "GET /?type=lexical&target=orthodox&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.&index=5 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jan/2017 18:20:07] "GET /?type=lexical&target=unorthodox&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.&index=5 HTTP/1.1" 200 -

@@ -5,6 +5,31 @@ from lexenstein.features import *
 import socket
 
 #Functions:
+def getTaggedSentences(sents):
+                tagged_sents = []
+                for sent in sents:
+                        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                        s.connect(("localhost",2020))
+                        s.send(sent+'\n')
+                        resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
+                        resp = [(token[0], token[1]) for token in resp]
+                        tagged_sents.append(resp)
+                return tagged_sents
+
+def updateRequest(sent, target, index, tagged):
+	if len(sent.split(' '))==len(tagged):
+		return sent, str(index)
+	else:
+		newsent = [t[0] for t in tagged]
+		newsent = ' '.join(newsent)
+		newindex = -1
+		mindiff = 999999
+		for i in range(0, len(tagged)):
+			if tagged[i][0]==target and math.fabs(index-i)<mindiff:
+				newindex = i
+				mindiff = math.fabs(index-i)
+		return newsent, str(newindex)
+
 def getNewselaCandidates(file):
 	subs = {}
 	f = open(file)
@@ -62,8 +87,21 @@ while 1:
 	target = data['target']
 	index = data['index']
 
+	#Tag sentence:
+	tagged_sents = getTaggedSentences([sent])
+
+	#Update request information:
+	sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+
+	print (sent, target, index)
+
 	#Get subs:
-	subs, tagged_sents = kg.getSubstitutionsSingle(sent, target, index, 3)
+	if target not in newselasubs:
+		subs = kg.getSubstitutionsSingle(sent, target, index, tagged_sents, 10)
+	else:
+		subs = kg.getSubstitutionsSingle(sent, target, index, tagged_sents, 3)
+
+	#Create input data instance:
 	fulldata = [sent, target, index]
 	for sub in subs[target]:
 		fulldata.append('0:'+sub)
@@ -74,8 +112,9 @@ while 1:
 
 	#Select them:
 	bs.ranker.fe.temp_resources['tagged_sents'] = tagged_sents
-	if len(subs[target])==0:
+	if len(fulldata[0])<5:
 		selected = [[]]
+		print 'Entered here!'
 	else:
 		selected = bs.selectCandidates(subs, fulldata, 0.5, proportion_type='percentage')		
 
@@ -85,7 +124,7 @@ while 1:
                 fulldata.append('0:'+sub)
         fulldata = [fulldata]
 	ranks = nr.getRankings(fulldata)
-	
+
 	#Get final replacement:
 	replacement = 'NULL'
 	if len(ranks[0])>0:

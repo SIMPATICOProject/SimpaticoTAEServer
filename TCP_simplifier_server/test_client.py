@@ -1,9 +1,9 @@
 import socket, json
 
 info = {}
-info['sentence'] = 'This is an complex sentence .'
-info['target'] = info['sentence'].split(' ')[3]
-info['index'] = '3'
+info['sentence'] = 'This, my friend, is a orthodox sentence.'
+info['target'] = info['sentence'].split(' ')[5]
+info['index'] = '5'
 
 data = json.dumps(info)
 

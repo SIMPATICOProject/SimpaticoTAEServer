@@ -77,11 +77,12 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 	def respond(self, parameters):
 		#Send a header:
 		self.send_response(200)
-		self.send_header('Content-type','text/html')
+		self.send_header('Content-type','application/json')
 		self.end_headers()
 
 		#Send the actual simplification response:
-		self.wfile.write(str(parameters))
+		response = json.dumps(parameters)
+		self.wfile.write(response)
 		return
 	
 	#Simplify the problem encoded in the parameters:
@@ -133,6 +134,9 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 					parameters = {'Error': ['Parameter "target" missing']}
 				elif 'index' not in parameters:
 					parameters = {'Error': ['Parameter "index" missing']}
+
+		#If argument 'sentence' in parameters, tokenize it:
+		
 		
 		#Return final parsed parameters:
 		return parameters

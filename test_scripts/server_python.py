@@ -1,7 +1,7 @@
 import socket, json
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', 1313))
+serversocket.bind(('143.167.8.122', 1313))
 serversocket.listen(5)
 
 while 1:

@@ -43,10 +43,10 @@ class PaetzoldGenerator:
 
 		return substitutions, tagged_sents
 
-	def getSubstitutionsSingle(self, sentence, target, index, amount):
-		tagged_sents = self.getParsedSentences([sentence])
+	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
+#		tagged_sents = self.getParsedSentences([sentence])
 		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
-		return substitutions, tagged_sents
+		return substitutions
 		
 	def getParsedSentences(self, sents):
 		tagged_sents = []
@@ -117,7 +117,6 @@ class PaetzoldGenerator:
 					most_sim = self.model.most_similar(positive=[wordc], topn=50)
 				except KeyError:
 					most_sim = []
-
 			subs.append([word[0] for word in most_sim])
 			
 		subsr = subs
@@ -147,7 +146,7 @@ class PaetzoldGenerator:
 			candmap[cand] = (lemma, stem)
 		
 		subs_filtered = self.filterSubs(data, tsents, subs, candmap, trgs, trgsc, trgsstems, trgscstems, trgslemmas, trgsclemmas)
-		
+
 		final_cands = {}
 		for i in range(0, len(data)):
 			target = data[i][1]

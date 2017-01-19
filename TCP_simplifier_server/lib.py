@@ -465,7 +465,7 @@ class BoundarySelector:
 	def trainSelectorWithCrossValidation(self, victor_corpus, positive_range, folds, test_size, losses=['hinge', 'modified_huber'], penalties=['elasticnet'], alphas=[0.0001, 0.001, 0.01], l1_ratios=[0.0, 0.15, 0.25, 0.5, 0.75, 1.0], k='all'):
 		self.ranker.trainRankerWithCrossValidation(victor_corpus, positive_range, folds, test_size, losses=losses, penalties=penalties, alphas=alphas, l1_ratios=l1_ratios, k=k)
 		
-	def selectCandidates(self, substitutions, data, proportion, proportion_type='percentage'):
+	def selectCandidates(self, data, proportion, proportion_type='percentage'):
 		rankings = self.ranker.getRankings(data)
 		
 		selected_substitutions = []				

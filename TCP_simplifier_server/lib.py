@@ -11,6 +11,7 @@ import os, pickle
 import gensim
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
+from nltk.stem import SnowballStemmer
 from sklearn.cross_validation import train_test_split
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
@@ -696,13 +697,21 @@ class GlavasRanker:
 		
 		#If feature values are not available, then estimate them:
 		if self.feature_values == None:
-			self.feature_values = self.fe.calculateFeatures(victor_corpus)
+			#Transform data:
+	                textdata = ''
+	                for inst in alldata:
+	                        for token in inst:
+	                                textdata += token+'\t'
+	                        textdata += '\n'
+	                textdata = textdata.strip()
+			self.feature_values = self.fe.calculateFeatures(textdata, input='text')
 		
 		#Create object for results:
 		result = []
 		
 		#Read feature values for each candidate in victor corpus:
-		for data in fulldata:
+		index = 0
+		for data in alldata:
 			#Get all substitutions in ranking instance:
 			substitutions = data[3:len(data)]
 			

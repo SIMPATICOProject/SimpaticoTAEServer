@@ -160,7 +160,7 @@ while 1:
 	sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
 
 	#SS:
-	ss_output =  simplifier_eng.selectCandidates(sg_output, tagged_sents)
+	ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
 	
 	#SR:
 	sr_output = simplifier_eng.rankCandidates(ss_output)

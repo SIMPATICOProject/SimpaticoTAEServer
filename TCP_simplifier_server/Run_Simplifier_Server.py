@@ -2,9 +2,34 @@ from lib import *
 from lexenstein.morphadorner import *
 from lexenstein.spelling import *
 from lexenstein.features import *
+from langdetect import detect
 import socket
 
 #Classes:
+class GalicianLexicalSimplifier:
+
+	def __init__(self, embeddingsgen, ranker):
+		self.embeddingsgen = embeddingsgen
+		self.ranker = ranker
+		
+	def generateCandidates(self, sent, target, index):
+		#Produce candidates:
+		subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, 10)
+
+		#Create input data instance:
+		fulldata = [sent, target, index]
+		for sub in subs[target]:
+			fulldata.append('0:'+sub)
+		fulldata = [fulldata]
+		
+		#Return requested structures:
+		return fulldata
+	
+	def rankCandidates(self, data):
+		#Rank selected candidates:
+		ranks = self.ranker.getRankings(data)
+		return ranks
+		
 class EnglishLexicalSimplifier:
 
 	def __init__(self, newselagen, embeddingsgen, selector, ranker):
@@ -126,6 +151,21 @@ def getEnglishLexicalSimplifier():
 	#Return LexicalSimplifier object:
 	return EnglishLexicalSimplifier(ng, kg, bs, nr)
 
+def getGalicianLexicalSimplifier():
+	#General purpose:
+	w2vpm_gal = '/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/galician/corpora/galician_vectors_300_cbow.bin'
+
+	#Generator:
+	gg = GalicianGlavasGenerator(w2vpm_gal)
+
+	#Ranker:
+	fe = FeatureEstimator()
+	fe.addLengthFeature('Complexity')
+	fe.addCollocationalFeature('/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/galician/corpora/galician_lm.bin', 2, 2, 'Simplicity')
+	gr = GlavasRanker(fe)
+	
+	#Return LexicalSimplifier object:
+	return GalicianLexicalSimplifier(gg, gr)
 	
 	
 	
@@ -133,6 +173,7 @@ def getEnglishLexicalSimplifier():
 	
 #Load English simplifier:
 simplifier_eng = getEnglishLexicalSimplifier()
+simplifier_gal = getGalicianLexicalSimplifier()
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -149,21 +190,25 @@ while 1:
 	sent = data['sentence']
 	target = data['target']
 	index = data['index']
+	lang = data['lang']
 
-	#Tag sentence:
-	tagged_sents = getTaggedSentences([sent])
-
-	#Update request information:
-	sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
-
-	#SG:
-	sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
-
-	#SS:
-	ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
-	
-	#SR:
-	sr_output = simplifier_eng.rankCandidates(ss_output)
+	#Simplify based on language:
+	if lang=='en':
+		#Tag sentence:
+		tagged_sents = getTaggedSentences([sent])
+		#Update request information:
+		sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+		#SG:
+		sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
+		#SS:
+		ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
+		#SR:
+		sr_output = simplifier_eng.rankCandidates(ss_output)
+	else:
+		#SG:
+		sg_output = simplifier_gal.generateCandidates(sent, target, index)
+		#SR:
+		sr_output = simplifier_gal.rankCandidates(sg_output)
 
 	#Get final replacement:
 	replacement = 'NULL'

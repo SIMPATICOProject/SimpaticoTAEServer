@@ -41,7 +41,7 @@ class LexicalSimplifier:
 				return result
 		except Exception as exc:
 			#If the connection fails, return an error:
-			return {'Error': [exc.strerror]}
+			return {'Error': ['Error while simplifying lexical problem.']}
 			
 class SyntacticSimplifier:
 
@@ -79,7 +79,7 @@ class SyntacticSimplifier:
 				return result
 		except Exception as exc:
 			#If the connection fails, return an error:
-			return {'Error': [exc.strerror]}
+			return {'Error': ['Error while simplifying syntactic problem.']}
 
 #This class represents the TAE server handler of Simpatico:
 class SimpaticoTAEServer(HTTPServer, object):
@@ -107,11 +107,11 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		input_parameters = self.parse_parameters(self.path)
 		
 		#Detect language:
-		try:
-			lang = detect(input_parameters['sentence'][0])
-		except Exception as exc:
-			print 'Error while detecting language: ' + exc.strerror
-			lang = 'en'
+#		try:
+		lang = detect(input_parameters['sentence'][0].encode('utf-8'))
+#		except Exception as exc:
+#			print 'Error while detecting language'
+#			lang = 'en'
 			
 		#Add it to parameters:
 		input_parameters['lang'] = [lang]
@@ -163,7 +163,7 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		try:
 			parameters = parse_qs(text[2:])
 		except Exception as exc:
-			parameters = {'Error': [exc.strerror]}
+			parameters = {'Error': ['Error while parsing problem.']}
 		
 		#Check for appropriate format:
 		#Mandatory parameters:

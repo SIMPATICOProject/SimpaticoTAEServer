@@ -1,6 +1,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from urlparse import parse_qs
 import socket, json
+from langdetect import detect
 
 class LexicalSimplifier:
 
@@ -15,6 +16,7 @@ class LexicalSimplifier:
 		info['sentence'] = parameters['sentence'][0]
 		info['target'] = parameters['target'][0]
 		info['index'] = parameters['index'][0]
+		info['lang'] = parameters['lang'][0]
 		data = json.dumps(info)
 
 		try:
@@ -52,6 +54,7 @@ class SyntacticSimplifier:
 		#Create a simplification request for local syntactic simplification server in json format:
 		info = {}
 		info['sentence'] = parameters['sentence'][0]
+		info['lang'] = parameters['lang'][0]
 		data = json.dumps(info)
 
 		try:
@@ -102,6 +105,16 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		#Get parameters from URL:
 		input_parameters = self.parse_parameters(self.path)
+		
+		#Detect language:
+		try:
+			lang = detect(input_parameters['sentence'][0])
+		except Exception as exc:
+			print 'Error while detecting language: ' + exc.strerror
+			lang = 'en'
+			
+		#Add it to parameters:
+		input_parameters['lang'] = [lang]
 		
 		#Resolve simplification problem:
 		output_parameters = self.simplify(input_parameters)

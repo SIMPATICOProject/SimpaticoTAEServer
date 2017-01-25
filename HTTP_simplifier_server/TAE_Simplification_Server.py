@@ -108,7 +108,7 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		
 		#Detect language:
 #		try:
-		lang = detect(input_parameters['sentence'][0].encode('utf-8'))
+		lang = detect(unicode(input_parameters['sentence'][0], 'utf-8'))
 #		except Exception as exc:
 #			print 'Error while detecting language'
 #			lang = 'en'

@@ -107,11 +107,11 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		input_parameters = self.parse_parameters(self.path)
 		
 		#Detect language:
-#		try:
-		lang = detect(unicode(input_parameters['sentence'][0], 'utf-8'))
-#		except Exception as exc:
-#			print 'Error while detecting language'
-#			lang = 'en'
+		try:
+			lang = self.correctLanguage(detect(unicode(input_parameters['sentence'][0], 'utf-8')))
+		except Exception as exc:
+			print 'Error while detecting language.'
+			lang = 'en'
 			
 		#Add it to parameters:
 		input_parameters['lang'] = [lang]
@@ -153,10 +153,6 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 			else:
 				return {'Error': ['Value of parameter "type" unknown (available values = "lexical" and "syntactic")']}
 	
-	#Perform a syntactic simplification:
-	def syntactic_simplification(self, parameters):
-		return {'Simplification': ['The syntactic friends we never made']}
-	
 	#This function parses the parameters of an HTTP request line:
 	def parse_parameters(self, text):
 		#Parse line:
@@ -187,7 +183,13 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		
 		#Return final parsed parameters:
 		return parameters
-
+	
+	#Corrects language detection because of lack of galician support:
+	def correctLanguage(self, lang):
+		if lang not in set(['en', 'it', 'gl']):
+			return 'gl'
+		else:
+			return lang
 try:
 	#Set parameters:
 	SERVER_PORT_NUMBER = 8080

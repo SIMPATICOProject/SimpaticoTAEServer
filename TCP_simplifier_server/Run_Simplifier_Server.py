@@ -194,22 +194,25 @@ while 1:
 	lang = data['lang']
 
 	#Simplify based on language:
-	if lang=='en':
-		#Tag sentence:
-		tagged_sents = getTaggedSentences([sent])
-		#Update request information:
-		sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
-		#SG:
-		sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
-		#SS:
-		ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
-		#SR:
-		sr_output = simplifier_eng.rankCandidates(ss_output)
-	else:
-		#SG:
-		sg_output = simplifier_gal.generateCandidates(sent, target, index)
-		#SR:
-		sr_output = simplifier_gal.rankCandidates(sg_output)
+	try:
+		if lang=='en':
+			#Tag sentence:
+			tagged_sents = getTaggedSentences([sent])
+			#Update request information:
+			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+			#SG:
+			sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
+			#SS:
+			ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
+			#SR:
+			sr_output = simplifier_eng.rankCandidates(ss_output)
+		else:
+			#SG:
+			sg_output = simplifier_gal.generateCandidates(sent, target, index)
+			#SR:
+			sr_output = simplifier_gal.rankCandidates(sg_output)
+	except Exception:
+		sr_output = [[]]
 
 	#Get final replacement:
 	replacement = 'NULL'

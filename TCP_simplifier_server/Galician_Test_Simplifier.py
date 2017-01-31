@@ -9,7 +9,7 @@ data = json.dumps(info)
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-s.connect(("localhost",1616))
+s.connect(("localhost",1414))
 
 print('Sending...')
 s.send(data+'\n')

@@ -87,7 +87,8 @@ def getTaggedSentences(sents):
                 for sent in sents:
                         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                         s.connect(("localhost",2020))
-                        s.send(sent+'\n')
+			sinput = sent+'\n'
+                        s.send(sinput.encode("utf-8"))
                         resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
                         resp = [(token[0], token[1]) for token in resp]
                         tagged_sents.append(resp)

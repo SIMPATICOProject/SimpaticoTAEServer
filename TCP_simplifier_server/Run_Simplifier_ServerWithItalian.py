@@ -179,7 +179,6 @@ def getItalianLexicalSimplifier():
 	fe = FeatureEstimator()
 	fe.addLengthFeature('Complexity')
 	fe.addCollocationalFeature('/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/italian/corpora/italian_lm.bin', 2, 2, 'Simplicity')
-	fe.addWordVectorSimilarityFeature(w2vpm_ita)
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:

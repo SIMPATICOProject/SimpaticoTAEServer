@@ -19,6 +19,142 @@ from sklearn import linear_model
 from keras.models import *
 import numpy as np
 
+
+class ItalianGlavasGenerator:
+
+	def __init__(self, w2vmodel):
+		self.lemmatizer = WordNetLemmatizer()
+		self.stemmer = SnowballStemmer("italian")
+		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(w2vmodel, binary=True, unicode_errors='ignore')
+		
+	def getSubstitutionsSingle(self, sentence, target, index, amount):
+		substitutions = self.getInitialSet([[sentence, target, index]], amount)
+		return substitutions
+
+	def getInitialSet(self, data, amount):
+		trgs = []
+		trgsstems = []
+		trgslemmas = []
+		for i in range(0, len(data)):
+			d = data[i]
+			target = d[1].strip().lower()
+			head = int(d[2].strip())
+			trgs.append(target)
+		trgslemmas = self.lemmatizeWords(trgs)
+		trgsstems = self.stemWords(trgs)
+
+		trgmap = {}
+		for i in range(0, len(trgslemmas)):
+			target = data[i][1].strip().lower()
+			head = int(data[i][2].strip())
+			lemma = trgslemmas[i]
+			stem = trgsstems[i]
+			trgmap[target] = (lemma, stem)
+
+		subs = []
+		cands = set([])
+		for i in range(0, len(data)):
+			d = data[i]
+
+			t = trgs[i]
+			tstem = trgsstems[i]
+			tlemma = trgslemmas[i]
+
+			word = t
+
+			most_sim = []
+			try:
+				most_sim = self.model.most_similar(positive=[word.decode('utf-8')], topn=50)
+			except KeyError:
+				most_sim = []
+
+			subs.append([word[0] for word in most_sim])
+
+		subsr = subs
+		subs = []
+		for l in subsr:
+			lr = []
+			for inst in l:
+				cand = inst.split('|||')[0].strip()
+				cands.add(cand)
+				lr.append(inst)
+			subs.append(lr)
+
+		cands = list(cands)
+		candslemmas = self.lemmatizeWords(cands)
+		candsstems = self.stemWords(cands)
+		candmap = {}
+		for i in range(0, len(cands)):
+			cand = cands[i]
+			lemma = candslemmas[i]
+			stem = candsstems[i]
+			candmap[cand] = (lemma, stem)
+
+		subs_filtered = self.filterSubs(data, subs, candmap, trgs, trgsstems, trgslemmas)
+
+		final_cands = {}
+		for i in range(0, len(data)):
+			target = data[i][1]
+			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
+			cands = [word.split('|||')[0].strip() for word in cands]
+			if target not in final_cands:
+				final_cands[target] = set([])
+			final_cands[target].update(set(cands))
+
+		return final_cands
+				
+	def lemmatizeWords(self, words):
+		result = []
+		for word in words:
+			try:
+				result.append(self.lemmatizer.lemmatize(word))
+			except Exception:
+				result.append(word)
+		return result
+
+	def stemWords(self, words):
+		result = []
+		for word in words:
+			try:
+				result.append(self.stemmer.stem(word))
+			except Exception:
+				result.append(word)
+		return result
+				
+	def filterSubs(self, data, subs, candmap, trgs, trgsstems, trgslemmas):
+		result = []
+		for i in range(0, len(data)):
+			d = data[i]
+
+			t = trgs[i]
+			tstem = trgsstems[i]
+			tlemma = trgslemmas[i]
+
+			word = t
+
+			most_sim = subs[i]
+			most_simf = []
+
+			for cand in most_sim:
+				cword = cand
+				clemma = candmap[cword][0]
+				cstem = candmap[cword][1]
+
+				if cstem!=tstem:
+#				if cstem.decode('utf-8')!=tstem.decode('utf-8'):
+					most_simf.append(cand)
+
+			result.append(most_simf)
+		return result
+
+
+
+
+
+
+
+
+
 class GalicianGlavasGenerator:
 
 	def __init__(self, w2vmodel):

@@ -178,7 +178,7 @@ simplifier_gal = getGalicianLexicalSimplifier()
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', 1616))
+serversocket.bind(('localhost', 1414))
 serversocket.listen(5)
 
 #Upon receival of simplification request, do:

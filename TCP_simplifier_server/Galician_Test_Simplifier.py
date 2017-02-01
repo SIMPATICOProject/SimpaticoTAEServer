@@ -1,15 +1,23 @@
+# -*- coding: utf-8 -*-
 import socket, json
 
 info = {}
 info['sentence'] = 'Os liquens que medran no residuo asfaltico suxiren a sua baixa toxicidade , que caberia comparar a dunha autoestrada .'
 info['target'] = info['sentence'].split(' ')[7]
 info['index'] = '7'
-info['lang'] = 'pt'
+info['lang'] = 'gl'
+data = json.dumps(info)
+
+info = {}
+info['sentence'] = 'Os líquens que medran no residuo asfáltico suxiren a sua baixa toxicidade , que cabería comparar á dunha autoestrada .'
+info['target'] = info['sentence'].split(' ')[11]
+info['index'] = '11'
+info['lang'] = 'gl'
 data = json.dumps(info)
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-s.connect(("localhost",1414))
+s.connect(("localhost",1616))
 
 print('Sending...')
 s.send(data+'\n')

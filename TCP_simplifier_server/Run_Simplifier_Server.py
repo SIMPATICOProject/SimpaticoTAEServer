@@ -178,7 +178,7 @@ simplifier_gal = getGalicianLexicalSimplifier()
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', 1414))
+serversocket.bind(('localhost', 1616))
 serversocket.listen(5)
 
 #Upon receival of simplification request, do:
@@ -217,8 +217,15 @@ while 1:
 	#Get final replacement:
 	replacement = 'NULL'
 	if len(sr_output[0])>0:
-		replacement = sr_output[0][0]	
+		try:
+			replacement = sr_output[0][0].encode('utf8')
+		except Exception:
+			replacement = sr_output[0][0]
 
 	#Send result:
-	conn.send(replacement+'\n')
-	conn.close()
+	try:
+		conn.send(replacement+'\n')
+		conn.close()
+	except Exception:
+		conn.send('NULL\n')
+		conn.close()

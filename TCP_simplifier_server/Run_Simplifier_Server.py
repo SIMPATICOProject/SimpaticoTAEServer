@@ -168,6 +168,22 @@ def getGalicianLexicalSimplifier():
 	#Return LexicalSimplifier object:
 	return GalicianLexicalSimplifier(gg, gr)
 	
+def getItalianLexicalSimplifier():
+	#General purpose:
+	w2vpm_ita = '/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/italian/corpora/italian_vectors_500_cbow.bin'
+
+	#Generator:
+	gg = ItalianGlavasGenerator(w2vpm_ita)
+
+	#Ranker:
+	fe = FeatureEstimator()
+	fe.addLengthFeature('Complexity')
+	fe.addCollocationalFeature('/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/italian/corpora/italian_lm.bin', 2, 2, 'Simplicity')
+	gr = GlavasRanker(fe)
+	
+	#Return LexicalSimplifier object:
+	return GalicianLexicalSimplifier(gg, gr)
+	
 	
 	
 ################################################ MAIN ########################################################	
@@ -175,6 +191,7 @@ def getGalicianLexicalSimplifier():
 #Load English simplifier:
 simplifier_eng = getEnglishLexicalSimplifier()
 simplifier_gal = getGalicianLexicalSimplifier()
+simplifier_ita = getItalianLexicalSimplifier()
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -206,6 +223,11 @@ while 1:
 			ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
 			#SR:
 			sr_output = simplifier_eng.rankCandidates(ss_output)
+		elif lang=='it':
+			#SG:
+			sg_output = simplifier_ita.generateCandidates(sent, target, index)
+			#SR:
+			sr_output = simplifier_ita.rankCandidates(sg_output)
 		else:
 			#SG:
 			sg_output = simplifier_gal.generateCandidates(sent, target, index)

@@ -825,16 +825,14 @@ class GlavasRanker:
 		
 	def getRankings(self, alldata):
 		
-		#If feature values are not available, then estimate them:
-		if self.feature_values == None:
-			#Transform data:
-	                textdata = ''
-	                for inst in alldata:
-	                        for token in inst:
-	                                textdata += token+'\t'
-	                        textdata += '\n'
-	                textdata = textdata.strip()
-			self.feature_values = self.fe.calculateFeatures(textdata, input='text')
+		#Calculate features:
+		textdata = ''
+		for inst in alldata:
+				for token in inst:
+						textdata += token+'\t'
+				textdata += '\n'
+		textdata = textdata.strip()
+		self.feature_values = self.fe.calculateFeatures(textdata, input='text')
 		
 		#Create object for results:
 		result = []

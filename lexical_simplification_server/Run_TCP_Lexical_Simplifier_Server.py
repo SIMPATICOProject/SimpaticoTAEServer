@@ -118,32 +118,50 @@ def getNewselaCandidates(file):
 		subs[target] = cands
 	f.close()
 	return subs
+
+def loadResources(path):
+	#Open resource file:
+	f = open(path)
 	
-def getEnglishLexicalSimplifier():
+	#Create resource map:
+	resources = {}
+	
+	#Read resource paths:
+	for line in f:
+		data = line.strip().split('\t')
+		if data[0] in resources:
+			print 'Repeated resource name: ' + data[0] + '. Please change the name of this resource.'
+		resources[data[0]] = data[1]
+	f.close()
+	
+	#Return resource database:
+	return resources
+	
+def getEnglishLexicalSimplifier(resources):
 	#General purpose:
-	nc = NorvigCorrector('/export/data/ghpaetzold/LEXenstein/corpora/norvig_model_wmt.bin', format='bin')
-	victor_corpus = '/export/data/ghpaetzold/benchmarking/paetzold_nns/corpora/paetzold_nns_dataset.txt'
-	pos_model = '/export/data/ghpaetzold/benchmarking/lexmturk/scripts/evaluators/stanford-postagger-full-2015-04-20/models/wsj-0-18-left3words-distsim.tagger'
-	stanford_tagger = '/export/data/ghpaetzold/benchmarking/lexmturk/scripts/evaluators/stanford-postagger-full-2015-04-20/stanford-postagger.jar'
-	w2vpm_eng = '/export/data/ghpaetzold/word2vecvectors/models/word_vectors_all_generalized_1300_cbow_retrofitted.bin'
+	nc = NorvigCorrector(resources['norvig_corrector'], format='bin')
+	victor_corpus = resources['nnseval']
+	pos_model = resources['tagger_model']
+	stanford_tagger = resources['stanford_tagger']
+	w2vpm_eng = resources['eng_caretro_embeddings']
 
 	#Generator:
-	ng = getNewselaCandidates('/export/data/ghpaetzold/benchmarking/lseval+lexmturk/substitutions/newsela/substitutions.txt')
-	kg = PaetzoldGenerator(w2vpm_eng, nc, pos_model, stanford_tagger, '/usr/bin/java')
+	ng = getNewselaCandidates(resources['newsela_candidates'])
+	kg = PaetzoldGenerator(w2vpm_eng, nc, pos_model, stanford_tagger, resources['java_path'])
 
 	#Selector:
 	fe = FeatureEstimator()
-	fe.addCollocationalFeature('/export/data/ghpaetzold/subtitlesimdb/corpora/160715/subtleximdb.5gram.unk.bin.txt', 2, 2, 'Complexity')
-	fe.addTargetPOSTagProbability('/export/data/ghpaetzold/LEXenstein/corpora/POS_condprob_model.bin', pos_model, stanford_tagger, '/usr/bin/java', 'Simplicity')
-	fe.addTaggedWordVectorSimilarityFeature(w2vpm_eng, pos_model, stanford_tagger, '/usr/bin/java', 'paetzold', 'Simplicity')
+	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Complexity')
+	fe.addTargetPOSTagProbability(resources['pos_prob_model'], pos_model, stanford_tagger, resources['java_path'], 'Simplicity')
+	fe.addTaggedWordVectorSimilarityFeature(w2vpm_eng, pos_model, stanford_tagger, resources['java_path'], 'paetzold', 'Simplicity')
 	br = BoundaryRanker(fe)
 	bs = BoundarySelector(br)
 	bs.trainSelectorWithCrossValidation(victor_corpus, 2, 5, 0.25, k='all')
 
 	#Ranker:
 	fe = FeatureEstimator(norm=False)
-	fe.addCollocationalFeature('/export/data/ghpaetzold/subimdbexperiments/corpora/binlms/subimdb', 2, 2, 'Simplicity')
-	model_file = '/export/data/ghpaetzold/benchmarking/lseval+lexmturk/nnmodels/RegressionParallelNN_HIDDEN=8_LAYERS=4'
+	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Simplicity')
+	model_file = resources['nn_sr_model']
 	model = model_from_json(open(model_file+'.json').read())
 	model.load_weights(model_file+'.h5')
 	model.compile(loss='mean_squared_error', optimizer='adam')
@@ -152,9 +170,9 @@ def getEnglishLexicalSimplifier():
 	#Return LexicalSimplifier object:
 	return EnglishLexicalSimplifier(ng, kg, bs, nr)
 
-def getGalicianLexicalSimplifier():
+def getGalicianLexicalSimplifier(resources):
 	#General purpose:
-	w2vpm_gal = '/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/galician/corpora/galician_vectors_300_cbow.bin'
+	w2vpm_gal = resources['gal_embeddings']
 
 	#Generator:
 	gg = GalicianGlavasGenerator(w2vpm_gal)
@@ -162,15 +180,15 @@ def getGalicianLexicalSimplifier():
 	#Ranker:
 	fe = FeatureEstimator()
 	fe.addLengthFeature('Complexity')
-	fe.addCollocationalFeature('/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/galician/corpora/galician_lm.bin', 2, 2, 'Simplicity')
+	fe.addCollocationalFeature(resources['gal_lm'], 2, 2, 'Simplicity')
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
 	return GalicianLexicalSimplifier(gg, gr)
 	
-def getItalianLexicalSimplifier():
+def getItalianLexicalSimplifier(resources):
 	#General purpose:
-	w2vpm_ita = '/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/italian/corpora/italian_vectors_500_cbow.bin'
+	w2vpm_ita = resources['ita_embeddings']
 
 	#Generator:
 	gg = ItalianGlavasGenerator(w2vpm_ita)
@@ -178,7 +196,7 @@ def getItalianLexicalSimplifier():
 	#Ranker:
 	fe = FeatureEstimator()
 	fe.addLengthFeature('Complexity')
-	fe.addCollocationalFeature('/export/data/ghpaetzold/simpatico/simplifiers_italian_spanish/italian/corpora/italian_lm.bin', 2, 2, 'Simplicity')
+	fe.addCollocationalFeature(resources['ita_lm'], 2, 2, 'Simplicity')
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
@@ -187,11 +205,14 @@ def getItalianLexicalSimplifier():
 	
 	
 ################################################ MAIN ########################################################	
-	
+
+#Load global resources:
+resources = loadResources('../resources.txt')
+
 #Load English simplifier:
-simplifier_eng = getEnglishLexicalSimplifier()
-simplifier_gal = getGalicianLexicalSimplifier()
-simplifier_ita = getItalianLexicalSimplifier()
+simplifier_eng = getEnglishLexicalSimplifier(resources)
+simplifier_gal = getGalicianLexicalSimplifier(resources)
+simplifier_ita = getItalianLexicalSimplifier(resources)
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

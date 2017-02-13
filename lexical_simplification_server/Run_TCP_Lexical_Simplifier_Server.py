@@ -151,7 +151,7 @@ def getEnglishLexicalSimplifier(resources):
 	#Selector:
 	fe = FeatureEstimator()
 	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Complexity')
-	fe.addTargetPOSTagProbability(resources['pos_prob_model'], pos_model, stanford_tagger, resources['java_path'], 'Simplicity')
+#	fe.addTargetPOSTagProbability(resources['pos_prob_model'], pos_model, stanford_tagger, resources['java_path'], 'Simplicity')
 	fe.addWordVectorSimilarityFeature(w2vty_eng, 'Simplicity')
 	br = BoundaryRanker(fe)
 	bs = BoundarySelector(br)

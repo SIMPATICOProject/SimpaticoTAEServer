@@ -1,10 +1,7 @@
-import xml.etree.ElementTree as ET
 import re, socket
 import urllib2 as urllib
-from nltk.corpus import wordnet as wn
 import subprocess
 import nltk
-from nltk.tag.stanford import StanfordPOSTagger
 import kenlm
 import codecs
 import os, pickle

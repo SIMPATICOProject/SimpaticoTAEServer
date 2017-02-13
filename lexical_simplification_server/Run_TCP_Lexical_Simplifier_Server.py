@@ -141,19 +141,18 @@ def getEnglishLexicalSimplifier(resources):
 	#General purpose:
 	nc = NorvigCorrector(resources['norvig_corrector'], format='bin')
 	victor_corpus = resources['nnseval']
-	pos_model = resources['tagger_model']
-	stanford_tagger = resources['stanford_tagger']
 	w2vpm_eng = resources['eng_caretro_embeddings']
+	w2vty_eng = resources['eng_typical_embeddings']
 
 	#Generator:
 	ng = getNewselaCandidates(resources['newsela_candidates'])
-	kg = PaetzoldGenerator(w2vpm_eng, nc, pos_model, stanford_tagger, resources['java_path'])
+	kg = PaetzoldGenerator(w2vpm_eng, nc)
 
 	#Selector:
 	fe = FeatureEstimator()
 	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Complexity')
 	fe.addTargetPOSTagProbability(resources['pos_prob_model'], pos_model, stanford_tagger, resources['java_path'], 'Simplicity')
-	fe.addTaggedWordVectorSimilarityFeature(w2vpm_eng, pos_model, stanford_tagger, resources['java_path'], 'paetzold', 'Simplicity')
+	fe.addWordVectorSimilarityFeature(w2vty_eng, 'Simplicity')
 	br = BoundaryRanker(fe)
 	bs = BoundarySelector(br)
 	bs.trainSelectorWithCrossValidation(victor_corpus, 2, 5, 0.25, k='all')

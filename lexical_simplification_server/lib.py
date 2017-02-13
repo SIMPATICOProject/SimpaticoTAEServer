@@ -305,13 +305,11 @@ class GalicianGlavasGenerator:
 
 class PaetzoldGenerator:
 
-	def __init__(self, posw2vmodel, nc, pos_model, stanford_tagger, java_path):
+	def __init__(self, posw2vmodel, nc):
 		self.lemmatizer = WordNetLemmatizer()
 		self.stemmer = PorterStemmer()
 		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(posw2vmodel, binary=True)
 		self.nc = nc
-		os.environ['JAVAHOME'] = java_path
-		self.tagger = StanfordPOSTagger(pos_model, stanford_tagger)
 
 	def getSubstitutions(self, victor_corpus, amount):
 		#Get initial set of substitutions:

@@ -3,6 +3,7 @@ nnseval	/export/data/ghpaetzold/benchmarking/paetzold_nns/corpora/paetzold_nns_d
 tagger_model	/export/data/ghpaetzold/benchmarking/lexmturk/scripts/evaluators/stanford-postagger-full-2015-04-20/models/wsj-0-18-left3words-distsim.tagger
 stanford_tagger	/export/data/ghpaetzold/benchmarking/lexmturk/scripts/evaluators/stanford-postagger-full-2015-04-20/stanford-postagger.jar
 eng_caretro_embeddings	/export/data/ghpaetzold/word2vecvectors/models/word_vectors_all_generalized_1300_cbow_retrofitted.bin
+eng_typical_embeddings	/export/data/ghpaetzold/word2vecvectors/models/word_vectors_all_300_cbow_retrofitted.bin
 newsela_candidates	/export/data/ghpaetzold/benchmarking/lseval+lexmturk/substitutions/newsela/substitutions.txt
 java_path	/usr/bin/java
 eng_sub_lm	/export/data/ghpaetzold/subimdbexperiments/corpora/binlms/subimdb

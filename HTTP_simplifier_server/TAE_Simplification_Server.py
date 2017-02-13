@@ -186,7 +186,7 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 	
 	#Corrects language detection because of lack of galician support:
 	def correctLanguage(self, lang):
-		if lang not in set(['en', 'it', 'gl']):
+		if lang not in set(['en', 'it', 'gl', 'es']):
 			return 'gl'
 		else:
 			return lang

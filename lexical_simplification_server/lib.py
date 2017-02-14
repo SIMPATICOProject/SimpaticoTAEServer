@@ -1,6 +1,5 @@
 import re, socket
 import urllib2 as urllib
-import subprocess
 import nltk
 import kenlm
 import codecs
@@ -308,37 +307,33 @@ class PaetzoldGenerator:
 		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(posw2vmodel, binary=True)
 		self.nc = nc
 
-	def getSubstitutions(self, victor_corpus, amount):
-		#Get initial set of substitutions:
-		lexf = open(victor_corpus)
-		data = []
-		for line in lexf:
-			d = line.strip().split('\t')
-			data.append(d)
-		lexf.close()
-
-		sents = [d[0] for d in data]
-		tagged_sents = self.getParsedSentences(sents)
-		substitutions = self.getInitialSet(data, tagged_sents, amount)
-
-		return substitutions, tagged_sents
+	# def getSubstitutions(self, victor_corpus, amount):
+		# #Get initial set of substitutions:
+		# lexf = open(victor_corpus)
+		# data = []
+		# for line in lexf:
+			# d = line.strip().split('\t')
+			# data.append(d)
+		# lexf.close()
+		# sents = [d[0] for d in data]
+		# tagged_sents = self.getParsedSentences(sents)
+		# substitutions = self.getInitialSet(data, tagged_sents, amount)
+		# return substitutions, tagged_sents
 
 	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
 		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
 		return substitutions
 		
-	def getParsedSentences(self, sents):
-		tagged_sents = []
-		for sent in sents:
-			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			s.connect(("localhost",2020))
-			s.send(sent+'\n')
-			resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
-			resp = [(token[0], token[1]) for token in resp]
-			
-			tagged_sents.append(resp)
-		
-		return tagged_sents
+	# def getParsedSentences(self, sents):
+		# tagged_sents = []
+		# for sent in sents:
+			# s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+			# s.connect(("localhost",2020))
+			# s.send(sent+'\n')
+			# resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
+			# resp = [(token[0], token[1]) for token in resp]
+			# tagged_sents.append(resp)
+		# return tagged_sents
 
 	def getInitialSet(self, data, tsents, amount):
 		trgs = []

@@ -190,11 +190,36 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 			return 'gl'
 		else:
 			return lang
+
+def loadResources(path):
+	#Open resource file:
+	f = open(path)
+	
+	#Create resource map:
+	resources = {}
+	
+	#Read resource paths:
+	for line in f:
+		data = line.strip().split('\t')
+		if data[0] in resources:
+			print 'Repeated resource name: ' + data[0] + '. Please change the name of this resource.'
+		resources[data[0]] = data[1]
+	f.close()
+	
+	#Return resource database:
+	return resources			
+			
+			
+			
+			
 try:
+	#Load configurations:
+	configurations = loadResources('../configurations.txt')
+	
 	#Set parameters:
-	SERVER_PORT_NUMBER = 8080
-	LS_PORT_NUMBER = 1414
-	SS_PORT_NUMBER = 1515
+	SERVER_PORT_NUMBER = int(configurations['main_tae_server_port'])
+	LS_PORT_NUMBER = int(configurations['ls_local_server_port'])
+	SS_PORT_NUMBER = int(configurations['ss_local_server_port'])
 
 	#Create the lexical simplifier:
 	ls = LexicalSimplifier(LS_PORT_NUMBER)

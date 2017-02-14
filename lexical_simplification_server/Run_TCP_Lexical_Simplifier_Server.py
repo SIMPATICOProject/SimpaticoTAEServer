@@ -82,11 +82,11 @@ class EnglishLexicalSimplifier:
 		return ranks
 
 #Functions:
-def getTaggedSentences(sents):
+def getTaggedSentences(sents, configurations):
 	tagged_sents = []
 	for sent in sents:
 		s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-		s.connect(("localhost",2020))
+		s.connect(("localhost", int(configurations['eng_stanford_tagger_port'])))
 		sinput = sent+'\n'
 		s.send(sinput.encode("utf-8"))
 		resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
@@ -205,7 +205,8 @@ def getItalianLexicalSimplifier(resources):
 	
 ################################################ MAIN ########################################################	
 
-#Load global resources:
+#Load global resources and configurations:
+configurations = loadResources('../configurations.txt')
 resources = loadResources('../resources.txt')
 
 #Load English simplifier:
@@ -215,7 +216,7 @@ simplifier_ita = getItalianLexicalSimplifier(resources)
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', 1414))
+serversocket.bind(('localhost', int(configurations['ls_local_server_port'])))
 serversocket.listen(5)
 
 #Upon receival of simplification request, do:
@@ -234,7 +235,7 @@ while 1:
 	try:
 		if lang=='en':
 			#Tag sentence:
-			tagged_sents = getTaggedSentences([sent])
+			tagged_sents = getTaggedSentences([sent], configurations)
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#SG:

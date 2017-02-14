@@ -1,5 +1,0 @@
-Server:
-java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/wsj-0-18-bidirectional-distsim.tagger -port 2020 &
-
-Client:
-java -cp stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -client -port 2020

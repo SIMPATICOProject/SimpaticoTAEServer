@@ -9,7 +9,9 @@ Content:
 
 Installation instructions:
 
-	1) In order to run the servers, you will first need to install the following Python 2 libraries:
+	1) In order to run the servers, you will need a Python 2.6+ installation (preferably Anaconda), and a Java 1.8+ installation.
+
+	2) Install the following Python 2 libraries:
 
 		urllib2
 		kenlm
@@ -21,13 +23,13 @@ Installation instructions:
 		pickle
 		[carol] (mais libraries?)
 	
-	2) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
+	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	
-	3) Download the data pack from http://www.quest.dcs.shef.ac.uk/simpatico/simplifier_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
+	4) Download the data pack from http://www.quest.dcs.shef.ac.uk/simpatico/simplifier_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
 	
-	4) Download the Stanford Tagger (full) from http://nlp.stanford.edu/software/stanford-postagger-full-2015-04-20.zip and unpack it into a folder of choice (ex: /home/user/stanford-postagger-full-2015-04-20).
+	5) Download the Stanford Tagger (full) from http://nlp.stanford.edu/software/stanford-postagger-full-2015-04-20.zip and unpack it into a folder of choice (ex: /home/user/stanford-postagger-full-2015-04-20).
 	
-	5) [carol] Download the Stanford Parser from...
+	6) [carol] Download the Stanford Parser from...
 
 Running instructions:
 

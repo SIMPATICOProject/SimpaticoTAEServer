@@ -6,7 +6,7 @@ from langdetect import detect
 import socket
 
 #Classes:
-class GalicianLexicalSimplifier:
+class MultilingualLexicalSimplifier:
 
 	def __init__(self, embeddingsgen, ranker):
 		self.embeddingsgen = embeddingsgen
@@ -174,7 +174,7 @@ def getGalicianLexicalSimplifier(resources):
 	w2vpm_gal = resources['gal_embeddings']
 
 	#Generator:
-	gg = GalicianGlavasGenerator(w2vpm_gal)
+	gg = MultilingualGlavasGenerator(w2vpm_gal, 'spanish')
 
 	#Ranker:
 	fe = FeatureEstimator()
@@ -183,14 +183,14 @@ def getGalicianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return GalicianLexicalSimplifier(gg, gr)
+	return MultilingualLexicalSimplifier(gg, gr)
 	
 def getItalianLexicalSimplifier(resources):
 	#General purpose:
 	w2vpm_ita = resources['ita_embeddings']
 
 	#Generator:
-	gg = ItalianGlavasGenerator(w2vpm_ita)
+	gg = MultilingualGlavasGenerator(w2vpm_ita, 'italian')
 
 	#Ranker:
 	fe = FeatureEstimator()
@@ -199,8 +199,23 @@ def getItalianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return GalicianLexicalSimplifier(gg, gr)
+	return MultilingualLexicalSimplifier(gg, gr)
 	
+def getSpanishLexicalSimplifier(resources):
+	#General purpose:
+	w2vpm_spa = resources['spa_embeddings']
+
+	#Generator:
+	gg = MultilingualGlavasGenerator(w2vpm_spa, 'spanish')
+
+	#Ranker:
+	fe = FeatureEstimator()
+	fe.addLengthFeature('Complexity')
+	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Simplicity')
+	gr = GlavasRanker(fe)
+	
+	#Return LexicalSimplifier object:
+	return MultilingualLexicalSimplifier(gg, gr)
 	
 	
 ################################################ MAIN ########################################################	
@@ -213,6 +228,7 @@ resources = loadResources('../resources.txt')
 simplifier_eng = getEnglishLexicalSimplifier(resources)
 simplifier_gal = getGalicianLexicalSimplifier(resources)
 simplifier_ita = getItalianLexicalSimplifier(resources)
+simplifier_spa = getSpanishLexicalSimplifier(resources)
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -249,6 +265,11 @@ while 1:
 			sg_output = simplifier_ita.generateCandidates(sent, target, index)
 			#SR:
 			sr_output = simplifier_ita.rankCandidates(sg_output)
+		elif lang=='es':
+			#SG:
+			sg_output = simplifier_spa.generateCandidates(sent, target, index)
+			#SR:
+			sr_output = simplifier_spa.rankCandidates(sg_output)
 		else:
 			#SG:
 			sg_output = simplifier_gal.generateCandidates(sent, target, index)

@@ -29,14 +29,15 @@ Installation instructions:
 	
 	5) Download the Stanford Tagger (full) from http://nlp.stanford.edu/software/stanford-postagger-full-2015-04-20.zip and unpack it into a folder of choice (ex: /home/user/stanford-postagger-full-2015-04-20).
 	
-	6) [carol] Download the Stanford Parser from...
+	6) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
+		- However, if you want to use a different version, you can download from http://stanfordnlp.github.io/CoreNLP/. In this case you will need to change the path to your CoreNLP version into the resources.txt file (corenlp_dir parameter).
 
 Running instructions:
 
 	1) In order to run a fully functional version of the SIMPATICO TAE server, you will have to run the following components:
 	
 		- The Stanford Tagger server for English: Receives requests from the Lexical Simplification local server for tagging.
-		- [carol] The Stanford Parser servers...: Receives requests from the Syntactic Simplification local server for parsing.
+		- The Stanford Dependency Parser servers: Receives requests from the Syntactic Simplification local server for parsing.
 		- The Lexical Simplification local server: Receives requests from the main TAE web server for lexical simplifications.
 		- The Syntactic Simplification local server: Receives requests from the main TAE web server for syntactic simplifications.
 		- The main TAE web server: Receives requests from the web for Text Adaptation.
@@ -49,7 +50,8 @@ Running instructions:
 			
 		Then you will have a tagging server running at port 2020. The port chosen MUST be the one specified on the "configurations.txt" file.
 		
-	3) [carol] How to run the Stanford parser servers...
+	3) How to run the Stanford parser servers:
+		These servers are run when the syntactic simplifier server is started, therefore, there is no need to run it externally.
 	
 	4) How to run the Lexical Simplification local server:
 	
@@ -59,7 +61,10 @@ Running instructions:
 			
 		Then you will have a server receiving requests at the "ls_local_server_port" port specified in the "configurations.txt" file.
 		
-	5) [carol] How to run the Syntactic Simplification local server:
+	5) How to run the Syntactic Simplification local server:
+		Navigate to the "syntactic_simplification_server" folder, then run the following command:
+			nohup python Run_TCP_Syntactic_Simplifier_Server.py &
+		Then you will have a server receiving requests at the "ss_local_server_port" port specified in the "configurations.txt" file.
 	
 	6) How to run the main TAE web server:
 	
@@ -78,10 +83,8 @@ Testing instructions:
 			java -cp stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -client -port 2020
 			
 		Then just type a complete English sentence and press enter. The port chosen MUST be the one specified on the "configurations.txt" file.
-		
-	2) [carol] How to test the Stanford parser servers...
-	
-	3) How to test the Lexical Simplification local server:
+			
+	2) How to test the Lexical Simplification local server:
 	
 		Navigate to the "lexical_simplification_server/tests" folder, then run the following commands:
 			
@@ -92,9 +95,17 @@ Testing instructions:
 		You should receive responses with simplifications after a few seconds.
 		You can also open the aforementoined scripts to see how they work.
 		
-	4) [carol] How to test the Syntactic Simplification local server:
+	3) How to test the Syntactic Simplification local server:
+		Navigate to the "syntactic_simplification_server/tests" folder, then run the following commands:
+			
+			python English_Test_Simplifier.py
+			python Galician_Test_Simplifier.py
+			python Spanish_Test_Simplifier.py
+			
+		You should receive responses with simplifications after a few seconds.
+		You can also open the aforementoined scripts to see how they work.
 	
-	5) How to test the main TAE web server:
+	4) How to test the main TAE web server:
 	
 		Navigate to the "main_TAE_server/tests" folder, then run the following commands:
 		

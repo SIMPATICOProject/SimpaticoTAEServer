@@ -2,10 +2,10 @@ Content:
 
 	architecture: Folder containing a visual description of the architecture of the first version of the TAE server.
 	lexical_simplification_server: Folder containing the code for the local Lexical Simplification server of SIMPATICO.
+	syntactic_simplification_server: Folder containing the code for the local Syntactic Simplification server of SIMPATICO.
 	main_TAE_server: Folder containing the code for the TAE web server of SIMPATICO.
 	resources.txt: File containing a map of resources to be used by the simplification servers of SIMPATICO.
 	configurations.txt: File containing port configurations for the servers.
-	[carol] (ss folder, etc)
 
 Installation instructions:
 

@@ -21,7 +21,6 @@ Installation instructions:
 		keras
 		numpy
 		pickle
-		[carol] (mais libraries?)
 	
 	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	

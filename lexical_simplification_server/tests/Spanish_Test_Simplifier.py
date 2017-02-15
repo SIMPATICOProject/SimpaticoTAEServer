@@ -19,10 +19,10 @@ def loadResources(path):
 configurations = loadResources('../../configurations.txt')
 
 info = {}
-info['sentence'] = 'Os líquens que medran no residuo asfáltico suxiren a sua baixa toxicidade , que cabería comparar á dunha autoestrada .'
-info['target'] = info['sentence'].split(' ')[14]
-info['index'] = '14'
-info['lang'] = 'gl'
+info['sentence'] = 'Si pudieras formar un súper grupo , quién formaría parte de él ?'
+info['target'] = info['sentence'].split(' ')[7]
+info['index'] = '7'
+info['lang'] = 'es'
 data = json.dumps(info)
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)

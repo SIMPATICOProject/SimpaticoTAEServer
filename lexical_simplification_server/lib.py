@@ -60,8 +60,11 @@ class MultilingualGlavasGenerator:
 			most_sim = []
 			try:
 				most_sim = self.model.most_similar(positive=[word.decode('utf-8')], topn=50)
-			except KeyError:
-				most_sim = []
+			except Exception:
+				try:
+					most_sim = self.model.most_similar(positive=[word], topn=50)
+				except Exception:
+					most_sim = []
 
 			subs.append([word[0] for word in most_sim])
 

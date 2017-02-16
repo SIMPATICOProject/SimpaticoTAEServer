@@ -2,7 +2,7 @@ norvig_corrector	../data/norvig_model_wmt.bin
 nnseval	../data/paetzold_nns_dataset.txt
 eng_caretro_embeddings	../data/word_vectors_all_generalized_1300_cbow_retrofitted.bin
 eng_typical_embeddings	../data/word_vectors_all_300_cbow_retrofitted.bin
-newsela_candidates	../data/substitutions.txt
+newsela_candidates	../data/newsela_candidates.txt
 eng_sub_lm	../data/subimdb
 nn_sr_model	../data/RegressionParallelNN_HIDDEN=8_LAYERS=4
 gal_embeddings	../data/galician_vectors_300_cbow.bin

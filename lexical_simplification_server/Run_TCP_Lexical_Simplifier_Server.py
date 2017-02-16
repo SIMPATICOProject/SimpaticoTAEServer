@@ -8,8 +8,9 @@ import socket
 #Classes:
 class MultilingualLexicalSimplifier:
 
-	def __init__(self, embeddingsgen, ranker):
+	def __init__(self, embeddingsgen, selector, ranker):
 		self.embeddingsgen = embeddingsgen
+		self.selector = selector
 		self.ranker = ranker
 		
 	def generateCandidates(self, sent, target, index):
@@ -23,6 +24,22 @@ class MultilingualLexicalSimplifier:
 		fulldata = [fulldata]
 		
 		#Return requested structures:
+		return fulldata
+	
+	def selectCandidates(self, data):		
+		#If there are not enough candidates to be selected, select none:
+		if len(data[0])<5:
+			selected = [[]]
+		else:
+			selected = self.selector.selectCandidates(data, 0.5, proportion_type='percentage')		
+
+		#Produce resulting data:
+		fulldata = [data[0][0], data[0][1], data[0][2]]
+		for sub in selected[0]:
+			fulldata.append('0:'+sub)
+		fulldata = [fulldata]
+		
+		#Return desired objects:
 		return fulldata
 	
 	def rankCandidates(self, data):
@@ -175,6 +192,14 @@ def getGalicianLexicalSimplifier(resources):
 
 	#Generator:
 	gg = MultilingualGlavasGenerator(w2vpm_gal, 'spanish')
+	
+	#Selector:
+	fe = FeatureEstimator()
+	fe.addCollocationalFeature(resources['gal_lm'], 2, 2, 'Complexity')
+	fe.addWordVectorSimilarityFeature(w2vpm_gal, 'Simplicity')
+	br = BoundaryRanker(fe)
+	bs = BoundarySelector(br)
+	bs.trainSelectorWithCrossValidation(resources['galician_ubr'], 1, 5, 0.25, k='all')
 
 	#Ranker:
 	fe = FeatureEstimator()
@@ -183,7 +208,7 @@ def getGalicianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return MultilingualLexicalSimplifier(gg, gr)
+	return MultilingualLexicalSimplifier(gg, bs, gr)
 	
 def getItalianLexicalSimplifier(resources):
 	#General purpose:
@@ -191,6 +216,14 @@ def getItalianLexicalSimplifier(resources):
 
 	#Generator:
 	gg = MultilingualGlavasGenerator(w2vpm_ita, 'italian')
+	
+	#Selector:
+	fe = FeatureEstimator()
+	fe.addCollocationalFeature(resources['ita_lm'], 2, 2, 'Complexity')
+	fe.addWordVectorSimilarityFeature(w2vpm_ita, 'Simplicity')
+	br = BoundaryRanker(fe)
+	bs = BoundarySelector(br)
+	bs.trainSelectorWithCrossValidation(resources['italian_ubr'], 1, 5, 0.25, k='all')
 
 	#Ranker:
 	fe = FeatureEstimator()
@@ -199,7 +232,7 @@ def getItalianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return MultilingualLexicalSimplifier(gg, gr)
+	return MultilingualLexicalSimplifier(gg, bs, gr)
 	
 def getSpanishLexicalSimplifier(resources):
 	#General purpose:
@@ -207,6 +240,14 @@ def getSpanishLexicalSimplifier(resources):
 
 	#Generator:
 	gg = MultilingualGlavasGenerator(w2vpm_spa, 'spanish')
+	
+	#Selector:
+	fe = FeatureEstimator()
+	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Complexity')
+	fe.addWordVectorSimilarityFeature(w2vpm_spa, 'Simplicity')
+	br = BoundaryRanker(fe)
+	bs = BoundarySelector(br)
+	bs.trainSelectorWithCrossValidation(resources['spanish_ubr'], 1, 5, 0.25, k='all')
 
 	#Ranker:
 	fe = FeatureEstimator()
@@ -215,7 +256,7 @@ def getSpanishLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return MultilingualLexicalSimplifier(gg, gr)
+	return MultilingualLexicalSimplifier(gg, bs, gr)
 	
 	
 ################################################ MAIN ########################################################	
@@ -248,8 +289,7 @@ while 1:
 	lang = data['lang']
 
 	#Simplify based on language:
-#	try:
-	if True:
+	try:
 		if lang=='en':
 			#Tag sentence:
 			tagged_sents = getTaggedSentences([sent], configurations)
@@ -264,20 +304,26 @@ while 1:
 		elif lang=='it':
 			#SG:
 			sg_output = simplifier_ita.generateCandidates(sent, target, index)
+			#SS:
+			ss_output = simplifier_ita.selectCandidates(sg_output)
 			#SR:
-			sr_output = simplifier_ita.rankCandidates(sg_output)
+			sr_output = simplifier_ita.rankCandidates(ss_output)
 		elif lang=='es':
 			#SG:
 			sg_output = simplifier_spa.generateCandidates(sent, target, index)
+			#SS:
+			ss_output = simplifier_spa.selectCandidates(sg_output)
 			#SR:
-			sr_output = simplifier_spa.rankCandidates(sg_output)
+			sr_output = simplifier_spa.rankCandidates(ss_output)
 		else:
 			#SG:
 			sg_output = simplifier_gal.generateCandidates(sent, target, index)
+			#SS:
+			ss_output = simplifier_gal.selectCandidates(sg_output)
 			#SR:
-			sr_output = simplifier_gal.rankCandidates(sg_output)
-#	except Exception:
-#		sr_output = [[]]
+			sr_output = simplifier_gal.rankCandidates(ss_output)
+	except Exception:
+		sr_output = [[]]
 
 	#Get final replacement:
 	replacement = 'NULL'

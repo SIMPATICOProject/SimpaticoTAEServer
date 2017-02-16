@@ -50,6 +50,7 @@ Running instructions:
 		Then you will have a tagging server running at port 2020. The port chosen MUST be the one specified on the "configurations.txt" file.
 		
 	3) How to run the Stanford parser servers:
+	
 		These servers are run when the syntactic simplifier server is started, therefore, there is no need to run it externally.
 	
 	4) How to run the Lexical Simplification local server:
@@ -61,8 +62,11 @@ Running instructions:
 		Then you will have a server receiving requests at the "ls_local_server_port" port specified in the "configurations.txt" file.
 		
 	5) How to run the Syntactic Simplification local server:
+	
 		Navigate to the "syntactic_simplification_server" folder, then run the following command:
+		
 			nohup python Run_TCP_Syntactic_Simplifier_Server.py &
+			
 		Then you will have a server receiving requests at the "ss_local_server_port" port specified in the "configurations.txt" file.
 	
 	6) How to run the main TAE web server:

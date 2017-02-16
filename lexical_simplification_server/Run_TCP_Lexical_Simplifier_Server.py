@@ -195,6 +195,7 @@ def getGalicianLexicalSimplifier(resources):
 	
 	#Selector:
 	fe = FeatureEstimator()
+	fe.resources[w2vpm_gal] = gg.model
 	fe.addCollocationalFeature(resources['gal_lm'], 2, 2, 'Complexity')
 	fe.addWordVectorSimilarityFeature(w2vpm_gal, 'Simplicity')
 	br = BoundaryRanker(fe)
@@ -219,6 +220,7 @@ def getItalianLexicalSimplifier(resources):
 	
 	#Selector:
 	fe = FeatureEstimator()
+	fe.resources[w2vpm_ita] = gg.model
 	fe.addCollocationalFeature(resources['ita_lm'], 2, 2, 'Complexity')
 	fe.addWordVectorSimilarityFeature(w2vpm_ita, 'Simplicity')
 	br = BoundaryRanker(fe)
@@ -243,6 +245,7 @@ def getSpanishLexicalSimplifier(resources):
 	
 	#Selector:
 	fe = FeatureEstimator()
+	fe.resources[w2vpm_spa] = gg.model
 	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Complexity')
 	fe.addWordVectorSimilarityFeature(w2vpm_spa, 'Simplicity')
 	br = BoundaryRanker(fe)

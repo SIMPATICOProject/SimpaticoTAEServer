@@ -13,14 +13,13 @@ Installation instructions:
 
 	2) Install the following Python 2 libraries:
 
-		urllib2
 		kenlm
 		gensim
 		nltk
 		sklearn
 		keras
 		numpy
-		pickle
+		langdetect
 	
 	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	

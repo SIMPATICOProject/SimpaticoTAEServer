@@ -667,8 +667,8 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
-            
-        simp_sentence = self.transformation(sentence, '')
+        try:     
+            simp_sentence = self.transformation(sentence, '')
 
             ## for demonstration purposes only. remove the prints later
             #print "Simplified: ",
@@ -676,4 +676,6 @@ class Simplify():
             #c+=1
 
             #print   
-        return simp_sentence.encode("utf-8")
+            return simp_sentence.encode("utf-8")
+        except:
+            return sentence

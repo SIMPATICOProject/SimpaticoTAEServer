@@ -695,8 +695,11 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
+        try:
             
-        simp_sentence = self.transformation(sentence, '')
+            simp_sentence = self.transformation(sentence, '')
+        
+
 
             ## for demonstration purposes only. remove the prints later
             #print "Simplified: ",
@@ -704,4 +707,6 @@ class Simplify():
             #c+=1
 
             #print   
-        return simp_sentence
+            return simp_sentence
+        except:
+            return sentence

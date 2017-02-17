@@ -51,7 +51,7 @@ Running instructions:
 		
 	3) How to run the Stanford parser servers:
 	
-		These servers are run when the syntactic simplifier server is started, therefore, there is no need to run it externally.
+		These servers are run when the syntactic simplifier server is started, therefore, there is no need to run them externally.
 	
 	4) How to run the Lexical Simplification local server:
 	
@@ -117,6 +117,7 @@ Testing instructions:
 			python Lexical_Italian_Test.py
 			python Syntactic_English_Test.py
 			python Syntactic_Galician_Test.py
+			python Syntactic_Spanish_Test.py
 		
 		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
 		You can also test it from a web browser through URLs such as:

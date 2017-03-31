@@ -26,8 +26,8 @@ doc = open(v_args['d'], "r")
 
 
 if v_args['l'] == 'en':
-    stfd_parser = Parser()
-    simplify = simpatico_ss.simplify.Simplify(stfd_parser)
+    stfd_parser = Parser("../../data/stanford-corenlp-full-2016-10-31/", "../../data/english.myproperties.properties")
+    simplify = simpatico_ss.simplify.Simplify(stfd_parser, "../../data/distributions.obj")
 
     for s in doc.readlines():
     
@@ -36,16 +36,16 @@ if v_args['l'] == 'en':
         print simp
 
 elif v_args['l'] == 'gl':
-    stfd_parser_gl = Parser_gl()
-    simplify = simpatico_ss_gl.simplify.Simplify(stfd_parser_gl)
+    stfd_parser_gl = Parser_gl("../../data/stanford-corenlp-full-2016-10-31/", "../../data/galician.myproperties.properties")
+    simplify = simpatico_ss_gl.simplify.Simplify(stfd_parser_gl, "../../data/distributions.gl.obj")
 
     for s in doc.readlines():
         simp = simplify.simplify(s.strip())
         print simp
 
 elif v_args['l'] == 'es':
-    stfd_parser_es = Parser_es()
-    simplify = simpatico_ss_es.simplify.Simplify(stfd_parser_es)
+    stfd_parser_es = Parser_es("../../data/stanford-corenlp-full-2016-10-31/", "../../data/spanish.myproperties.properties")
+    simplify = simpatico_ss_es.simplify.Simplify(stfd_parser_es, "../../data/distributions.es.obj")
 
     for s in doc.readlines():
         simp = simplify.simplify(s.strip())

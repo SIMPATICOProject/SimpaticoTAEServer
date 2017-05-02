@@ -8,8 +8,8 @@ from nltk.corpus import reuters
 import cPickle
 import string
 import math
-import MySQLdb
-import MySQLdb.cursors
+# import MySQLdb
+# import MySQLdb.cursors
 import nltk.data
 
 from TrainFunctions import *

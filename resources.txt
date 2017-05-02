@@ -14,9 +14,11 @@ spa_lm	../data/spanish_lm.bin
 true_en	../data/distributions.obj
 true_es	../data/distributions.es.obj
 true_gl	../data/distributions.gl.obj
+true_it	../data/distributions.it.obj
 prop_en	../data/english.myproperties.properties
 prop_es	../data/spanish.myproperties.properties
 prop_gl	../data/galician.myproperties.properties
+prop_it	../data/italian.myproperties.properties
 corenlp_dir	../data/stanford-corenlp-full-2016-10-31
 spanish_ubr	../data/spanish_dataset_ubr.txt
 galician_ubr	../data/galician_dataset_ubr.txt

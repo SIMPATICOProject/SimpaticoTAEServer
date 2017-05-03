@@ -93,8 +93,9 @@ while 1:
     #Syntactic Simplification:
     if lang == 'es':
         ss_output = ss_eng_es.simplify(sent)
+    if lang == 'it':
+        ss_output = ss_eng_it.simplify(sent)
     if lang == 'en':
-        #print sent
         ss_output = ss_eng.simplify(sent)
     elif lang == 'gl':
         ss_output = ss_eng_gl.simplify(sent)

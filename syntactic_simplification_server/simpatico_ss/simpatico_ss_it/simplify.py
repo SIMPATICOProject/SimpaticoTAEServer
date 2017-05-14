@@ -10,6 +10,9 @@ from nltk.parse import DependencyGraph
 import operator
 import time
 
+#demo-emnlp extension
+from classify import Classify
+
 class Simplify():
 
     def __init__(self, parser, truecase_model):
@@ -41,7 +44,7 @@ class Simplify():
         
 
         
-    def transformation(self, sent, ant, justify=False):
+    def transformation(self, sent, ant, comp=False, justify=False):
         """
         Transformation step in the simplification process.
         This is a recursive method that receives two parameters:
@@ -257,7 +260,7 @@ class Simplify():
                     else:
                         sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
                         
-                    s1 = self.transformation(sentence1, ant, justify)
+                    s1 = self.transformation(sentence1, ant, justify=justify)
                     s2 = self.transformation(sentence2, ant)
 
                     flag = True 
@@ -344,7 +347,7 @@ class Simplify():
                 else:
                     sentence1, sentence2 = self.generation.print_sentence(final_root, final_relc)
 
-                s1 = self.transformation(sentence1, ant, justify)
+                s1 = self.transformation(sentence1, ant, justify=justify)
                 s2 = self.transformation(sentence2, ant)
                 return True, s1 + " " +  s2
             else:
@@ -573,6 +576,15 @@ class Simplify():
         if 0 not in dict_dep:
             return ant
 
+
+        ## classify whether the sentence should be simplified or not (EMNLP demo extension)
+        if comp:
+            c = Classify()
+            label = c.classify(sent, dict_dep, words)
+            if label[0] == 0. : 
+                return ant
+
+
         root = dict_dep[0]['root'][0]
         
         ## check for root dependencies
@@ -658,7 +670,7 @@ class Simplify():
         if flag== False:
             return ant
 
-    def simplify(self, sentence):        
+    def simplify(self, sentence, comp=False):        
         """
         Call the simplification process for all sentences in the document.
         """
@@ -667,8 +679,8 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
-        try:     
-            simp_sentence = self.transformation(sentence, '')
+        #try:     
+        simp_sentence = self.transformation(sentence, '', comp)
 
             ## for demonstration purposes only. remove the prints later
             #print "Simplified: ",
@@ -676,6 +688,6 @@ class Simplify():
             #c+=1
 
             #print   
-            return simp_sentence.encode("utf-8")
-        except:
-            return sentence
+        return simp_sentence.encode("utf-8")
+        #except:
+        #    return sentence

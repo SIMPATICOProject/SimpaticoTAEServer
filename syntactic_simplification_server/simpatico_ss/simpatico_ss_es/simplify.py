@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 from analysis import Analysis
 from generation import Generation
@@ -9,6 +9,10 @@ import string
 from nltk.parse import DependencyGraph
 import operator
 import time
+import sys
+
+#emnlp-demo extension
+from classify import Classify
 
 class Simplify():
 
@@ -18,20 +22,19 @@ class Simplify():
         @param parser: parser server.
         @param truecase_model: truecase model.
         """
-        #self.sentences = open(doc, "r").read().strip().split("\n")
-        ## markers are separated by their most used sense
-        self.time = ['cuando', 'despues', 'antes', 'before', 'once']
-        self.concession = ['aunque', 'pero', 'sino', 'however', 'whereas']
-        self.justify = ['so', 'mientras']
-        self.condition = ['si']
-        self.condition2 = ['o']
-        self.addition = ['y']
+        
+        self.time = ['cuando', 'después', 'desde', 'antes'] 
+        self.concession = ['aunque', 'pero', 'sino'] 
+        self.justify = ['porque', 'mientras', 'entonces', 'pues'] 
+        self.condition = ['si'] 
+        self.condition2 = ['o'] 
+        self.addition = ['y']   
         
         ## list of all markers for analysis purposes
         self.cc = self.time + self.concession + self.justify + self.condition + self.addition + self.condition2
 
-        ## list of relative pronouns
-        self.relpron = ['que', 'whose', 'which', 'who']
+        ## list of relative pronouns  
+        self.relpron = ['que', 'quien', 'quienes', 'cuyo', 'cuyos', 'cuya', 'cuyas' ] 
 
         ## initiates parser server
         self.parser = parser
@@ -41,7 +44,7 @@ class Simplify():
         
 
         
-    def transformation(self, sent, ant, justify=False):
+    def transformation(self, sent, ant, comp=False, justify=False):
         """
         Transformation step in the simplification process.
         This is a recursive method that receives two parameters:
@@ -120,16 +123,8 @@ class Simplify():
             for k in dep.keys():
                 for i in dep[k]:
                     if i in aux.keys():
-
                         deps = aux[i]
-                        
-                        ## needed for breaking loops -- solved by the recursion condition
-                        #for d in deps.keys():
-                        #    if i in deps[d]:
-                        #        deps[d].remove(i)
-                        
                         build(i, deps, aux, words, final,previous=previous)
-
                     final[i] = words[i-1][0]
 
 
@@ -183,11 +178,6 @@ class Simplify():
                         flag = False
                         continue
                 
-                ## hack for simpatico use cases
-                if mark_name == "and" and words[mark-2][0].lower() == "care" and words[mark][0].lower() == "support":
-                    flag = False
-                    continue
-
                 ## dealing with cases without subject 
                 if 'nsubj' not in deps_other and 'nsubj' in deps_root:
                     deps_other['nsubj'] = deps_root['nsubj']
@@ -203,30 +193,16 @@ class Simplify():
                     ## check if verbs have objects
                     tag_list = ('advcl', 'xcomp', 'acomp', 'amod', 'appos', 'cc', 'ccomp', 'dep', 'dobj', 'iobj', 'nwe', 'pcomp', 'pobj', 'prepc', 'rcmod', 'ucomp', 'nmod', 'auxpass', 'advmod', 'prep')
 
-                    #if not any([t in tag_list  for t in deps_root.keys()]):
-                        #return False, ant
-                    #    flag = False
-                    #    continue
-                    #elif not any([t in tag_list  for t in deps_other.keys()]):
-                        #return False, ant
-                    #    flag = False
-                    #    continue
-                    #if (len(deps_root) < 2 or len(deps_other) < 2):
-                    #   return False, ant
-                    
                     ## delete marker and relation from the graph
                     if 'advcl' in rel:
                         if 'mark' in deps_other.keys():
-                             del deps_other['mark'][0]
+                            del deps_other['mark'][0]
                         elif 'advmod' in deps_other.keys():
                             del deps_other['advmod'][0]
                     else:
                         del deps_root['cc'][0]
                                 
-                    #del deps_root[rel][pos]
-                    #pos+=1
                     deps_root[rel].remove(o)
-
 
                     ## for cases with time markers -- This + modal + happen
                     modal = None
@@ -249,7 +225,7 @@ class Simplify():
                     root_tag =  words[root-1][1]['PartOfSpeech']
                     justify = True
                     #if ((root > o) and (mark_name in self.time and mark>1)) or (mark_name == 'because' and mark > 1):
-                    if (root > o) or (mark_name == 'because' and mark > 1):
+                    if (root > o) or (mark_name == 'porque' and mark > 1):
                         if (mark_name in self.time and mark == 1):
                             sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
                         else:
@@ -257,11 +233,13 @@ class Simplify():
                     else:
                         sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
                         
-                    s1 = self.transformation(sentence1, ant, justify)
+                    s1 = self.transformation(sentence1, ant, justify=justify)
                     s2 = self.transformation(sentence2, ant)
 
                     flag = True 
                 else:
+                    
+                    
                     flag = False
                     continue
             
@@ -317,7 +295,7 @@ class Simplify():
                     if 'poss' in aux[obj]:
                         mod = aux[obj]['poss'][0]
                         aux_words = list(words[mod-1])
-                        aux_words[0] = words[subj-1][0] + '\'s'
+                        aux_words[0] = words[subj-1][0] #+ '\'s'
                         words[mod-1] = tuple(aux_words)
                         aux[mod] = aux[subj]
                     else:
@@ -344,7 +322,7 @@ class Simplify():
                 else:
                     sentence1, sentence2 = self.generation.print_sentence(final_root, final_relc)
 
-                s1 = self.transformation(sentence1, ant, justify)
+                s1 = self.transformation(sentence1, ant, justify=justify)
                 s2 = self.transformation(sentence2, ant)
                 return True, s1 + " " +  s2
             else:
@@ -362,7 +340,7 @@ class Simplify():
             @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
             """
 
-            ## apposition needs to have a subject -- same subject of the mais sentence.
+            ## apposition needs to have a subject -- same subject of the main sentence.
             if 'nsubj' in deps_root.keys():
 
                 subj = deps_root['nsubj'][0]
@@ -374,7 +352,7 @@ class Simplify():
                 deps_subj = aux[subj]
                 v_tense = words[root-1][1]['PartOfSpeech']
                 n_num = words[subj-1][1]['PartOfSpeech']
-                if 'amod' in deps_subj: ## bug -- this generates several mistakes... 
+                if 'amod' in deps_subj: ## bug -- this generates several mistakes...   
                     mod = deps_subj['amod'][0]
                     if mod in aux:
                         deps_mod = aux[mod]
@@ -436,15 +414,15 @@ class Simplify():
                     if 'nsubjpass' not in deps_root:
                         return False, ant
 
-                    subj = deps_root['nsubjpass'][0]
+                    subj = deps_root['nsubjpass'][0]   
                     if subj in aux:
-                        deps_subj = aux[subj]
+                        deps_subj = aux[subj]   
                     else:
                         deps_subj = {}
 
-                    root_tense = words[root-1][1]['PartOfSpeech']
+                    root_tense = words[root-1][1]['PartOfSpeech']  
                         
-                    aux_tense = words[deps_root['auxpass'][0]-1][1]['PartOfSpeech']
+                    aux_tense = words[deps_root['auxpass'][0]-1][1]['PartOfSpeech'] 
                     v_aux = None
 
                     if 'v' in aux_tense and 'aux' in deps_root.keys():
@@ -512,7 +490,7 @@ class Simplify():
                     else:
                         mod = deps_root['nmod:por'][0]
     
-                        deps_mod =  aux[mod]
+                        deps_mod =  aux[mod]   
 
                         if 'case' in deps_mod:
                             if words[deps_mod['case'][0]-1][0].lower() != 'por':
@@ -521,7 +499,7 @@ class Simplify():
                             del deps_mod['case']
                             del deps_root['nmod:por']
 
-                            subj_tag = words[mod-1][1]['PartOfSpeech']
+                            subj_tag = words[mod-1][1]['PartOfSpeech']  
                             subj_word = words[mod-1][0]
                     
                             final_subj = {}
@@ -548,6 +526,7 @@ class Simplify():
         ## MAIN OF TRANSFORMATION
         
         ## control recursion: check whether there is no simplification to be done
+        
         if sent == ant:
             return sent
 
@@ -555,8 +534,6 @@ class Simplify():
 
         ant = sent
 
-
-        ## parser
         try:
             parsed = self.parser.process(sent)
 
@@ -579,6 +556,14 @@ class Simplify():
         if root not in dict_dep:
             return ant
 
+
+        ## classify whether the sentence should be simplified or not (EMNLP demo extension)
+        if comp:
+            c = Classify()
+            label = c.classify(sent, dict_dep, words)
+            if label[0] == 0. : 
+                return ant
+
         deps_root = dict_dep[root]
         
         ## get tokens
@@ -588,8 +573,8 @@ class Simplify():
 
 
         ## dealing with questions
-        ## TODO: improve this control with parser information.
-        if sent_tok[0].lower() in ("what", "where", "when", "whose", "who", "which", "whom", "whatever", "whatsoever", "whichever", "whoever", "whosoever", "whomever", "whomsoever", "whoseever", "whereever") and sent_tok[-1] == "?":
+        ## TODO: improve this control with parser information.      
+        if sent_tok[1].lower() in ("qué", "dónde", "cuándo", "quiénes", "quién", "cuál", "cuáles", "cómo", "cuánto", "cuánta", "cuántos", "cuántas") and sent_tok[-1] == "?":
             return ant
 
         ## deal with apposition
@@ -600,18 +585,21 @@ class Simplify():
         
         ## analyse whether or not a sentence has simplification clues (in this case, discourse markers or relative pronouns)
         a = Analysis(sent_tok, self.cc, self.relpron)
+        
 
         flag_cc, type_cc = a.analyse_cc()
+        
+        
 
         ## if sentence has a marker that requires attention
         if flag_cc:
             ## sorting according to the order of the relations
             rel = {}
-            for k in deps_root.keys():
-                if 'conj' in k or 'advcl' in k:
-                    others = sorted(deps_root[k], reverse=True)
-                    cnt = 0
-                    for o in others:
+            for k in deps_root.keys():                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                if 'conj' in k or 'advcl' in k:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                    others = sorted(deps_root[k], reverse=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                    cnt = 0         
+                    for o in others:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                         deps_root[k+str(cnt)] = []
                         deps_root[k+str(cnt)].append(o)
                         rel[k+str(cnt)] = deps_root[k][0]
@@ -658,24 +646,16 @@ class Simplify():
         if flag== False:
             return ant
 
-    def simplify(self, sentence):        
+    def simplify(self, sentence, comp=False):        
         """
-        Call the simplification process for all sentences in the document.
+        Call the simplification process for sentence
         """
-        #c = 0
-        #simp_sentences = []
-        #for s in self.sentences:
-
-            #print "Original: " + s
+       
         try:     
-            simp_sentence = self.transformation(sentence, '')
-
-            ## for demonstration purposes only. remove the prints later
-            #print "Simplified: ",
-            #print simp_sentences[c]
-            #c+=1
-
-            #print   
+            simp_sentence = self.transformation(sentence, '', comp)
             return simp_sentence.encode("utf-8")
         except:
+            print "error exception in simplify.py "
+            print sys.exc_info()
             return sentence
+        

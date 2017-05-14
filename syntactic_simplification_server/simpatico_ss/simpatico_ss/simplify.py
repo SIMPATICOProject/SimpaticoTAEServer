@@ -7,7 +7,8 @@ from nltk.parse import DependencyGraph
 import operator
 import time
 import sys
-
+from classify import Classify
+from confidence import Confidence
 
 class Simplify():
 
@@ -40,7 +41,7 @@ class Simplify():
         
 
         
-    def transformation(self, sent, ant, justify=False):
+    def transformation(self, sent, ant, comp=False, justify=False):
         """
         Transformation step in the simplification process.
         This is a recursive method that receives two parameters:
@@ -276,7 +277,7 @@ class Simplify():
                     else:
                         sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
                         
-                    s1 = self.transformation(sentence1, ant, justify)
+                    s1 = self.transformation(sentence1, ant, justify=justify)
                     s2 = self.transformation(sentence2, ant)
 
                     flag = True 
@@ -359,7 +360,7 @@ class Simplify():
                 else:
                     sentence1, sentence2 = self.generation.print_sentence(final_root, final_relc)
 
-                s1 = self.transformation(sentence1, ant, justify)
+                s1 = self.transformation(sentence1, ant, justify=justify)
                 s2 = self.transformation(sentence2, ant)
                 return True, s1 + " " +  s2
             else:
@@ -597,6 +598,14 @@ class Simplify():
 
         #print dict_dep
 
+        ## classify whether the sentence should be simplified or not (EMNLP demo extension)
+        if comp:
+            c = Classify()
+            label = c.classify(sent, dict_dep, words)
+            if label[0] == 0. : 
+                return ant
+
+
         ## check whether or not the sentence has a root node
         if 0 not in dict_dep:
             return ant
@@ -686,7 +695,7 @@ class Simplify():
         if flag== False:
             return ant
 
-    def simplify(self, sentence):        
+    def simplify(self, sentence, comp=False, conf=False):        
         """
         Call the simplification process for all sentences in the document.
         """
@@ -695,18 +704,25 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
-        try:
+        #try:
             
-            simp_sentence = self.transformation(sentence, '')
+            
+        simp_sentence = self.transformation(sentence, '', comp=comp)
         
 
+        if simp_sentence != sentence and conf == True:
+                ## parser
+            parsed = self.parser.process(simp_sentence)
 
-            ## for demonstration purposes only. remove the prints later
-            #print "Simplified: ",
-            #print simp_sentences[c]
-            #c+=1
 
-            #print   
-            return simp_sentence
-        except:
-            return sentence
+            words = parsed["words"]
+            dict_dep = self.parser.transform(parsed)
+
+            c = Confidence()
+            label = c.classify(simp_sentence, dict_dep, words)
+            if label[0] == 1. : 
+                return sentence
+
+        return simp_sentence
+        #except:
+        #    return sentence

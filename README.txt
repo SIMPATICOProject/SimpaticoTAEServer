@@ -20,7 +20,7 @@ Installation instructions:
 	
 	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer/tree/emnlp2017-demo/ onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	
-	4) Download the data pack from http://www.quest.dcs.shef.ac.uk/simpatico/emnlp2017_demo_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
+	4) Download the data pack from https://www.dcs.shef.ac.uk/people/C.Scarton/resources/emnlp2017_demo_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
 	
 	5) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
 		- However, if you want to use a different version, you can download from http://stanfordnlp.github.io/CoreNLP/. In this case you will need to change the path to your CoreNLP version into the resources.txt file (corenlp_dir parameter).

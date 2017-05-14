@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 class Analysis():
 
@@ -18,17 +18,16 @@ class Analysis():
         Analyse sentences searching for markers that could indicate conjoing clauses.
         @return: a flag indicating whether or not a maker was identified and a list of markers found (None if flag = False).
         """
+
         if any([s.lower() in self.cc for s in self.sentence]):
             mark = []
             c = 0
             for s in self.sentence:
-                if (c>0) and (s.lower() =="if"):
+                if (c>0) and (s.lower() =="si"):
                     c+=1
                 else:
                     c+=1
-                    if s.lower() in self.cc and "this was " + s.lower() not in " ".join(self.sentence).lower() and "this is " + s.lower() not in " ".join(self.sentence).lower() and "this happens " + s.lower() not in " ".join(self.sentence).lower() and "this happened " + s.lower() not in " ".join(self.sentence).lower()  and "this would happen " + s.lower() not in " ".join(self.sentence).lower() and "this will happen " + s.lower() not in " ".join(self.sentence).lower() and "this should happen " + s.lower() not in " ".join(self.sentence).lower() and "this could happen " + s.lower() not in " ".join(self.sentence).lower() + "this must happen " + s.lower() not in " ".join(self.sentence).lower() and "this may happen " + s.lower() not in " ".join(self.sentence).lower() and "this can happen " + s.lower() not in " ".join(self.sentence).lower() and "this shall happen " + s.lower() not in " ".join(self.sentence).lower() and "this will happen " + s.lower() not in " ".join(self.sentence).lower() and "this 'll happen " + s.lower() not in " ".join(self.sentence).lower():
-                    #if s.lower() in self.cc and "this" not in " ".join(self.sentence).lower() and "happen" not in " ".join(self.sentence).lower():  
-                    
+                    if s.lower() in self.cc and "esto pasó " + s.lower() not in " ".join(self.sentence).lower() and "esto es " + s.lower() not in " ".join(self.sentence).lower() and "esto sucede " + s.lower() not in " ".join(self.sentence).lower() and "esto sucedió " + s.lower() not in " ".join(self.sentence).lower()  and "esto podría suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto sucederá "  + s.lower() not in " ".join(self.sentence).lower() + "esto puede pasar " + s.lower() not in " ".join(self.sentence).lower() and "esto podría pasar "  + s.lower() not in " ".join(self.sentence).lower():
                         mark.append(s.lower())
             return True, mark
         else: 

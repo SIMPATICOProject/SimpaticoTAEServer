@@ -88,26 +88,25 @@ class Generation:
         elif mark in self.concession:
             s_sentence2 += 'Pero '
 
-        ## English implementation -->  need to be adapted to Spanish    
-        #elif mark in self.time:
-        #    if mark_pos > 1:
-        #        if root_tag == 'VBP' or root_tag == 'VBZ' or root_tag == 'VB':
-        #            s_sentence2 += 'This is ' + mark + " "
-        #        else:
-        #            s_sentence2 += 'This was ' + mark + " "
-        #    else:
+        elif mark in self.time:
+            if mark_pos > 1:
+                if root_tag == 'VBP' or root_tag == 'VBZ' or root_tag == 'VB':
+                    s_sentence2 += 'Esto es ' + mark + " "
+                else:
+                    s_sentence2 += 'Esto pasó ' + mark + " "
+            else:
 
-        #        if root_tag == 'VBP' or root_tag == 'VBZ':
-        #            s_sentence2 += 'This happens ' + mark + " "
-        #        elif root_tag == 'VB' and modal != None: 
-        #            s_sentence2 += 'This ' + modal + ' happen ' + mark + " "
-        #        else:
-        #            s_sentence2 += 'This happened ' + mark + " "
+                if root_tag == 'VBP' or root_tag == 'VBZ':
+                    s_sentence2 += 'Esto sucede ' + mark + " "
+                elif root_tag == 'VB' and modal != None: 
+                    s_sentence2 += 'Esto ' + modal + ' suceder ' + mark + " "
+                else:
+                    s_sentence2 += 'Esto sucedió ' + mark + " "
 
         elif mark in self.justify:
-            s_sentence2 += 'So '
+            s_sentence2 += 'Mientras ' #'So '
         elif mark in self.condition2:
-            s_sentence2 += 'Alternatively '
+            s_sentence2 += 'Alternativamente '#'Alternatively '
         
         c = 0
 
@@ -167,40 +166,37 @@ class Generation:
         for k in sorted(final_subj.keys()):
             s_sentence2 += final_subj[k] + " "
 
-        ## hard-coded for demo
-        s_sentence2 += "és ".decode('utf-8')
-        
-        ## a line like this with the right resource should solve the problem
-        #s_sentence2 += es.verb_conjugate("ser", v_tense) + " "
+       
+        if n_num in ("NN", "NNP"):
+            if v_tense in ("VBP", "VBZ", "VB"):
+                s_sentence2 += "es "
+            elif v_tense in ("VBD", "VBG", "VBN"):
+                s_sentence2 += "era " 
 
-        ## from English simplifier --> left here as an example
-        #if n_num in ("NN", "NNP"):
-        #    if v_tense in ("VBP", "VBZ", "VB"):
-        #        s_sentence2 += "is "
-        #    elif v_tense in ("VBD", "VBG", "VBN"):
-        #        s_sentence2 += "was "
+        elif n_num in ("NNS", "NNPS"):
+            if v_tense in ("VBP", "VBZ", "VB"):
+                s_sentence2 += "son " 
+            elif v_tense in ("VBD", "VBG", "VBN"):
+                s_sentence2 += "fueron " 
 
-        #elif n_num in ("NNS", "NNPS"):
-        #    if v_tense in ("VBP", "VBZ", "VB"):
-        #        s_sentence2 += "are "
-        #    elif v_tense in ("VBD", "VBG", "VBN"):
-        #        s_sentence2 += "were "
+        elif n_num in ("PRP") and subj_word.lower() == "they":
 
-        #elif n_num in ("PRP") and subj_word.lower() == "they":
+            if v_tense in ("VBP", "VBZ", "VB"):
+                s_sentence2 += "son " 
+            elif v_tense in ("VBD", "VBG", "VBN"):
+                s_sentence2 += "eran " 
 
-        #    if v_tense in ("VBP", "VBZ", "VB"):
-        #        s_sentence2 += "are "
-        #    elif v_tense in ("VBD", "VBG", "VBN"):
-        #        s_sentence2 += "were "
-
-        #elif n_num in ("PRP"):
-        #    if v_tense in ("VBP", "VBZ", "VB"):
-        #        s_sentence2 += "is "
-        #    elif v_tense in ("VBD", "VBG", "VBN"):
-        #        s_sentence2 += "was "
+        elif n_num in ("PRP"):
+            if v_tense in ("VBP", "VBZ", "VB"):
+                s_sentence2 += "es " 
+            elif v_tense in ("VBD", "VBG", "VBN"):
+                s_sentence2 += "era "
 
         for k in sorted(final_appos.keys()):
+            if "," in final_appos[k]: continue  #deleting ","
             s_sentence2 += final_appos[k] + " "
+            
+        
 
         ## including final punctuation
         if final_root[sorted(final_root.keys())[-1]] not in (".", "?", "!"):
@@ -208,6 +204,11 @@ class Generation:
 
         if final_subj[sorted(final_subj.keys())[-1]] not in (".", "?", "!"):
             s_sentence2+= ". "
+            
+        #removing errors in punctuation
+        s_sentence  = s_sentence.replace(", .", ".").replace("; .", ".").replace(": .", ".").replace(", ?", "?").replace("; ?", "?").replace(": ?", "?").replace(", !", "!").replace("; !", "!").replace(": !", "!").replace(". .", ".")
+        s_sentence2 = s_sentence2.replace(", .", ".").replace("; .", ".").replace(": .", ".").replace(", ?", "?").replace("; ?", "?").replace(": ?", "?").replace(", !", "!").replace("; !", "!").replace(": !", "!").replace(". .", ".")
+
         
         return self.runTrueCaser(s_sentence), self.runTrueCaser(s_sentence2)
 
@@ -234,11 +235,6 @@ class Generation:
 
         if new_verb.strip() == "":
             new_verb = es.verb_conjugate(verb, verb_tense, "vmis3s0").decode('utf8') + " "
-
-        # modal verbs "han sido controladas" --> "han controlado" -- not working properly
-        #if v_aux != None:
-        #    new_verb = v_aux + " " + new_verb
-
 
         for k in sorted(final_subj.keys()):
             s_sentence1 += final_subj[k] + " "

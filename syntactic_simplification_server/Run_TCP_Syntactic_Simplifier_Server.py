@@ -58,14 +58,14 @@ configurations = loadResources('../configurations.txt')
 # print configurations
 
 #Load simplifiers:
-# print "Loading English simplifier"
-# ss_eng = getEnglishSyntacticSimplifier(resources)
+print "Loading English simplifier"
+ss_eng = getEnglishSyntacticSimplifier(resources)
 
 # print "Loading Galician simplifier"
 # ss_eng_gl = getGalicianSyntacticSimplifier(resources)
 
-# print "Loading Spanish simplifier"
-# ss_eng_es = getSpanishSyntacticSimplifier(resources)
+print "Loading Spanish simplifier"
+ss_eng_es = getSpanishSyntacticSimplifier(resources)
 
 print "Loading Italian simplifier"
 ss_eng_it = getItalianSyntacticSimplifier(resources)

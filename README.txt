@@ -74,7 +74,7 @@ Running instructions:
 		Navigate to the "syntactic_simplification_server/tests" folder, then run the following commands:
 			
 			python English_Test_Simplifier.py
-			python Galician_Test_Simplifier.py
+			python Italian_Test_Simplifier.py
 			python Spanish_Test_Simplifier.py
 			
 		You should receive responses with simplifications after a few seconds.

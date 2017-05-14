@@ -704,25 +704,25 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
-        #try:
+        try:
             
             
-        simp_sentence = self.transformation(sentence, '', comp=comp)
+            simp_sentence = self.transformation(sentence, '', comp=comp)
         
 
-        if simp_sentence != sentence and conf == True:
+            if simp_sentence != sentence and conf == True:
                 ## parser
-            parsed = self.parser.process(simp_sentence)
+                parsed = self.parser.process(simp_sentence)
 
 
-            words = parsed["words"]
-            dict_dep = self.parser.transform(parsed)
+                words = parsed["words"]
+                dict_dep = self.parser.transform(parsed)
 
-            c = Confidence()
-            label = c.classify(simp_sentence, dict_dep, words)
-            if label[0] == 1. : 
-                return sentence
+                c = Confidence()
+                label = c.classify(simp_sentence, dict_dep, words)
+                if label[0] == 1. : 
+                    return sentence
 
-        return simp_sentence
-        #except:
-        #    return sentence
+            return simp_sentence
+        except:
+            return sentence

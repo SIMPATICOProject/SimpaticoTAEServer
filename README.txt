@@ -1,10 +1,9 @@
+MUSST: multilingual syntactic simplification tool
+
 Content:
 
-	architecture: Folder containing a visual description of the architecture of the first version of the TAE server.
-	lexical_simplification_server: Folder containing the code for the local Lexical Simplification server of SIMPATICO.
-	syntactic_simplification_server: Folder containing the code for the local Syntactic Simplification server of SIMPATICO.
-	main_TAE_server: Folder containing the code for the TAE web server of SIMPATICO.
-	resources.txt: File containing a map of resources to be used by the simplification servers of SIMPATICO.
+	syntactic_simplification_server: Folder containing the code for the local MUSST server.
+	resources.txt: File containing a map of resources to be used by the simplification servers.
 	configurations.txt: File containing port configurations for the servers.
 
 Installation instructions:
@@ -14,53 +13,53 @@ Installation instructions:
 	2) Install the following Python 2 libraries:
 
 		kenlm
-		gensim
-		nltk
 		sklearn
-		keras
 		numpy
-		langdetect
+		grammar-check
+		scipy
 	
-	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
+	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer/tree/emnlp2017-demo/ onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	
-	4) Download the data pack from http://www.quest.dcs.shef.ac.uk/simpatico/simplifier_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
+	4) Download the data pack from http://www.quest.dcs.shef.ac.uk/simpatico/emnlp2017_demo_data.tar.gz and unpack it into the root folder of the code (ex: resulting in /home/user/SimpaticoTAEServer/data). These are the files referenced in the "resources.txt" file.
 	
-	5) Download the Stanford Tagger (full) from http://nlp.stanford.edu/software/stanford-postagger-full-2015-04-20.zip and unpack it into a folder of choice (ex: /home/user/stanford-postagger-full-2015-04-20).
-	
-	6) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
+	5) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
 		- However, if you want to use a different version, you can download from http://stanfordnlp.github.io/CoreNLP/. In this case you will need to change the path to your CoreNLP version into the resources.txt file (corenlp_dir parameter).
 
 Running instructions:
 
-	1) In order to run a fully functional version of the SIMPATICO TAE server, you will have to run the following components:
+* You can run MUSST locally:
+
+	Navigate to the "syntactic_simplification_server/simpatico_ss" folder.
 	
-		- The Stanford Tagger server for English: Receives requests from the Lexical Simplification local server for tagging.
+	Usage: __main__.py [-h] [-l {en,it,es}] [-d D] [-comp] [-conf]
+	
+	optional arguments:
+  		-h, --help     show this help message and exit
+  		-l {en,it,es}  language
+  		-d D           document to be simplified (with one sentence per line)
+  		-comp          use the complexity checker sentence selection
+  		-conf          use the confidence model
+		
+	Example of usage for English:
+	
+	python __main__.py -l en -d ../tests/examples.en -comp -conf
+	
+	(Please note that the confidence model is only applied for English.)
+	
+* You can run MUSST as a server:
+
+	1) In order to run a fully functional version of the MUSST, you will have to run the following components:
+	
 		- The Stanford Dependency Parser servers: Receives requests from the Syntactic Simplification local server for parsing.
-		- The Lexical Simplification local server: Receives requests from the main TAE web server for lexical simplifications.
 		- The Syntactic Simplification local server: Receives requests from the main TAE web server for syntactic simplifications.
-		- The main TAE web server: Receives requests from the web for Text Adaptation.
 		
-	2) How to run the Stanford Tagger server for English:
-	
-		Go to the folder where you unpacked the Stanford Tagger and run the following command:
 		
-			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/wsj-0-18-bidirectional-distsim.tagger -port 2020 &
-			
-		Then you will have a tagging server running at port 2020. The port chosen MUST be the one specified on the "configurations.txt" file.
-		
-	3) How to run the Stanford parser servers:
+	2) How to run the Stanford parser servers:
 	
 		These servers are run when the syntactic simplifier server is started, therefore, there is no need to run them externally.
 	
-	4) How to run the Lexical Simplification local server:
-	
-		Navigate to the "lexical_simplification_server" folder, then run the following command:
-			
-			nohup python Run_TCP_Lexical_Simplifier_Server.py &
-			
-		Then you will have a server receiving requests at the "ls_local_server_port" port specified in the "configurations.txt" file.
 		
-	5) How to run the Syntactic Simplification local server:
+	3) How to run the Syntactic Simplification local server:
 	
 		Navigate to the "syntactic_simplification_server" folder, then run the following command:
 		
@@ -68,36 +67,10 @@ Running instructions:
 			
 		Then you will have a server receiving requests at the "ss_local_server_port" port specified in the "configurations.txt" file.
 	
-	6) How to run the main TAE web server:
-	
-		Navigate to the "main_TAE_server" folder, then run the following command:
 		
-			nohup python Run_TAE_Simplification_Server.py &
+	Testing instructions:
 		
-		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
-		
-Testing instructions:
-
-	1) How to test the Stanford Tagger server for English:
-	
-		Go to the folder where you unpacked the Stanford Tagger and run the following command:
-		
-			java -cp stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -client -port 2020
-			
-		Then just type a complete English sentence and press enter. The port chosen MUST be the one specified on the "configurations.txt" file.
-			
-	2) How to test the Lexical Simplification local server:
-	
-		Navigate to the "lexical_simplification_server/tests" folder, then run the following commands:
-			
-			python English_Test_Simplifier.py
-			python Galician_Test_Simplifier.py
-			python Italian_Test_Simplifier.py
-			
-		You should receive responses with simplifications after a few seconds.
-		You can also open the aforementoined scripts to see how they work.
-		
-	3) How to test the Syntactic Simplification local server:
+	1) How to test the Syntactic Simplification local server:
 		Navigate to the "syntactic_simplification_server/tests" folder, then run the following commands:
 			
 			python English_Test_Simplifier.py
@@ -106,23 +79,3 @@ Testing instructions:
 			
 		You should receive responses with simplifications after a few seconds.
 		You can also open the aforementoined scripts to see how they work.
-	
-	4) How to test the main TAE web server:
-	
-		Navigate to the "main_TAE_server/tests" folder, then run the following commands:
-		
-			python Lexical_English_Test.py
-			python Lexical_Galician_Test.py
-			python Lexical_Italian_Test.py
-			python Syntactic_English_Test.py
-			python Syntactic_Galician_Test.py
-			python Syntactic_Spanish_Test.py
-		
-		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
-		You can also test it from a web browser through URLs such as:
-		
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=unorthodox&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.&index=5
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=collegamento&sentence=gestione%20dati%20del%20nucleo%20familiare%20in%20caso%20di%20casa%20famiglia%20(%20nucleo%20familiare%20)%20-%20da%20collegamento%20all’%20anagrafe%20.&index=16'
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=medran&sentence=Os%20líquens%20que%20medran%20no%20residuo%20asfáltico%20suxiren%20a%20sua%20.&index=3
-			http://<server_ip>:<main_tae_server_port>/?type=syntactic&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.
-			http://<server_ip>:<main_tae_server_port>/?type=syntactic&sentence=Os%20líquens%20que%20medran%20no%20residuo%20asfáltico%20suxiren%20a%20sua%20.

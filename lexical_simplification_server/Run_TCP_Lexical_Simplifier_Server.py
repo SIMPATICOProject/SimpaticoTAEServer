@@ -103,8 +103,8 @@ def getTaggedSentences(sents, configurations):
 	tagged_sents = []
 	for sent in sents:
 		s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-		s.connect(("localhost", int(configurations['eng_stanford_tagger_port'])))
-		sinput = sent+'\n'
+		s.connect((configurations['eng_stanford_tagger_host'], int(configurations['eng_stanford_tagger_port'])))
+		sinput = sent+'\n' 
 		s.send(sinput.encode("utf-8"))
 		resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
 		resp = [(token[0], token[1]) for token in resp]

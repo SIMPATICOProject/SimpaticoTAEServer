@@ -6,8 +6,9 @@ from langdetect import detect
 class LexicalSimplifier:
 
 	#Initialize the simplifier handler:
-	def __init__(self, port):
+	def __init__(self, host, port):
 		self.port = port
+		self.host = host
 
 	#Simplify a problem:
 	def simplify(self, parameters):
@@ -22,7 +23,7 @@ class LexicalSimplifier:
 		try:
 			#Send the simplification request to the local server at the designated port:
 			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			s.connect(("localhost", self.port))
+			s.connect((self.host, self.port))
 			s.send(data+'\n')
 			
 			#Get a response from the server containing the simplified word:
@@ -46,8 +47,9 @@ class LexicalSimplifier:
 class SyntacticSimplifier:
 
 	#Initialize the simplifier handler:
-	def __init__(self, port):
+	def __init__(self, host, port):
 		self.port = port
+		self.host = host
 
 	#Simplify a problem:
 	def simplify(self, parameters):
@@ -60,7 +62,7 @@ class SyntacticSimplifier:
 		try:
 			#Send the simplification request to the local server at the designated port:
 			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			s.connect(("localhost", self.port))
+			s.connect((self.host, self.port))
 			s.send(data+'\n')
 			
 			#Get a response from the server containing the simplified sentence:
@@ -217,16 +219,19 @@ try:
 	configurations = loadResources('../configurations.txt')
 	
 	#Set parameters:
+	SERVER_HOST = configurations['main_tae_server_host']
 	SERVER_PORT_NUMBER = int(configurations['main_tae_server_port'])
+	LS_SERVER = configurations['ls_local_server_host']
 	LS_PORT_NUMBER = int(configurations['ls_local_server_port'])
+	SS_SERVER = configurations['ss_local_server_host']
 	SS_PORT_NUMBER = int(configurations['ss_local_server_port'])
 
 	#Create the lexical simplifier:
-	ls = LexicalSimplifier(LS_PORT_NUMBER)
-	ss = SyntacticSimplifier(SS_PORT_NUMBER)
+	ls = LexicalSimplifier(LS_SERVER, LS_PORT_NUMBER)
+	ss = SyntacticSimplifier(SS_SERVER, SS_PORT_NUMBER)
 	
 	#Create the web server:
-	server = SimpaticoTAEServer(('', SERVER_PORT_NUMBER), SimpaticoTAEHandler)
+	server = SimpaticoTAEServer((SERVER_HOST, SERVER_PORT_NUMBER), SimpaticoTAEHandler)
 	server.addLexicalSimplifier(ls)
 	server.addSyntacticSimplifier(ss)
 	

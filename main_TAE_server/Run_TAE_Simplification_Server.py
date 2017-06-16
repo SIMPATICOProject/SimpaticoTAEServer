@@ -219,7 +219,6 @@ try:
 	configurations = loadResources('../configurations.txt')
 	
 	#Set parameters:
-	SERVER_HOST = configurations['main_tae_server_host']
 	SERVER_PORT_NUMBER = int(configurations['main_tae_server_port'])
 	LS_SERVER = configurations['ls_local_server_host']
 	LS_PORT_NUMBER = int(configurations['ls_local_server_port'])
@@ -231,7 +230,7 @@ try:
 	ss = SyntacticSimplifier(SS_SERVER, SS_PORT_NUMBER)
 	
 	#Create the web server:
-	server = SimpaticoTAEServer((SERVER_HOST, SERVER_PORT_NUMBER), SimpaticoTAEHandler)
+	server = SimpaticoTAEServer(('', SERVER_PORT_NUMBER), SimpaticoTAEHandler)
 	server.addLexicalSimplifier(ls)
 	server.addSyntacticSimplifier(ss)
 	

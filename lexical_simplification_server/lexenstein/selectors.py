@@ -8,6 +8,119 @@ import numpy as np
 import os
 import pickle
 
+class HeuristicSelector:
+
+	def __init__(self, fe):
+		"""
+		Creates an instance of the HeuristicSelector class.
+	
+		@param fe: An instance of the FeatureEstimator class.
+		"""
+		self.fe = fe
+
+	def selectCandidates(self, substitutions, victor_corpus, minimum_proportion):
+		"""
+		Selects which candidates can replace the target complex words in each instance of a VICTOR corpus.
+	
+		@param substitutions: Candidate substitutions to be filtered.
+		It can be in two formats:
+		A dictionary produced by a Substitution Generator linking complex words to a set of candidate substitutions.
+		Example: substitutions['perched'] = {'sat', 'roosted'}
+		A list of candidate substitutions selected for the "victor_corpus" dataset by a Substitution Selector.
+		Example: [['sat', 'roosted'], ['easy', 'uncomplicated']]
+		@param victor_corpus: Path to a corpus in the VICTOR format.
+		For more information about the file's format, refer to the LEXenstein Manual.
+		@param minimum_proportion: The minimum proportion of features that indicate that a candidate is suitable necessary for it not to be discarded.
+		Must be a number between 0.0 and 1.0.
+		@return: Returns a vector of size N, containing a set of selected substitutions for each instance in the VICTOR corpus.
+		"""
+		selected_substitutions = []
+
+		if isinstance(substitutions, list):
+			return substitutions	
+
+		lexf = open(victor_corpus)
+		for line in lexf:
+			data = line.strip().split('\t')
+			sent = data[0].strip()
+			target = data[1].strip()
+			targetindex = data[2].strip()
+		
+			#Create list of candidate substitutions for target word that starts with target word:
+			candidates = set([])
+			if target in substitutions:
+				candidates = set(substitutions[target])
+			if target in candidates:
+				candidates.remove(target)
+			candidates = [target]+list(candidates)
+			
+			#Create the text input for the feature estimator:
+			input = sent+'\t'+target+'\t'+targetindex
+			for candidate in candidates:
+				input += '\t0:'+candidate
+			input += '\n'
+			
+			#Calculate feature values:
+			features = self.fe.calculateFeatures(input, format='victor', input='text')
+			
+			#Calculate score map:
+			scoremap = {}
+			if len(candidates)==1:
+				selected_substitutions.append([])
+			else:
+				tgtfeatures = features[0]
+				for i, cand in enumerate(candidates[1:]):
+					scoremap[cand] = 0.0
+					candfeatures = features[i+1]
+					for j, identifier in enumerate(self.fe.identifiers):
+						ftype = identifier[1]
+						tgtvalue = tgtfeatures[j]
+						candvalue = candfeatures[j]
+						if ftype=='Complexity':
+							if candvalue<tgtvalue:
+								scoremap[cand] += 1.0
+						elif ftype=='Simplicity':
+							if candvalue>tgtvalue:
+								scoremap[cand] += 1.0
+						else:
+							print('Feature has an invalid Complexity/Simplicity identifier!')
+							
+			#Filter candidates:
+			final_candidates = []
+			total_features = float(len(self.fe.identifiers))
+			for cand in scoremap:
+				proportion = scoremap[cand]/total_features
+				if proportion>=minimum_proportion:
+					final_candidates.append(cand)
+			selected_substitutions.append(final_candidates)
+			
+		lexf.close()
+		return selected_substitutions
+		
+	def toVictorFormat(self, victor_corpus, substitutions, output_path, addTargetAsCandidate=False):
+		"""
+		Saves a set of selected substitutions in a file in VICTOR format.
+	
+		@param victor_corpus: Path to the corpus in the VICTOR format to which the substitutions were selected.
+		@param substitutions: The vector of substitutions selected for the VICTOR corpus.
+		@param output_path: The path in which to save the resulting VICTOR corpus.
+		@param addTargetAsCandidate: If True, adds the target complex word of each instance as a candidate substitution.
+		"""
+		o = open(output_path, 'w')
+		f = open(victor_corpus)
+		for subs in substitutions:
+			data = f.readline().strip().split('\t')
+			sentence = data[0].strip()
+			target = data[1].strip()
+			head = data[2].strip()
+			
+			newline = sentence + '\t' + target + '\t' + head + '\t'
+			for sub in subs:
+				newline += '0:'+sub + '\t'
+			o.write(newline.strip() + '\n')
+		f.close()
+		o.close()
+
 class SVMRankSelector:
 
 	def __init__(self, svm_ranker):
@@ -1108,7 +1221,7 @@ class WordVectorSelector:
 		@param pos_type: The type of POS tags with which the model's words are annotated, if any.
 		Values supported: none, treebank, paetzold
 		"""
-		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(vector_model, binary=True)
+		self.model = gensim.models.KeyedVectors.load_word2vec_format(vector_model, binary=True)
 		self.pos_type = pos_type
 		os.environ['JAVAHOME'] = java_path
 		self.tagger = StanfordPOSTagger(pos_model, stanford_tagger)

@@ -20,7 +20,7 @@ class MultilingualGlavasGenerator:
 	def __init__(self, w2vmodel, language):
 		self.lemmatizer = WordNetLemmatizer()
 		self.stemmer = SnowballStemmer(language)
-		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(w2vmodel, binary=True, unicode_errors='ignore')
+		self.model = gensim.models.KeyedVectors.load_word2vec_format(w2vmodel, binary=True, unicode_errors='ignore')
 		
 	def getSubstitutionsSingle(self, sentence, target, index, amount):
 		substitutions = self.getInitialSet([[sentence, target, index]], amount)
@@ -171,7 +171,7 @@ class PaetzoldGenerator:
 	def __init__(self, posw2vmodel, nc):
 		self.lemmatizer = WordNetLemmatizer()
 		self.stemmer = PorterStemmer()
-		self.model = gensim.models.word2vec.Word2Vec.load_word2vec_format(posw2vmodel, binary=True)
+		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True)
 		self.nc = nc
 
 	# def getSubstitutions(self, victor_corpus, amount):

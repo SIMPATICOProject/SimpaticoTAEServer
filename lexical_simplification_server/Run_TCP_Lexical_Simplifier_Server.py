@@ -292,8 +292,7 @@ while 1:
 	lang = data['lang']
 
 	#Simplify based on language:
-#	try:
-	if 1:
+	try:
 		if lang=='en':
 			#Tag sentence:
 			tagged_sents = getTaggedSentences([sent], configurations)
@@ -326,8 +325,8 @@ while 1:
 			ss_output = simplifier_gal.selectCandidates(sg_output)
 			#SR:
 			sr_output = simplifier_gal.rankCandidates(ss_output)
-#	except Exception:
-#		sr_output = [[]]
+	except Exception:
+		sr_output = [[]]
 
 	#Get final replacement:
 	replacement = 'NULL'

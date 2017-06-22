@@ -13,7 +13,7 @@ import numpy
 import shelve
 import urllib2
 import json
-import re
+import re, codecs
 
 class FeatureEstimator:
 
@@ -49,14 +49,14 @@ class FeatureEstimator:
 		data = []
 		if format.strip().lower()=='victor':
 			if input=='file':
-				data = [line.strip().split('\t') for line in open(corpus)]
+				data = [line.strip().split('\t') for line in codecs.open(corpus, encoding='utf8')]
 			elif input=='text':
 				data = [line.strip().split('\t') for line in corpus.split('\n')]
 			else:
 				print('Unrecognized format: must be file or text.')
 		elif format.strip().lower()=='cwictor':
 			if input=='file':
-				f = open(corpus)
+				f = codecs.open(open(corpus), encoding='utf8')
 				for line in f:
 					line_data = line.strip().split('\t')
 					data.append([line_data[0].strip(), line_data[1].strip(), line_data[2].strip(), '0:'+line_data[1].strip()])
@@ -2041,7 +2041,7 @@ class FeatureEstimator:
 			print('Orientation must be Complexity or Simplicity')
 		else:
 			if model not in self.resources:
-				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True, unicode_errors='ignore')
+				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True)
 				self.resources[model] = m
 			self.features.append((self.wordVectorValuesFeature, [model, size]))
 			for i in range(0, size):
@@ -2093,7 +2093,7 @@ class FeatureEstimator:
 			print('Orientation must be Complexity or Simplicity')
 		else:
 			if model not in self.resources:
-				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True, unicode_errors='ignore')
+				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True)
 				self.resources[model] = m
 			self.features.append((self.wordVectorSimilarityFeature, [model]))
 			self.identifiers.append(('Word Vector Similarity (Model: '+model+')', orientation))
@@ -2124,7 +2124,7 @@ class FeatureEstimator:
 		else:
 			os.environ['JAVAHOME'] = java_path
 			if model not in self.resources:
-				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True, unicode_errors='ignore')
+				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True)
 				self.resources[model] = m
 			if pos_model not in self.resources:
 				tagger = StanfordPOSTagger(pos_model, stanford_tagger)
@@ -3032,7 +3032,7 @@ class FeatureEstimator:
 			print('Orientation must be Complexity or Simplicity')
 		else:
 			if model not in self.resources:
-				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True, unicode_errors='ignore')
+				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True)
 				self.resources[model] = m
 			os.environ['JAVAHOME'] = java_path
 			if pos_model not in self.resources:
@@ -3066,7 +3066,7 @@ class FeatureEstimator:
 			print('Orientation must be Complexity or Simplicity')
 		else:
 			if model not in self.resources:
-				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True, unicode_errors='ignore')
+				m = gensim.models.KeyedVectors.load_word2vec_format(model, binary=True)
 				self.resources[model] = m
 			os.environ['JAVAHOME'] = java_path
 			if pos_model not in self.resources:

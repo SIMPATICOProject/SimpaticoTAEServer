@@ -711,15 +711,10 @@ class Simplify():
         
 
             if simp_sentence != sentence and conf == True:
-                ## parser
-                parsed = self.parser.process(simp_sentence)
 
-
-                words = parsed["words"]
-                dict_dep = self.parser.transform(parsed)
 
                 c = Confidence()
-                label = c.classify(simp_sentence, dict_dep, words)
+                label = c.classify(sentence,simp_sentence,self.parser)
                 if label[0] == 1. : 
                     return sentence
 

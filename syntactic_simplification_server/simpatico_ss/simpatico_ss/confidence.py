@@ -5,6 +5,7 @@ import sys
 import string
 import kenlm
 import grammar_check
+from util import Parser
 
 class Confidence:
 
@@ -85,13 +86,42 @@ class Confidence:
 
         return features
     
-    def classify(self, sent, dict_dep, words):
+    def classify(self, original, simp, stfd_parser):
 
         model = kenlm.Model('../../data/training_full.blm.en')
 
         tool = grammar_check.LanguageTool('en-GB')
 
-        features = np.array(self.extract_features(dict_dep, sent, words, model, tool))
+
+        parsed = stfd_parser.process(original)
+
+
+        ## data structure for the words and POS
+        words = parsed['words']
+    
+        #print words
+
+        ## data structure for the dependency parser
+        dict_dep = stfd_parser.transform(parsed)
+
+        features_orig = np.array(self.extract_features(dict_dep, original, words, model, tool))
+
+        parsed = stfd_parser.process(simp)
+
+
+        ## data structure for the words and POS
+        words = parsed['words']
+    
+        #print words
+
+        ## data structure for the dependency parser
+        dict_dep = stfd_parser.transform(parsed)
+
+        features_simp = np.array(self.extract_features(dict_dep, simp, words, model, tool))
+
+
+        features = np.concatenate([features_orig, features_simp])
+
         features = features.reshape(1,-1) 
         clf = joblib.load('../../data/confidence_model/en/model.pkl')
         pred = clf.predict(features)

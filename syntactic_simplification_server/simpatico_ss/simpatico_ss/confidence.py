@@ -97,14 +97,14 @@ class Confidence:
 
 
         ## data structure for the words and POS
-        words = parsed['words']
+        #words = parsed['words']
     
         #print words
 
         ## data structure for the dependency parser
-        dict_dep = stfd_parser.transform(parsed)
+        #dict_dep = stfd_parser.transform(parsed)
 
-        features_orig = np.array(self.extract_features(dict_dep, original, words, model, tool))
+        #features_orig = np.array(self.extract_features(dict_dep, original, words, model, tool))
 
         parsed = stfd_parser.process(simp)
 
@@ -120,7 +120,8 @@ class Confidence:
         features_simp = np.array(self.extract_features(dict_dep, simp, words, model, tool))
 
 
-        features = np.concatenate([features_orig, features_simp])
+        #features = np.concatenate([features_orig, features_simp])
+        features = features_simp
 
         features = features.reshape(1,-1) 
         clf = joblib.load('../../data/confidence_model/en/model.pkl')

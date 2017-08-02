@@ -214,9 +214,9 @@ class __main__:
         features_tgt = train.extract_features(dict_dep, tgt, words, model, tool)
 
         
-        for feature in features_src:
-            feat_file.write(str(feature))
-            feat_file.write("\t")
+        #for feature in features_src:
+        #    feat_file.write(str(feature))
+        #    feat_file.write("\t")
         for feature in features_tgt:
             feat_file.write(str(feature))
             feat_file.write("\t")

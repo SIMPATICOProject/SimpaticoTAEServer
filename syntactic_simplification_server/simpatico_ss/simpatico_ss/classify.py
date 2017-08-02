@@ -4,7 +4,6 @@ from sklearn.externals import joblib
 import sys
 import string
 
-
 class Classify:
 
 

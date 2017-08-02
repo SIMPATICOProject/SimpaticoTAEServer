@@ -58,7 +58,13 @@ class Train:
             recall += recall_score(labels[test], pred)
             r_dummy += recall_score(labels[test], pred_dummy)
 
-        return f1/10., acc/10., precision/10., recall/10., f1_dummy/10., acc_dummy/10., p_dummy/10., r_dummy/10.
+        final_p = precision/10.
+        final_r = recall/10.
+        final_p_dummy = p_dummy/10.
+        final_r_dummy = r_dummy/10.
+        f1 = 2*(final_p*final_r)/(final_p+final_r)
+        f1_dummy = 2*(final_p_dummy*final_r_dummy)/(final_p_dummy+final_r_dummy)
+        return f1, acc/10., final_p, final_r, f1_dummy, acc_dummy/10., final_p_dummy, final_r_dummy
 
 
 class __main__:

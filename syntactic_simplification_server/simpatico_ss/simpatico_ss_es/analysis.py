@@ -23,11 +23,11 @@ class Analysis():
             mark = []
             c = 0
             for s in self.sentence:
-                if (c>0) and (s.lower() =="si"):
+                if (c>0) and (s.lower() =="si"): 
                     c+=1
                 else:
                     c+=1
-                    if s.lower() in self.cc and "esto pasó " + s.lower() not in " ".join(self.sentence).lower() and "esto es " + s.lower() not in " ".join(self.sentence).lower() and "esto sucede " + s.lower() not in " ".join(self.sentence).lower() and "esto sucedió " + s.lower() not in " ".join(self.sentence).lower()  and "esto podría suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto sucederá "  + s.lower() not in " ".join(self.sentence).lower() + "esto puede pasar " + s.lower() not in " ".join(self.sentence).lower() and "esto podría pasar "  + s.lower() not in " ".join(self.sentence).lower():
+                    if s.lower() in self.cc and "esto sucederá " + s.lower() not in " ".join(self.sentence).lower() and "esto sucede " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto puede suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder "  + s.lower() not in " ".join(self.sentence).lower():
                         mark.append(s.lower())
             return True, mark
         else: 

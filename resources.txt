@@ -9,7 +9,8 @@ gal_embeddings	../data/galician_vectors_300_cbow.bin
 gal_lm	../data/galician_lm.bin
 ita_embeddings	../data/italian_vectors_500_cbow.bin
 ita_lm	../data/italian_lm.bin
-spa_embeddings	../data/spanish_vectors_500_cbow.bin
+spa_typical_embeddings	../data/spanish_vectors_500_cbow.bin
+spa_caretro_embeddings	../data/spanish_w2vmodel_tagged_generalized_1300_cbow.bin
 spa_lm	../data/spanish_lm.bin
 true_en	../data/distributions.obj
 true_es	../data/distributions.es.obj

@@ -59,14 +59,14 @@ port = int(configurations['ss_local_server_port'])
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind((hostname, port))
 serversocket.listen(5)
-print "Bound to " + hostname + ":" + port + ". Listening for connections"
+print "Bound to " + hostname + ":" + str(port) + ". Listening for connections"
 
 #Upon receival of simplification request, do:
 while 1:
     #Open connection:
     (conn, address) = serversocket.accept()
 
-    print "incoming connection from " + address
+    print "incoming connection from " + str(address)
 
     #Parse request:
     data = json.loads(conn.recv(1024).decode("utf-8"))
@@ -84,6 +84,6 @@ while 1:
 
                                                                 
     #Send result:
-    print "Sending " + ss_output + " To User"
+    print "Sending " + str(ss_output) + " To User"
     conn.send(ss_output)
     conn.close()

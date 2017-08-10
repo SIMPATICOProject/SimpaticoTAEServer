@@ -47,17 +47,17 @@ class MultilingualLexicalSimplifier:
 		ranks = self.ranker.getRankings(data)
 		return ranks
 		
-class EnglishLexicalSimplifier:
+class EnhancedLexicalSimplifier:
 
-	def __init__(self, newselagen, embeddingsgen, selector, ranker):
-		self.newselagen = newselagen
+	def __init__(self, dictgen, embeddingsgen, selector, ranker):
+		self.dictgen = dictgen
 		self.embeddingsgen = embeddingsgen
 		self.selector = selector
 		self.ranker = ranker
 		
 	def generateCandidates(self, sent, target, index, tagged_sents):
-		#Produce candidates based on Newsela map:
-		if target not in self.newselagen:
+		#Produce candidates based on dictionary map:
+		if target not in self.dictgen:
 			subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 10)
 		else:
 			subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 3)
@@ -66,8 +66,8 @@ class EnglishLexicalSimplifier:
 		fulldata = [sent, target, index]
 		for sub in subs[target]:
 			fulldata.append('0:'+sub)
-		if target in self.newselagen:
-			for sub in self.newselagen[target]:
+		if target in self.dictgen:
+			for sub in self.dictgen[target]:
 				fulldata.append('0:'+sub)
 		fulldata = [fulldata]
 		
@@ -99,16 +99,17 @@ class EnglishLexicalSimplifier:
 		return ranks
 
 #Functions:
-def getTaggedSentences(sents, configurations):
+def getTaggedSentences(sents, configurations, lang):
 	tagged_sents = []
 	for sent in sents:
 		s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-		s.connect(("localhost", int(configurations['eng_stanford_tagger_port'])))
+		s.connect(("localhost", int(configurations[lang+'_stanford_tagger_port'])))
 		sinput = sent+'\n'
 		s.send(sinput.encode("utf-8"))
 		resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
 		resp = [(token[0], token[1]) for token in resp]
 		tagged_sents.append(resp)
+	print tagged_sents
 	return tagged_sents
 
 def updateRequest(sent, target, index, tagged):
@@ -153,6 +154,32 @@ def loadResources(path):
 	
 	#Return resource database:
 	return resources
+
+def getSpanishLexicalSimplifier(resources):
+	#General purpose:
+	victor_corpus = resources['spanish_ubr']
+	w2vpm_spa = resources['spa_caretro_embeddings']
+	w2vty_spa = resources['spa_typical_embeddings']
+
+	#Generator:
+	kg = SpanishTaggedGenerator(w2vpm_spa)
+
+	#Selector:
+	fe = FeatureEstimator()
+	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Complexity')
+	fe.addWordVectorSimilarityFeature(w2vty_spa, 'Simplicity')
+	br = BoundaryRanker(fe)
+	bs = BoundarySelector(br)
+	bs.trainSelectorWithCrossValidation(resources['spanish_ubr'], 1, 5, 0.25, k='all')
+
+	#Ranker:
+	fe = FeatureEstimator()
+	fe.addLengthFeature('Complexity')
+	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Simplicity')
+	gr = GlavasRanker(fe)
+
+	#Return LexicalSimplifier object:
+	return EnhancedLexicalSimplifier({}, kg, bs, gr)
 	
 def getEnglishLexicalSimplifier(resources):
 	#General purpose:
@@ -168,7 +195,6 @@ def getEnglishLexicalSimplifier(resources):
 	#Selector:
 	fe = FeatureEstimator()
 	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Complexity')
-#	fe.addTargetPOSTagProbability(resources['pos_prob_model'], pos_model, stanford_tagger, resources['java_path'], 'Simplicity')
 	fe.addWordVectorSimilarityFeature(w2vty_eng, 'Simplicity')
 	br = BoundaryRanker(fe)
 	bs = BoundarySelector(br)
@@ -184,7 +210,7 @@ def getEnglishLexicalSimplifier(resources):
 	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnglishLexicalSimplifier(ng, kg, bs, nr)
+	return EnhancedLexicalSimplifier(ng, kg, bs, nr)
 
 def getGalicianLexicalSimplifier(resources):
 	#General purpose:
@@ -235,32 +261,7 @@ def getItalianLexicalSimplifier(resources):
 	
 	#Return LexicalSimplifier object:
 	return MultilingualLexicalSimplifier(gg, bs, gr)
-	
-def getSpanishLexicalSimplifier(resources):
-	#General purpose:
-	w2vpm_spa = resources['spa_embeddings']
-
-	#Generator:
-	gg = MultilingualGlavasGenerator(w2vpm_spa, 'spanish')
-	
-	#Selector:
-	fe = FeatureEstimator()
-	fe.resources[w2vpm_spa] = gg.model
-	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Complexity')
-	fe.addWordVectorSimilarityFeature(w2vpm_spa, 'Simplicity')
-	br = BoundaryRanker(fe)
-	bs = BoundarySelector(br)
-	bs.trainSelectorWithCrossValidation(resources['spanish_ubr'], 1, 5, 0.25, k='all')
-
-	#Ranker:
-	fe = FeatureEstimator()
-	fe.addLengthFeature('Complexity')
-	fe.addCollocationalFeature(resources['spa_lm'], 2, 2, 'Simplicity')
-	gr = GlavasRanker(fe)
-	
-	#Return LexicalSimplifier object:
-	return MultilingualLexicalSimplifier(gg, bs, gr)
-	
+		
 	
 ################################################ MAIN ########################################################	
 
@@ -292,10 +293,11 @@ while 1:
 	lang = data['lang']
 
 	#Simplify based on language:
-	try:
+	if 1:
+	#try:
 		if lang=='en':
 			#Tag sentence:
-			tagged_sents = getTaggedSentences([sent], configurations)
+			tagged_sents = getTaggedSentences([sent], configurations, lang)
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#SG:
@@ -312,10 +314,14 @@ while 1:
 			#SR:
 			sr_output = simplifier_ita.rankCandidates(ss_output)
 		elif lang=='es':
+			#Tag sentence:
+			tagged_sents = getTaggedSentences([sent], configurations, lang)
+			#Update request information:
+			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#SG:
-			sg_output = simplifier_spa.generateCandidates(sent, target, index)
+			sg_output = simplifier_spa.generateCandidates(sent, target, index, tagged_sents)
 			#SS:
-			ss_output = simplifier_spa.selectCandidates(sg_output)
+			ss_output = simplifier_spa.selectCandidates(sg_output, tagged_sents)
 			#SR:
 			sr_output = simplifier_spa.rankCandidates(ss_output)
 		else:
@@ -325,8 +331,8 @@ while 1:
 			ss_output = simplifier_gal.selectCandidates(sg_output)
 			#SR:
 			sr_output = simplifier_gal.rankCandidates(ss_output)
-	except Exception:
-		sr_output = [[]]
+	#except Exception:
+	#	sr_output = [[]]
 
 	#Get final replacement:
 	replacement = 'NULL'

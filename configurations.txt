@@ -1,4 +1,5 @@
-eng_stanford_tagger_port	2020
+en_stanford_tagger_port	2020
+es_stanford_tagger_port	3030
 ls_local_server_port	1414
 ss_local_server_port	1515
 main_tae_server_port	8080

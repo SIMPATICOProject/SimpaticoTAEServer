@@ -276,7 +276,7 @@ simplifier_spa = getSpanishLexicalSimplifier(resources)
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', int(configurations['ls_local_server_port'])))
+serversocket.bind(('0.0.0.0', int(configurations['ls_local_server_port'])))
 serversocket.listen(5)
 
 #Upon receival of simplification request, do:

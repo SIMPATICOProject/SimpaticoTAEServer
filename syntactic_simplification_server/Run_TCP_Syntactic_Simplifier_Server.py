@@ -54,7 +54,7 @@ ss_eng_es = getSpanishSyntacticSimplifier(resources)
 
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', int(configurations['ss_local_server_port'])))
+serversocket.bind(('0.0.0.0', int(configurations['ss_local_server_port'])))
 serversocket.listen(5)
 
 #Upon receival of simplification request, do:

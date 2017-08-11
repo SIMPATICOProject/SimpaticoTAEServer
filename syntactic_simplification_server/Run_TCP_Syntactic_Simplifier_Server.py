@@ -52,34 +52,38 @@ ss_eng = getEnglishSyntacticSimplifier(resources)
 ss_eng_gl = getGalicianSyntacticSimplifier(resources)
 ss_eng_es = getSpanishSyntacticSimplifier(resources)
 
+hostname = '0.0.0.0'
+port = int(configurations['ss_local_server_port'])
+
 #Wait for simplification requests:
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', int(configurations['ss_local_server_port'])))
+serversocket.bind((hostname, port))
 serversocket.listen(5)
+print "Bound to " + hostname + ":" + str(port) + ". Listening for connections"
 
 #Upon receival of simplification request, do:
 while 1:
     #Open connection:
     (conn, address) = serversocket.accept()
 
+    print "incoming connection from " + str(address)
+
     #Parse request:
     data = json.loads(conn.recv(1024).decode("utf-8"))
     sent = data['sentence'].encode("utf-8")
+    print "Sentance Received : " + sent
     lang = data['lang']
-
-
-
+    print "Language :" + lang
     #Syntactic Simplification:
     if lang == 'es':
         ss_output = ss_eng_es.simplify(sent)
     if lang == 'en':
-        #print sent
         ss_output = ss_eng.simplify(sent)
     elif lang == 'gl':
         ss_output = ss_eng_gl.simplify(sent)
 
-                                                                    
-
+                                                                
     #Send result:
+    print "Sending " + str(ss_output) + " To User"
     conn.send(ss_output)
     conn.close()

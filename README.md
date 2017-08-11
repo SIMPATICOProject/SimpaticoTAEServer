@@ -1,4 +1,4 @@
-Content:
+## Content:
 
 	architecture: Folder containing a visual description of the architecture of the first version of the TAE server.
 	lexical_simplification_server: Folder containing the code for the local Lexical Simplification server of SIMPATICO.
@@ -7,7 +7,7 @@ Content:
 	resources.txt: File containing a map of resources to be used by the simplification servers of SIMPATICO.
 	configurations.txt: File containing port configurations for the servers.
 
-Installation instructions:
+## Installation instructions:
 
 	1) In order to run the servers, you will need a Python 2.6+ installation (preferably Anaconda), and a Java 1.8+ installation.
 
@@ -20,6 +20,7 @@ Installation instructions:
 		keras
 		numpy
 		langdetect
+		h5py
 	
 	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
 	
@@ -30,7 +31,7 @@ Installation instructions:
 	6) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
 		- However, if you want to use a different version, you can download from http://stanfordnlp.github.io/CoreNLP/. In this case you will need to change the path to your CoreNLP version into the resources.txt file (corenlp_dir parameter).
 
-Running instructions:
+## Running instructions:
 
 	1) In order to run a fully functional version of the SIMPATICO TAE server, you will have to run the following components:
 	
@@ -76,7 +77,7 @@ Running instructions:
 		
 		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
 		
-Testing instructions:
+## Testing instructions:
 
 	1) How to test the Stanford Tagger server for English:
 	

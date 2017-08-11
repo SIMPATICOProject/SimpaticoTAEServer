@@ -2,6 +2,7 @@
 *nohup.out
 *.gz
 data/
+data
 .DS_Store
 get-pip.py
 .idea

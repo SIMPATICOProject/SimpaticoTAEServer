@@ -35,19 +35,20 @@
 
 	1) In order to run a fully functional version of the SIMPATICO TAE server, you will have to run the following components:
 	
-		- The Stanford Tagger server for English: Receives requests from the Lexical Simplification local server for tagging.
+		- The Stanford Tagger server for English and Spanish: Receives requests from the Lexical Simplification local server for tagging.
 		- The Stanford Dependency Parser servers: Receives requests from the Syntactic Simplification local server for parsing.
 		- The Lexical Simplification local server: Receives requests from the main TAE web server for lexical simplifications.
 		- The Syntactic Simplification local server: Receives requests from the main TAE web server for syntactic simplifications.
 		- The main TAE web server: Receives requests from the web for Text Adaptation.
 		
-	2) How to run the Stanford Tagger server for English:
+	2) How to run the Stanford Tagger servers for English and Spanish:
 	
 		Go to the folder where you unpacked the Stanford Tagger and run the following command:
 		
 			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/wsj-0-18-bidirectional-distsim.tagger -port 2020 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/spanish-distsim.tagger -port 3030 &
 			
-		Then you will have a tagging server running at port 2020. The port chosen MUST be the one specified on the "configurations.txt" file.
+		Then you will have a tagging servers running at ports 2020 and 3030. The ports chosen MUST be the ones specified on the "configurations.txt" file.
 		
 	3) How to run the Stanford parser servers:
 	
@@ -79,7 +80,7 @@
 		
 ## Testing instructions:
 
-	1) How to test the Stanford Tagger server for English:
+	1) How to test the Stanford Tagger server:
 	
 		Go to the folder where you unpacked the Stanford Tagger and run the following command:
 		
@@ -92,6 +93,7 @@
 		Navigate to the "lexical_simplification_server/tests" folder, then run the following commands:
 			
 			python English_Test_Simplifier.py
+			python Spanish_Test_Simplifier.py
 			python Galician_Test_Simplifier.py
 			python Italian_Test_Simplifier.py
 			
@@ -113,6 +115,7 @@
 		Navigate to the "main_TAE_server/tests" folder, then run the following commands:
 		
 			python Lexical_English_Test.py
+			python Lexical_Spanish_Test.py
 			python Lexical_Galician_Test.py
 			python Lexical_Italian_Test.py
 			python Syntactic_English_Test.py

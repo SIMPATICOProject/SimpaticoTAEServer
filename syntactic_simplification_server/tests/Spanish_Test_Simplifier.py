@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 import socket, json
 import sys
 
@@ -20,7 +20,7 @@ def loadResources(path):
 
 configurations = loadResources('../../configurations.txt')
 
-doc = open('examples.es', "r")
+doc = open('galicia_municipality.es', "r")
 
 for s in doc.readlines():
     info = {}

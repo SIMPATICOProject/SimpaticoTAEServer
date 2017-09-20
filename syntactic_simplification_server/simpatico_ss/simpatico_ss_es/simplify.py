@@ -9,6 +9,8 @@ import string
 from nltk.parse import DependencyGraph
 import operator
 import time
+import sys
+from numpy.f2py.rules import aux_rules
 
 class Simplify():
 
@@ -18,20 +20,19 @@ class Simplify():
         @param parser: parser server.
         @param truecase_model: truecase model.
         """
-        #self.sentences = open(doc, "r").read().strip().split("\n")
-        ## markers are separated by their most used sense
-        self.time = ['cuando', 'despues', 'antes', 'before', 'once']
-        self.concession = ['aunque', 'pero', 'sino', 'however', 'whereas']
-        self.justify = ['so', 'mientras']
-        self.condition = ['si']
-        self.condition2 = ['o']
-        self.addition = ['y']
+
+        self.time = ['cuando', 'después', 'desde', 'antes'] 
+        self.concession = ['aunque', 'pero', 'sino'] 
+        self.justify = ['porque', 'mientras', 'entonces', 'pues']
+        self.condition = ['si'] 
+        self.condition2 = ['o'] 
+        self.addition = ['y','ni']  
         
         ## list of all markers for analysis purposes
         self.cc = self.time + self.concession + self.justify + self.condition + self.addition + self.condition2
 
-        ## list of relative pronouns
-        self.relpron = ['que', 'whose', 'which', 'who']
+        ## list of relative pronouns  
+        self.relpron = ['que', 'quien', 'quienes', 'cuyo', 'cuyos', 'cuya', 'cuyas', 'cual', 'cuales', 'donde' ] 
 
         ## initiates parser server
         self.parser = parser
@@ -71,7 +72,6 @@ class Simplify():
             @param s: the tokenised sentence with the punctuation marks
             @return the final dictionary with the punctuation marks
             """
-
             char_list = "``\'\'"
             ant = 0
             for k in sorted(final.keys()):
@@ -120,16 +120,8 @@ class Simplify():
             for k in dep.keys():
                 for i in dep[k]:
                     if i in aux.keys():
-
-                        deps = aux[i]
-                        
-                        ## needed for breaking loops -- solved by the recursion condition
-                        #for d in deps.keys():
-                        #    if i in deps[d]:
-                        #        deps[d].remove(i)
-                        
+                        deps = aux[i]                       
                         build(i, deps, aux, words, final,previous=previous)
-
                     final[i] = words[i-1][0]
 
 
@@ -173,20 +165,11 @@ class Simplify():
                 else:
                     if 'cc' in deps_root.keys() and 'conj' in rel:
                         conj = deps_root[rel][0]
-                        if 'vm' in words[conj-1][1]['PartOfSpeech'] and 'vm'in words[root-1][1]['PartOfSpeech']: #needed for broken cases like 'Care and support you won't have to pay towards'
-                            mark = deps_root['cc'][0]
-                            mark_name = words[mark-1][0].lower()
-                        else:
-                            flag = False
-                            continue
+                        mark = deps_root['cc'][0]
+                        mark_name = words[mark-1][0].lower()
                     else:
                         flag = False
                         continue
-                
-                ## hack for simpatico use cases
-                if mark_name == "and" and words[mark-2][0].lower() == "care" and words[mark][0].lower() == "support":
-                    flag = False
-                    continue
 
                 ## dealing with cases without subject 
                 if 'nsubj' not in deps_other and 'nsubj' in deps_root:
@@ -199,34 +182,15 @@ class Simplify():
                 
                 ## check if the marker is in the list of selected markers
                 if mark_name in _type:
-                    
-                    ## check if verbs have objects
-                    tag_list = ('advcl', 'xcomp', 'acomp', 'amod', 'appos', 'cc', 'ccomp', 'dep', 'dobj', 'iobj', 'nwe', 'pcomp', 'pobj', 'prepc', 'rcmod', 'ucomp', 'nmod', 'auxpass', 'advmod', 'prep')
-
-                    #if not any([t in tag_list  for t in deps_root.keys()]):
-                        #return False, ant
-                    #    flag = False
-                    #    continue
-                    #elif not any([t in tag_list  for t in deps_other.keys()]):
-                        #return False, ant
-                    #    flag = False
-                    #    continue
-                    #if (len(deps_root) < 2 or len(deps_other) < 2):
-                    #   return False, ant
-                    
                     ## delete marker and relation from the graph
                     if 'advcl' in rel:
                         if 'mark' in deps_other.keys():
-                             del deps_other['mark'][0]
+                            del deps_other['mark'][0]
                         elif 'advmod' in deps_other.keys():
                             del deps_other['advmod'][0]
                     else:
                         del deps_root['cc'][0]
-                                
-                    #del deps_root[rel][pos]
-                    #pos+=1
                     deps_root[rel].remove(o)
-
 
                     ## for cases with time markers -- This + modal + happen
                     modal = None
@@ -245,26 +209,21 @@ class Simplify():
                     build(o, deps_other, aux, words, final_deps)
 
                     
-                    ## TODO: remove this part from here --> move to another module: self.generation
                     root_tag =  words[root-1][1]['PartOfSpeech']
                     justify = True
-                    #if ((root > o) and (mark_name in self.time and mark>1)) or (mark_name == 'because' and mark > 1):
-                    if (root > o) or (mark_name == 'because' and mark > 1):
+                    if (root > o) or (mark_name == 'porque' and mark > 1):
                         if (mark_name in self.time and mark == 1):
                             sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
                         else:
                             sentence1, sentence2 = self.generation.print_sentence(final_deps, final_root, root_tag, mark_name, mark, modal)
                     else:
                         sentence1, sentence2 = self.generation.print_sentence(final_root, final_deps, root_tag, mark_name, mark, modal)
-                        
                     s1 = self.transformation(sentence1, ant, justify)
                     s2 = self.transformation(sentence2, ant)
-
                     flag = True 
                 else:
                     flag = False
                     continue
-            
             if flag:
                 return flag,  s1 + " " +  s2
             else:
@@ -279,20 +238,32 @@ class Simplify():
             @param root: root node in the dependency tree
             @param deps_root: dependencies of the root node
             @param ant: previous sentence (for recursion purposes)
-            @param rel: parser relation between the main and the dependent clause (can be 'nsubj' or 'dobj')
+            @param rel: parser relation between the main and the dependent clause (can be 'nsubj' or 'dobj' or 'nmod')
             @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
             """
             subj = deps_root[rel][0]
             if subj not in aux.keys():
                 return False, ant
             deps_subj = aux[subj]
-            if 'acl:relcl' in deps_subj.keys() or 'rcmod' in deps_subj.keys():
+            
+            if 'acl:relcl' in deps_subj.keys() or 'rcmod' in deps_subj.keys() or 'nmod:entre' in deps_root.keys():
                 if 'acl:relcl' in deps_subj.keys():
                     relc = deps_subj['acl:relcl'][0]
                     type_rc = 'acl:relcl'
-                else:
+                elif 'rcmod' in deps_subj.keys():
                     relc = deps_subj['rcmod'][0]
                     type_rc = 'rcmod'
+                elif 'nmod:entre' in deps_root.keys():
+                    subj = deps_root['nmod:entre'][0]
+                    if subj not in aux.keys():
+                        return False, ant
+                    deps_subj = aux[subj]
+                    relc = deps_subj['acl:relcl'][0]
+                    type_rc = 'acl:relcl'
+                else:
+                    return False, ant
+                
+                    
                 deps_relc = aux[relc]
                 subj_rel = ""
                 if 'nsubj' in deps_relc.keys():
@@ -302,6 +273,7 @@ class Simplify():
                 else: 
                     subj_rel = 'mark'
 
+                mark = ''
                 if 'ref' in deps_subj:
                     to_remove = deps_subj['ref'][0] 
                     mark = words[deps_subj['ref'][0]-1][0].lower()
@@ -309,7 +281,7 @@ class Simplify():
                     to_remove = deps_relc[subj_rel][0]
                     mark = words[deps_relc[subj_rel][0]-1][0].lower()
 
-                if mark in self.relpron:
+                if mark and mark in self.relpron:
                     deps_relc[subj_rel][0] = subj
                     remove_all(aux, to_remove)
                 elif 'dobj' in deps_relc: ## needed for cases where the subject of the relative clause is the object
@@ -325,7 +297,10 @@ class Simplify():
                 else:
                     return False, ant #for borken cases - " There are some situations where it is particularly important that you get financial information and advice that is independent of us."
 
-                del aux[subj][type_rc]
+                if len(aux[subj][type_rc])>1:
+                    del aux[subj][type_rc][0]  
+                elif len(aux[subj][type_rc])==1:
+                    del aux[subj][type_rc]
 
                 if 'punct' in deps_subj.keys():
                     del aux[subj]['punct']
@@ -362,7 +337,7 @@ class Simplify():
             @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
             """
 
-            ## apposition needs to have a subject -- same subject of the mais sentence.
+            ## apposition needs to have a subject -- same subject of the main sentence.
             if 'nsubj' in deps_root.keys():
 
                 subj = deps_root['nsubj'][0]
@@ -374,7 +349,7 @@ class Simplify():
                 deps_subj = aux[subj]
                 v_tense = words[root-1][1]['PartOfSpeech']
                 n_num = words[subj-1][1]['PartOfSpeech']
-                if 'amod' in deps_subj: ## bug -- this generates several mistakes... 
+                if 'amod' in deps_subj: 
                     mod = deps_subj['amod'][0]
                     if mod in aux:
                         deps_mod = aux[mod]
@@ -382,10 +357,8 @@ class Simplify():
                         deps_mod = {}
                     del aux[subj]['amod']
                     deps_subj = aux[subj]
-                        
-                    ## Treat simple cases such as 'general rule'
-                    #if 'JJ' in words[mod-1][1]['PartOfSpeech'] and len(deps_mod.keys()) == 0: 
-                    if 'JJ' in words[mod-1][1]['PartOfSpeech'] and 'punct' not in deps_subj:
+
+                    if 'a' == words[mod-1][1]['PartOfSpeech'][0] and 'punct' not in deps_subj:
                         return False, ant
 
                 elif 'appos' in deps_subj:
@@ -418,6 +391,126 @@ class Simplify():
                 return True, s1 + " " + s2
             else:
                 return False, ant
+        
+        def parataxis_phrases(aux, words, root, deps_root, ant):
+            """
+            Simplify parataxis phrases
+            @param aux: auxiliary parser output
+            @param words: auxiliary words and POS tags structure
+            @param root: root node in the dependency tree
+            @param deps_root: dependencies of the root node
+            @param ant: previous sentence (for recursion purposes)
+            @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
+            """
+            
+            parat = 0
+            iparat = 0
+            if 'parataxis' in deps_root.keys():
+                parat = deps_root['parataxis'][0]
+                iparat = root
+                if parat not in aux.keys():
+                    return False, ant
+            else: 
+                for i in aux.keys():
+                    if 'parataxis' in aux[i].keys(): 
+                        parat = aux[i]['parataxis'][0]
+                        iparat = i
+                        break
+            if parat == 0:
+                    return False, ant
+            
+            if 'nmod:por' not in aux[parat]:
+                return False, ant
+
+            deps_parat = aux[parat]
+            mod = parat
+
+            if 'punct' in deps_parat.keys(): 
+                del deps_parat['punct']
+                
+            if 'parataxis' in deps_root.keys():
+                del deps_root['parataxis']
+            
+            if 'parataxis' in aux[iparat]:
+                del aux[iparat]['parataxis']
+                
+            del aux[aux[parat]['nmod:por'][0]]  
+            
+            del deps_parat['nmod:por'] #delete 'por'
+            if 'iobj' in deps_parat:
+                del deps_parat['iobj'] #delete 'se'
+            
+            final_root = {}
+            
+            build(root, deps_root, aux, words, final_root)
+            final_parat = {}
+            build(mod, deps_parat, aux, words, final_parat)
+            
+            if len(final_parat.keys()) < 2:
+                return False, ant
+
+            sentence1, sentence2 = self.generation.print_sentence_parataxis(final_root, final_parat)
+            s1 = self.transformation(sentence1, ant)
+            s2 = self.transformation(sentence2, ant)
+            return True, s1 + " " + s2
+        
+        def parataxis_phrases_acl(aux, words, root, deps_root, ant):
+            """
+            Simplify parataxis phrases, marked as acl:relcl with a nmod:por
+            @param aux: auxiliary parser output
+            @param words: auxiliary words and POS tags structure
+            @param root: root node in the dependency tree
+            @param deps_root: dependencies of the root node
+            @param ant: previous sentence (for recursion purposes)
+            @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
+            """
+            parat = 0
+            iparat = 0
+            
+            for rel in aux.keys():
+                
+                if "acl:relcl" in aux[rel].keys():
+                    acl_dep = aux[rel]["acl:relcl"]
+                    j = 0
+                    
+                    for acl_rel in acl_dep:
+                        j+=1
+                        if acl_rel not in aux: continue
+                    
+                        if 'nmod:por' in aux[acl_rel]:
+                            
+                            parat = acl_rel
+                            iparat = rel
+                
+                            deps_parat = aux[parat]
+                            mod = parat
+                
+                            if 'punct' in deps_parat.keys(): 
+                                del deps_parat['punct']
+                            
+                            del aux[iparat]['acl:relcl'][j-1]
+                                
+                            del aux[aux[parat]['nmod:por'][0]]  
+                            
+                            del deps_parat['nmod:por'] 
+                            if 'iobj' in deps_parat:
+                                del deps_parat['iobj'] 
+                            
+                            final_root = {}
+                            
+                            build(root, deps_root, aux, words, final_root)
+                            final_parat = {}
+                            build(mod, deps_parat, aux, words, final_parat)
+                            
+                            if len(final_parat.keys()) < 2:
+                                return False, ant
+                
+                            sentence1, sentence2 = self.generation.print_sentence_parataxis(final_root, final_parat)
+                            s1 = self.transformation(sentence1, ant)
+                            s2 = self.transformation(sentence2, ant)
+                            return True, s1 + " " + s2
+            return False, ant
+            
 
         def passive_voice(aux, words, root, deps_root, ant):
             """
@@ -429,37 +522,42 @@ class Simplify():
             @param ant: previous sentence (for recursion purposes)
             @return: a flag that indicates whether or not the sentence was simplified and the result sentence (if flag = False, ant is returned)
             """
-            if 'auxpass' in deps_root.keys():
-                    
-                if 'nmod:por' in deps_root.keys():
+            if 'auxpass' in deps_root.keys():  
+                if 'nmod:por' in deps_root.keys(): 
 
-                    if 'nsubjpass' not in deps_root:
+                    if 'nsubjpass' not in deps_root:  
                         return False, ant
-
-                    subj = deps_root['nsubjpass'][0]
+                    subj = deps_root['nsubjpass'][0]  
                     if subj in aux:
-                        deps_subj = aux[subj]
+                        deps_subj = aux[subj]   
                     else:
                         deps_subj = {}
 
-                    root_tense = words[root-1][1]['PartOfSpeech']
+                    root_tense = words[root-1][1]['PartOfSpeech']  
                         
-                    aux_tense = words[deps_root['auxpass'][0]-1][1]['PartOfSpeech']
-                    v_aux = None
+                    aux_tense = words[deps_root['auxpass'][0]-1][1]['PartOfSpeech'] 
+                    v_auxpass = words[deps_root['auxpass'][0]-1][0]
+                    v_aux =  None
 
                     if 'v' in aux_tense and 'aux' in deps_root.keys():
                         aux_tense = words[deps_root['aux'][0]-1][1]['PartOfSpeech']
                         v_aux = words[deps_root['aux'][0]-1][0]
                         del deps_root['aux']
-                           
-                    del deps_root['auxpass']
-                    del deps_root['nsubjpass']
+                    del deps_root['auxpass']  
+                    del deps_root['nsubjpass'] 
+                    
+                    article = None
 
                     if len(deps_root['nmod:por']) > 1:
                         mod = deps_root['nmod:por'][1]
+                        
                         mod2 = deps_root['nmod:por'][0]
                         deps_mod = aux[mod]
                         deps_mod2 = aux[mod2]
+                        
+                        if 'det' in deps_mod: 
+                            article = words[deps_mod['det'][0]-1][0].lower()
+                        
                         if 'case' in deps_mod:
                             if words[deps_mod[u'case'][0]-1][0].lower() != 'por':
                                 return False, ant
@@ -480,7 +578,7 @@ class Simplify():
                             build(root, deps_root, aux, words, final_root, False)
                                 
                                 
-                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0],root_tense, v_aux, aux_tense, subj_tag, subj_word, final_mod2, final_root)
+                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0],root_tense, v_aux, v_auxpass, aux_tense, subj_tag, subj_word,article, final_mod2, final_root)
                             s1 = self.transformation(sentence1, ant)
                             return True, s1
                         elif 'case' in deps_mod2:
@@ -503,25 +601,24 @@ class Simplify():
                             final_root = {}
                             build(root, deps_root, aux, words, final_root, False)
 
-                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0], root_tense, v_aux, aux_tense, subj_tag, subj_word, final_mod2, final_root)
+                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0], root_tense, v_aux, v_auxpass, aux_tense, subj_tag, subj_word, article, final_mod2, final_root)
                             s1 = self.transformation(sentence1, ant)
                             return True, s1
                         else:
                             return False, ant
-
-                    else:
+                    else:  
                         mod = deps_root['nmod:por'][0]
     
-                        deps_mod =  aux[mod]
-
+                        deps_mod =  aux[mod]   
+                        
+                        if 'det' in deps_mod: 
+                            article = words[deps_mod['det'][0]-1][0].lower()
                         if 'case' in deps_mod:
                             if words[deps_mod['case'][0]-1][0].lower() != 'por':
                                 return False, ant
-
                             del deps_mod['case']
                             del deps_root['nmod:por']
-
-                            subj_tag = words[mod-1][1]['PartOfSpeech']
+                            subj_tag = words[mod-1][1]['PartOfSpeech']  
                             subj_word = words[mod-1][0]
                     
                             final_subj = {}
@@ -533,7 +630,7 @@ class Simplify():
                             final_root = {}
                             build(root, deps_root, aux, words, final_root, False)
 
-                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0], root_tense, v_aux, aux_tense, subj_tag, subj_word, final_root)
+                            sentence1 = self.generation.print_sentence_voice(final_subj, final_obj, words[root-1][0], root_tense, v_aux, v_auxpass, aux_tense, subj_tag, subj_word, article, None, final_root)
                             s1 = self.transformation(sentence1, ant)
                             return True, s1
                         else:
@@ -543,23 +640,16 @@ class Simplify():
             else:
                 return False, ant
 
-                
-
         ## MAIN OF TRANSFORMATION
-        
         ## control recursion: check whether there is no simplification to be done
         if sent == ant:
             return sent
-
         flag = False
-
         ant = sent
-
 
         ## parser
         try:
             parsed = self.parser.process(sent)
-
         except AssertionError:
             return ant
 
@@ -586,32 +676,39 @@ class Simplify():
         for w in words:
             sent_tok.append(w[0])
 
-
+        
         ## dealing with questions
-        ## TODO: improve this control with parser information.
-        if sent_tok[0].lower() in ("what", "where", "when", "whose", "who", "which", "whom", "whatever", "whatsoever", "whichever", "whoever", "whosoever", "whomever", "whomsoever", "whoseever", "whereever") and sent_tok[-1] == "?":
+        if sent_tok[1].lower() in ("qué", "dónde", "cuándo", "quiénes", "quién", "cuál", "cuáles", "cómo", "cuánto", "cuánta", "cuántos", "cuántas") and sent_tok[-1] == "?":
             return ant
+        
+        ##deal with parataxis
+        flag, simpl = parataxis_phrases(dict_dep, words, root, deps_root, ant)
+        if flag:
+            return simpl
+        
+        flag, simpl = parataxis_phrases_acl(dict_dep, words, root, deps_root, ant)
+        if flag:
+            return simpl
 
         ## deal with apposition
         flag, simpl = appositive_phrases(dict_dep, words, root, deps_root, ant)
         if flag:
             return simpl
         
-        
         ## analyse whether or not a sentence has simplification clues (in this case, discourse markers or relative pronouns)
         a = Analysis(sent_tok, self.cc, self.relpron)
 
         flag_cc, type_cc = a.analyse_cc()
-
+        
         ## if sentence has a marker that requires attention
         if flag_cc:
             ## sorting according to the order of the relations
             rel = {}
-            for k in deps_root.keys():
-                if 'conj' in k or 'advcl' in k:
-                    others = sorted(deps_root[k], reverse=True)
-                    cnt = 0
-                    for o in others:
+            for k in deps_root.keys():                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                if 'conj' in k or 'advcl' in k:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                    others = sorted(deps_root[k], reverse=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                    cnt = 0         
+                    for o in others:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                         deps_root[k+str(cnt)] = []
                         deps_root[k+str(cnt)].append(o)
                         rel[k+str(cnt)] = deps_root[k][0]
@@ -626,33 +723,25 @@ class Simplify():
                     return simpl
 
 
-                    
-    
         flag_rc, type_rc = a.analyse_rc()
 
         ## if sentence has a relative pronoun
         if flag_rc:
-                
-    
+            
             ## check where is the dependency of the relative clause
-            if 'nsubj' in deps_root:
-                flag, simpl = relative_clauses(dict_dep, words, root, deps_root, ant, 'nsubj')
-                if flag:
-                    return simpl
-            elif 'dobj' in deps_root:
-                flag, simpl = relative_clauses(dict_dep, words, root, deps_root, ant, 'dobj')
-                if flag:
-                    return simpl
-
-
-        
-
-
+            if 'nsubj' in  deps_root.keys():
+                    flag, simpl = relative_clauses(dict_dep, words, root, deps_root, ant, 'nsubj')
+                    if flag:
+                        return simpl
+            if 'dobj' in  deps_root.keys():
+                    flag, simpl = relative_clauses(dict_dep, words, root, deps_root, ant, 'dobj')
+                    if flag:
+                        return simpl
+       
         ## deal with passive voice
         flag, simpl = passive_voice(dict_dep, words, root, deps_root, ant)
         if flag:
             return simpl
-
         
         ## return the original sentence if no simplification was done
         if flag== False:
@@ -660,22 +749,16 @@ class Simplify():
 
     def simplify(self, sentence):        
         """
-        Call the simplification process for all sentences in the document.
+        Call the simplification process for sentence
         """
-        #c = 0
-        #simp_sentences = []
-        #for s in self.sentences:
-
-            #print "Original: " + s
+        #simp_sentence = self.transformation(sentence, '')
+        #return simp_sentence.encode("utf-8")
+         
         try:     
             simp_sentence = self.transformation(sentence, '')
-
-            ## for demonstration purposes only. remove the prints later
-            #print "Simplified: ",
-            #print simp_sentences[c]
-            #c+=1
-
-            #print   
             return simp_sentence.encode("utf-8")
         except:
+            print "error exception in simplify.py "
+            print sys.exc_info()
             return sentence
+        

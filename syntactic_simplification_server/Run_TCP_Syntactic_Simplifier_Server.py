@@ -70,7 +70,7 @@ while 1:
 
     #Parse request:
     data = json.loads(conn.recv(1024).decode("utf-8"))
-    sent = data['sentence'].encode("utf-8")
+    sent = data['sentence']
     print "Sentance Received : " + sent
     lang = data['lang']
     print "Language :" + lang

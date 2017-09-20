@@ -1,10 +1,5 @@
 f = open("dicc.src.verbs", "r")
 
-#for s in f.readlines():
-#    tokens = s.split(" ")
-#    tag = tokens[2]
-#    if tag[0] == "V":
-#        print s.strip()
 lemmas = {}
 for s in f.readlines():
     tokens = s.strip().split(" ")

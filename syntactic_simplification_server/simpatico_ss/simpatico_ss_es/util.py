@@ -3,19 +3,19 @@
 
 from nltk.parse.stanford import StanfordDependencyParser
 from corenlp import StanfordCoreNLP
+
+
 import time
 
 class Parser():
     def __init__(self, corenlp_dir, properties):
-        #corenlp_dir = "/export/data/ghpaetzold/simpatico/server_simplifiers/core_nlp/stanford-corenlp-full-2016-10-31/"
-        #corenlp_dir = "/export/data/cscarton/simpatico/stanford-corenlp-full-2016-10-31/"
         self.corenlp = StanfordCoreNLP(corenlp_dir, memory="4g", properties=properties)
     
     def process(self, sentence):
-        #sentences = open(self.doc, "r").read().strip().split("\n")
-        #sentences = [l.strip().split(' ') for l in f_read]
-        #dep_parser = StanfordDependencyParser(model_path="edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz")
-        return self.corenlp.raw_parse(sentence)['sentences'][0]
+        parse=self.corenlp.raw_parse(sentence)
+        if parse['sentences'] == []:  
+            parse=self.corenlp.raw_parse(sentence)
+        return parse['sentences'][0]
 
     def transform(self, parsed):
         dict_dep = {}

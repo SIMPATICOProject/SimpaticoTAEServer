@@ -695,18 +695,11 @@ class Simplify():
         #for s in self.sentences:
 
             #print "Original: " + s
-        try:
-            
+
+        try:     
             simp_sentence = self.transformation(sentence, '')
-        
-
-
-            ## for demonstration purposes only. remove the prints later
-            #print "Simplified: ",
-            #print simp_sentences[c]
-            #c+=1
-
-            #print   
             return simp_sentence
         except:
+            print "error exception in simplify.py "
+            print sys.exc_info()
             return sentence

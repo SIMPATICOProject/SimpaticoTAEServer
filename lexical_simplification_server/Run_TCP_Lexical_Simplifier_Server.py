@@ -3,7 +3,7 @@ from lexenstein.morphadorner import *
 from lexenstein.spelling import *
 from lexenstein.features import *
 from langdetect import detect
-import socket
+import socket, sys
 
 #Classes:
 class MultilingualLexicalSimplifier:
@@ -109,7 +109,6 @@ def getTaggedSentences(sents, configurations, lang):
 		resp = [token.split(r'_') for token in s.recv(2014).decode('utf-8').strip().split(' ')]
 		resp = [(token[0], token[1]) for token in resp]
 		tagged_sents.append(resp)
-	print tagged_sents
 	return tagged_sents
 
 def updateRequest(sent, target, index, tagged):
@@ -286,15 +285,33 @@ while 1:
 	(conn, address) = serversocket.accept()
 
 	#Parse request:
-	data = json.loads(conn.recv(1024).decode('utf-8'))
-	sent = data['sentence']
-	target = data['target']
-	index = data['index']
-	lang = data['lang']
+	data = None
+	try:
+		data = conn.recv(1024)
+		data = data.decode('utf-8')
+		data = json.loads(data)
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error occurred while receiving/parsing a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
+		data = None
+
+	try:
+		sent = data['sentence']
+		target = data['target']
+		index = data['index']
+		lang = data['lang']
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error occurred while checking the integrity of a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
+		data = None
+		sent = None
+		target = None
+		index = None
+		lang = None
 
 	#Simplify based on language:
-	if 1:
-	#try:
+	sr_output = [[]]
+	try:
 		if lang=='en':
 			#Tag sentence:
 			tagged_sents = getTaggedSentences([sent], configurations, lang)
@@ -331,8 +348,10 @@ while 1:
 			ss_output = simplifier_gal.selectCandidates(sg_output)
 			#SR:
 			sr_output = simplifier_gal.rankCandidates(ss_output)
-	#except Exception:
-	#	sr_output = [[]]
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e
+		sr_output = [[]]
 
 	#Get final replacement:
 	replacement = 'NULL'
@@ -346,6 +365,8 @@ while 1:
 	try:
 		conn.send(replacement+'\n')
 		conn.close()
-	except Exception:
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error has ocurred while sending a response. Line: ', exc_tb.tb_lineno, ' Message: ', e
 		conn.send('NULL\n')
 		conn.close()

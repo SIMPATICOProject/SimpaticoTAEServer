@@ -10,7 +10,7 @@ import gensim
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import SnowballStemmer
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn import linear_model
@@ -946,7 +946,6 @@ class SpanishTaggedGenerator:
 			most_simf = []
 			for cand in most_sim:
 				candd = cand.split('|||')
-				print candd
 				cword = candd[0].strip()
 				if len(candd)<2:
 					ctag = 'NONE'

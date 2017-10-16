@@ -58,7 +58,7 @@
 	
 		Navigate to the "lexical_simplification_server" folder, then run the following command:
 			
-			nohup python Run_TCP_Lexical_Simplifier_Server.py &
+			nohup python -u Run_TCP_Lexical_Simplifier_Server.py &
 			
 		Then you will have a server receiving requests at the "ls_local_server_port" port specified in the "configurations.txt" file.
 		
@@ -66,7 +66,7 @@
 	
 		Navigate to the "syntactic_simplification_server" folder, then run the following command:
 		
-			nohup python Run_TCP_Syntactic_Simplifier_Server.py &
+			nohup python -u Run_TCP_Syntactic_Simplifier_Server.py &
 			
 		Then you will have a server receiving requests at the "ss_local_server_port" port specified in the "configurations.txt" file.
 	
@@ -74,7 +74,7 @@
 	
 		Navigate to the "main_TAE_server" folder, then run the following command:
 		
-			nohup python Run_TAE_Simplification_Server.py &
+			nohup python -u Run_TAE_Simplification_Server.py &
 		
 		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
 		

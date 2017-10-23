@@ -49,12 +49,22 @@ class MultilingualLexicalSimplifier:
 		
 class EnhancedLexicalSimplifier:
 
-	def __init__(self, dictgen, embeddingsgen, selector, ranker):
+	def __init__(self, cwisystem, dictgen, embeddingsgen, selector, ranker):
+		self.cwisystem = cwisystem
 		self.dictgen = dictgen
 		self.embeddingsgen = embeddingsgen
 		self.selector = selector
 		self.ranker = ranker
-		
+
+	def getSimplifiability(self, target):
+		#Check if there is a CWI system available:
+		if self.cwisystem:
+			#If so, return the verdict from the CWI system:
+			return self.cwisystem.getSimplifiability(target)
+		else:
+			#If not, assume the word is simplifiable:
+			return True
+
 	def generateCandidates(self, sent, target, index, tagged_sents):
 		#Produce candidates based on dictionary map:
 		if target not in self.dictgen:
@@ -178,7 +188,7 @@ def getSpanishLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier({}, kg, bs, gr)
+	return EnhancedLexicalSimplifier(None, {}, kg, bs, gr)
 	
 def getEnglishLexicalSimplifier(resources):
 	#General purpose:
@@ -186,6 +196,13 @@ def getEnglishLexicalSimplifier(resources):
 	victor_corpus = resources['nnseval']
 	w2vpm_eng = resources['eng_caretro_embeddings']
 	w2vty_eng = resources['eng_typical_embeddings']
+
+	#Complex word identifier:
+	freq_map = shelve.open(resources['eng_sub_shelf'], protocol=pickle.HIGHEST_PROTOCOL)
+	mean_freq = float(resources['eng_mean_freq'])
+	std_freq = float(resources['eng_std_freq'])
+	min_proportion = float(resources['eng_min_proportion'])
+	cwi = EnglishComplexWordIdentifier(freq_map, mean_freq, std_freq, min_proportion)
 
 	#Generator:
 	ng = getNewselaCandidates(resources['newsela_candidates'])
@@ -209,7 +226,7 @@ def getEnglishLexicalSimplifier(resources):
 	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(ng, kg, bs, nr)
+	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr)
 
 def getGalicianLexicalSimplifier(resources):
 	#General purpose:
@@ -317,12 +334,17 @@ while 1:
 			tagged_sents = getTaggedSentences([sent], configurations, lang)
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
-			#SG:
-			sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
-			#SS:
-			ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
-			#SR:
-			sr_output = simplifier_eng.rankCandidates(ss_output)
+			#CWI:
+			cwi_output = simplifier_eng.getSimplifiability(target)
+			if cwi_output:
+				#SG:
+				sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
+				#SS:
+				ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
+				#SR:
+				sr_output = simplifier_eng.rankCandidates(ss_output)
+			else:
+				sr_output = [[]]
 		elif lang=='it':
 			#SG:
 			sg_output = simplifier_ita.generateCandidates(sent, target, index)

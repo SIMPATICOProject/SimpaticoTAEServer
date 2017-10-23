@@ -19,9 +19,9 @@ def loadResources(path):
 configurations = loadResources('../../configurations.txt')
 
 info = {}
-info['sentence'] = 'This, my friend, is an orthodox sentence mañana.'
+info['sentence'] = 'This, my friend, is an parents sentence mañana.'
 info['target'] = info['sentence'].split(' ')[5]
-#info['index'] = '5'
+info['index'] = '5'
 info['lang'] = 'en'
 data = json.dumps(info)
 print data

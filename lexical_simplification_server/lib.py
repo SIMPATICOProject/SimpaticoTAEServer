@@ -10,12 +10,49 @@ import gensim
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import SnowballStemmer
+from nltk.corpus import wordnet as wn
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn import linear_model
 from keras.models import *
 import numpy as np
+
+class EnglishComplexWordIdentifier:
+
+	def __init__(self, freq_map, mean_freq, std_freq, min_proportion):
+		self.freq_map = freq_map
+		self.mean_freq = mean_freq
+		self.std_freq = std_freq
+		self.min_proportion = min_proportion
+
+	def getSimplifiability(self, target):
+		#Try to get a list of synonyms for the target from WordNet:
+		try:
+			lemma = wn.morphy(target)
+			syns = wn.synsets(lemma)
+			synonyms = set([])
+			for syn in syns:
+				synonyms.update([s.strip() for s in syn.lemma_names() if '_' not in s])
+			if lemma in synonyms:
+				synonyms.remove(lemma)
+		except Exception:
+			synonyms = set([])
+		
+		#Get the target's frequency:
+		if isinstance(target, unicode):
+			word = target.encode('utf8')
+		else:
+			word = target
+		word_freq = 0
+		if word.lower() in self.freq_map:
+			word_freq = self.freq_map[word.lower()]
+
+		#Check wether frequency is small enough and there are existing synonyms:
+		if word_freq<=self.mean_freq/self.min_proportion and len(synonyms)>0:
+			return True
+		else:
+			return False
 
 class MultilingualGlavasGenerator:
 

@@ -49,12 +49,14 @@ class MultilingualLexicalSimplifier:
 		
 class EnhancedLexicalSimplifier:
 
-	def __init__(self, cwisystem, dictgen, embeddingsgen, selector, ranker):
+	def __init__(self, cwisystem, dictgen, embeddingsgen, selector, ranker, hard_simps={}, irreplaceable=set([])):
 		self.cwisystem = cwisystem
 		self.dictgen = dictgen
 		self.embeddingsgen = embeddingsgen
 		self.selector = selector
 		self.ranker = ranker
+		self.hard_simps = hard_simps
+		self.irreplaceable = irreplaceable
 
 	def getSimplifiability(self, target):
 		#Check if there is a CWI system available:
@@ -66,24 +68,31 @@ class EnhancedLexicalSimplifier:
 			return True
 
 	def generateCandidates(self, sent, target, index, tagged_sents):
-		#Produce candidates based on dictionary map:
-		if target not in self.dictgen:
-			subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 10)
-		else:
-			subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 3)
-
-		#Create input data instance:
-		fulldata = [sent, target, index]
-		for sub in subs[target]:
-			fulldata.append('0:'+sub)
-		if target in self.dictgen:
-			for sub in self.dictgen[target]:
+		#If target is not irreplaceable:
+		if target not in self.irreplaceable and target not in self.hard_simps:
+			#Produce candidates based on dictionary map:
+			if target not in self.dictgen:
+				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 10)
+			else:
+				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 3)
+	
+			#Create input data instance:
+			fulldata = [sent, target, index]
+			for sub in subs[target]:
 				fulldata.append('0:'+sub)
-		fulldata = [fulldata]
-		
-		#Return requested structures:
-		return fulldata
-		
+			if target in self.dictgen:
+				for sub in self.dictgen[target]:
+					fulldata.append('0:'+sub)
+			fulldata = [fulldata]
+			
+			#Return requested structures:
+			return fulldata
+		else:
+			if target in self.irreplaceable:
+				return [[sent, target, index]]
+			else:
+				return [[sent, target, index, '0:'+self.hard_simps[target], '0:'+self.hard_simps[target]]]
+	
 	def selectCandidates(self, data, tagged_sents):
 		#Setup selector:
 		self.selector.ranker.fe.temp_resources['tagged_sents'] = tagged_sents
@@ -146,6 +155,17 @@ def getNewselaCandidates(file):
 	f.close()
 	return subs
 
+def getHardSimplifications(file):
+	subs = {}
+	f = open(file)
+	for line in f:
+		data = line.strip().split('\t')
+		target = data[0].strip()
+		cand = data[1].strip()
+		subs[target] = cand
+	f.close()
+	return subs
+
 def loadResources(path):
 	#Open resource file:
 	f = open(path)
@@ -196,6 +216,8 @@ def getEnglishLexicalSimplifier(resources):
 	victor_corpus = resources['nnseval']
 	w2vpm_eng = resources['eng_caretro_embeddings']
 	w2vty_eng = resources['eng_typical_embeddings']
+	hardsimps_eng = getHardSimplifications(resources['eng_hard_simps'])
+	irrep_eng = set([line.strip() for line in open(resources['eng_irreplaceable'])])
 
 	#Complex word identifier:
 	freq_map = shelve.open(resources['eng_sub_shelf'], protocol=pickle.HIGHEST_PROTOCOL)
@@ -226,7 +248,7 @@ def getEnglishLexicalSimplifier(resources):
 	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr)
+	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 
 def getGalicianLexicalSimplifier(resources):
 	#General purpose:

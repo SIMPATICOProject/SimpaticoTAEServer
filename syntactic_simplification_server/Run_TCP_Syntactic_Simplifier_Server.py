@@ -78,7 +78,7 @@ while 1:
     if lang == 'es':
         ss_output = ss_eng_es.simplify(sent)
     if lang == 'en':
-        ss_output = ss_eng.simplify(sent)
+        ss_output = ss_eng.simplify(sent.encode("utf-8"))
     elif lang == 'gl':
         ss_output = ss_eng_gl.simplify(sent)
 

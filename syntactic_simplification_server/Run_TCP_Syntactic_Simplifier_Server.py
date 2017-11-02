@@ -13,6 +13,7 @@ import simpatico_ss_gl.simplify
 import simpatico_ss_es.simplify
 import simpatico_ss_it.simplify
 
+
 def getEnglishSyntacticSimplifier(resources):
     stfd_parser = Parser(resources["corenlp_dir"], resources["prop_en"])
     return simpatico_ss.simplify.Simplify(stfd_parser, resources["true_en"])
@@ -85,14 +86,15 @@ while 1:
 
     #Parse request:
     data = json.loads(conn.recv(1024).decode("utf-8"))
-    sent = data['sentence'].encode("utf-8")
+    sent = data['sentence']
     lang = data['lang']
 
-
+    print "Sentance Received : " + sent
+    print "Language :" + lang
 
     #Syntactic Simplification:
     if lang == 'es':
-        ss_output = ss_eng_es.simplify(sent)
+        ss_output = ss_eng_es.simplify(sent.encode("utf-8"))
     if lang == 'it':
         ss_output = ss_eng_it.simplify(sent)
     if lang == 'en':

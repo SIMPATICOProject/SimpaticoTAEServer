@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 class Analysis():
 
@@ -27,7 +27,7 @@ class Analysis():
                     c+=1
                 else:
                     c+=1
-                    if s.lower() in self.cc and "esto sucederá " + s.lower() not in " ".join(self.sentence).lower() and "esto sucede " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto puede suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder "  + s.lower() not in " ".join(self.sentence).lower():
+                    if s.lower() in self.cc and "esto sucederá ".decode("utf-8") + s.lower() not in " ".join(self.sentence).lower() and "esto sucede " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder ".decode("utf-8") + s.lower() not in " ".join(self.sentence).lower() and "esto puede suceder " + s.lower() not in " ".join(self.sentence).lower() and "esto podría suceder ".decode("utf-8")  + s.lower() not in " ".join(self.sentence).lower():
                         mark.append(s.lower())
             return True, mark
         else: 

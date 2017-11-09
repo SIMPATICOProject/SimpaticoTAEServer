@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 from nltk.parse.stanford import StanfordDependencyParser
 from corenlp import StanfordCoreNLP

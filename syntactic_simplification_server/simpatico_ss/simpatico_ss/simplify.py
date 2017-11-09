@@ -12,7 +12,7 @@ from confidence import Confidence
 
 class Simplify():
 
-    def __init__(self, parser, truecase_model):
+    def __init__(self, parser, truecase_model, lm, conf_model, comp_model):
         """
         Perform syntactic simplification rules.
         @param parser: parser server.
@@ -38,6 +38,10 @@ class Simplify():
         
         ## Generation class instance
         self.generation = Generation(self.time, self.concession, self.justify, self.condition, self.condition2, self.addition, self.cc, self.relpron, truecase_model)
+        
+        self.lm = lm
+        self.conf_model = conf_model
+        self.comp_model = comp_model
         
 
         
@@ -601,7 +605,7 @@ class Simplify():
         ## classify whether the sentence should be simplified or not (EMNLP demo extension)
         if comp:
             c = Classify()
-            label = c.classify(sent, dict_dep, words)
+            label = c.classify(sent, dict_dep, words, self.comp_model)
             if label[0] == 0. : 
                 return ant
 
@@ -706,18 +710,17 @@ class Simplify():
             #print "Original: " + s
         try:
             
-            
             simp_sentence = self.transformation(sentence, '', comp=comp)
         
-
             if simp_sentence != sentence and conf == True:
 
-
                 c = Confidence()
-                label = c.classify(sentence,simp_sentence,self.parser)
+                label = c.classify(sentence,simp_sentence,self.parser,self.lm,self.conf_model)
                 if label[0] == 1. : 
                     return sentence
 
             return simp_sentence
-        except:
+        except:            
+            print "error exception in simplify.py "
+            print sys.exc_info()
             return sentence

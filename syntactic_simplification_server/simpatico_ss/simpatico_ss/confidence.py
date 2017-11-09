@@ -86,9 +86,9 @@ class Confidence:
 
         return features
     
-    def classify(self, original, simp, stfd_parser):
+    def classify(self, original, simp, stfd_parser, lm, conf_model):
 
-        model = kenlm.Model('../../data/training_full.blm.en')
+        model = kenlm.Model(lm)
 
         tool = grammar_check.LanguageTool('en-GB')
 
@@ -124,7 +124,7 @@ class Confidence:
         features = features_simp
 
         features = features.reshape(1,-1) 
-        clf = joblib.load('../../data/confidence_model/en/model.pkl')
+        clf = joblib.load(conf_model)
         pred = clf.predict(features)
 
         return pred

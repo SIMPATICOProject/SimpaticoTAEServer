@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 import es
 from truecaser.Truecaser import *
@@ -86,13 +86,13 @@ class Generation:
         elif mark in self.time:
             if mark_pos > 1:
                 if "vmif" in root_tag: 
-                    s_sentence2 += 'Esto sucederá ' + mark + " "
+                    s_sentence2 += 'Esto sucederá '.decode("utf-8") + mark + " "
                 else:
                     s_sentence2 += 'Esto sucede ' + mark + " "
             else:
 
                 if "vmif" in root_tag: 
-                    s_sentence2 += 'Esto sucederá ' + mark + " "
+                    s_sentence2 += 'Esto sucederá '.decode("utf-8") + mark + " "
                 elif "vmif" in root_tag and modal != None: 
                     s_sentence2 += 'Esto ' + modal + ' suceder ' + mark + " "
                 else:
@@ -103,7 +103,7 @@ class Generation:
         elif mark in self.condition2:
             s_sentence2 += 'Alternativamente '
         
-        s_sentence2 = s_sentence2.decode('utf-8')
+        #s_sentence2 = s_sentence2.decode('utf-8')
         
         c = 0
 
@@ -264,6 +264,8 @@ class Generation:
 
         if new_verb.strip() == "":
             print "\t\tNO VERB CONJUGATION:\t" ,   verb, verb_tense, v_tense
+        else: 
+            new_verb = new_verb.decode("utf-8")
              
         if v_aux != None:
             new_verb = v_aux + " " + new_verb + " "
@@ -285,6 +287,5 @@ class Generation:
         #removing errors in punctuation
         s_sentence1 = s_sentence1.replace(", .", ".").replace("; .", ".").replace(": .", ".").replace(", ?", "?").replace("; ?", "?").replace(": ?", "?").replace(", !", "!").replace("; !", "!").replace(": !", "!").replace(". .", ".")
         s_sentence2 = s_sentence2.replace(", .", ".").replace("; .", ".").replace(": .", ".").replace(", ?", "?").replace("; ?", "?").replace(": ?", "?").replace(", !", "!").replace("; !", "!").replace(": !", "!").replace(". .", ".")
-
 
         return self.runTrueCaser(s_sentence1 + new_verb + s_sentence2)

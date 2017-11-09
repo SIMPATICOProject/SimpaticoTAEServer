@@ -79,10 +79,10 @@ class Classify:
         return features
 
     
-    def classify(self, sent, dict_dep, words):
+    def classify(self, sent, dict_dep, words, comp_model):
         features = np.array(self.extract_features(dict_dep, sent, words))
         features = features.reshape(1,-1) 
-        clf = joblib.load('../../data/complex_classifier/es/model.pkl')
+        clf = joblib.load(comp_model)
         pred = clf.predict(features)
 
         return pred

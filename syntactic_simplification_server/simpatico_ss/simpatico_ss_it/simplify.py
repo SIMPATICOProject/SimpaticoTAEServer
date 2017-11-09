@@ -9,13 +9,14 @@ import string
 from nltk.parse import DependencyGraph
 import operator
 import time
+import sys
 
 #demo-emnlp extension
 from classify import Classify
 
 class Simplify():
 
-    def __init__(self, parser, truecase_model):
+    def __init__(self, parser, truecase_model, comp_model):
         """
         Perform syntactic simplification rules.
         @param parser: parser server.
@@ -41,6 +42,8 @@ class Simplify():
         
         ## Generation class instance
         self.generation = Generation(self.time, self.concession, self.justify, self.condition, self.condition2, self.addition, self.cc, self.relpron, truecase_model)
+
+        self.comp_model = comp_model
         
 
         
@@ -580,7 +583,7 @@ class Simplify():
         ## classify whether the sentence should be simplified or not (EMNLP demo extension)
         if comp:
             c = Classify()
-            label = c.classify(sent, dict_dep, words)
+            label = c.classify(sent, dict_dep, words, self.comp_model)
             if label[0] == 0. : 
                 return ant
 
@@ -670,7 +673,7 @@ class Simplify():
         if flag== False:
             return ant
 
-    def simplify(self, sentence, comp=False):        
+    def simplify(self, sentence, comp=False, conf=False):        
         """
         Call the simplification process for all sentences in the document.
         """
@@ -680,7 +683,7 @@ class Simplify():
 
             #print "Original: " + s
         try:     
-            simp_sentence = self.transformation(sentence, '', comp)
+            simp_sentence = self.transformation(sentence, '', comp=comp)
 
             ## for demonstration purposes only. remove the prints later
             #print "Simplified: ",
@@ -688,6 +691,11 @@ class Simplify():
             #c+=1
 
             #print   
-            return simp_sentence.encode("utf-8")
+            if sentence != simp_sentence:
+                return simp_sentence.encode("utf-8")
+            else:
+                return sentence
         except:
+            print "error exception in simplify.py "
+            print sys.exc_info()
             return sentence

@@ -16,7 +16,7 @@ import simpatico_ss_it.simplify
 
 def getEnglishSyntacticSimplifier(resources):
     stfd_parser = Parser(resources["corenlp_dir"], resources["prop_en"])
-    return simpatico_ss.simplify.Simplify(stfd_parser, resources["true_en"])
+    return simpatico_ss.simplify.Simplify(stfd_parser, resources["true_en"], resources["lm_en"], resources["conf_model_en"], resources["comp_model_en"])
 
 def getGalicianSyntacticSimplifier(resources):
     stfd_parser = Parser_gl(resources["corenlp_dir"], resources["prop_gl"])
@@ -24,11 +24,11 @@ def getGalicianSyntacticSimplifier(resources):
 
 def getSpanishSyntacticSimplifier(resources):
     stfd_parser = Parser_es(resources["corenlp_dir"], resources["prop_es"])
-    return simpatico_ss_es.simplify.Simplify(stfd_parser, resources["true_es"])
+    return simpatico_ss_es.simplify.Simplify(stfd_parser, resources["true_es"], resources["comp_model_es"])
 
 def getItalianSyntacticSimplifier(resources):
     stfd_parser = Parser_it(resources["corenlp_dir"], resources["prop_it"])
-    return simpatico_ss_it.simplify.Simplify(stfd_parser, resources["true_it"])
+    return simpatico_ss_it.simplify.Simplify(stfd_parser, resources["true_it"], resources["comp_model_it"])
 
 
 def loadResources(path):
@@ -88,17 +88,31 @@ while 1:
     data = json.loads(conn.recv(1024).decode("utf-8"))
     sent = data['sentence']
     lang = data['lang']
+    comp = data['comp']
+    conf = data['conf']
 
     print "Sentance Received : " + sent
     print "Language :" + lang
+    print "Complexity checker : " + comp
+    print "Confidence model : " + conf
+
+    bcomp = False
+    bconf = False
+    
+    if comp.lower() == "true": 
+        bcomp = True
+
+    if conf.lower() == "true":
+        bconf = True
+    
 
     #Syntactic Simplification:
     if lang == 'es':
-        ss_output = ss_eng_es.simplify(sent.encode("utf-8"))
+        ss_output = ss_eng_es.simplify(sent.encode("utf-8"), bcomp, bconf)
     if lang == 'it':
-        ss_output = ss_eng_it.simplify(sent)
+        ss_output = ss_eng_it.simplify(sent.encode("utf-8"), bcomp, bconf)
     if lang == 'en':
-        ss_output = ss_eng.simplify(sent.encode("utf-8"))
+        ss_output = ss_eng.simplify(sent.encode("utf-8"), bcomp, bconf)
     elif lang == 'gl':
         ss_output = ss_eng_gl.simplify(sent)
 

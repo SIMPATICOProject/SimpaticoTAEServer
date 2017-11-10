@@ -1,3 +1,8 @@
+comp_model_en	../data/complex_classifier/en/model.pkl
+comp_model_es	../data/complex_classifier/es/model.pkl
+comp_model_it	../data/complex_classifier/it/model.pkl
+conf_model_en	../data/confidence_model/en/model.pkl
+lm_en	../data/training_full.blm.en
 true_en	../data/distributions.obj
 true_es	../data/distributions.es.obj
 true_gl	../data/distributions.gl.obj

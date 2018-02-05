@@ -131,17 +131,28 @@ def getTaggedSentences(sents, configurations, lang):
 	return tagged_sents
 
 def updateRequest(sent, target, index, tagged):
-	if len(sent.split(' '))==len(tagged):
-		return sent, str(index)
+	#If target is a word:
+	if ' ' not in target.strip():
+		if len(sent.split(' '))==len(tagged):
+			return sent, str(index)
+		else:
+			newsent = [t[0] for t in tagged]
+			newsent = ' '.join(newsent)
+			newindex = -1
+			mindiff = 999999
+			for i in range(0, len(tagged)):
+				if tagged[i][0]==target and math.fabs(index-i)<mindiff:
+					newindex = i
+					mindiff = math.fabs(index-i)
+			return newsent, str(newindex)
+	#If target is a phrase:
 	else:
-		newsent = [t[0] for t in tagged]
-		newsent = ' '.join(newsent)
-		newindex = -1
-		mindiff = 999999
-		for i in range(0, len(tagged)):
-			if tagged[i][0]==target and math.fabs(index-i)<mindiff:
+		jtarget = target.replace(' ', '_')
+		newsent = sent.replace(target, jtarget)
+		newindex = 0
+		for i, token in enumerate(newsent.split(' ')):
+			if token==jtarget:
 				newindex = i
-				mindiff = math.fabs(index-i)
 		return newsent, str(newindex)
 
 def getNewselaCandidates(file):
@@ -218,6 +229,8 @@ def getEnglishLexicalSimplifier(resources):
 	w2vty_eng = resources['eng_typical_embeddings']
 	hardsimps_eng = getHardSimplifications(resources['eng_hard_simps'])
 	irrep_eng = set([line.strip() for line in open(resources['eng_irreplaceable'])])
+	proh_edges = set([line.strip() for line in open(resources['eng_prohibited_phrase_edges'])])
+	proh_chars = set([line.strip() for line in open(resources['eng_prohibited_phrase_chars'])])
 
 	#Complex word identifier:
 	freq_map = shelve.open(resources['eng_sub_shelf'], protocol=pickle.HIGHEST_PROTOCOL)
@@ -228,7 +241,7 @@ def getEnglishLexicalSimplifier(resources):
 
 	#Generator:
 	ng = getNewselaCandidates(resources['newsela_candidates'])
-	kg = PaetzoldGenerator(w2vpm_eng, nc)
+	kg = PaetzoldGenerator(w2vpm_eng, nc, proh_edges, proh_chars)
 
 	#Selector:
 	fe = FeatureEstimator()
@@ -248,7 +261,8 @@ def getEnglishLexicalSimplifier(resources):
 	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
+	return EnhancedLexicalSimplifier(None, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
+#	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 
 def getGalicianLexicalSimplifier(resources):
 	#General purpose:
@@ -361,10 +375,13 @@ while 1:
 			if cwi_output:
 				#SG:
 				sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
+				print 'SG: ', sg_output
 				#SS:
 				ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
+				print 'SS: ', ss_output
 				#SR:
 				sr_output = simplifier_eng.rankCandidates(ss_output)
+				print 'SR: ', sr_output
 			else:
 				sr_output = [[]]
 		elif lang=='it':

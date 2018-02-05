@@ -1,6 +1,6 @@
 norvig_corrector	../data/norvig_model_wmt.bin
 nnseval	../data/paetzold_nns_dataset.txt
-eng_caretro_embeddings	../data/word_vectors_all_generalized_1300_cbow_retrofitted.bin
+eng_caretro_embeddings	/export/data/ghpaetzold/word2vecvectors/models/word_vectors_mweall_generalized_1300_cbow_retrofitted.bin
 eng_typical_embeddings	../data/word_vectors_all_300_cbow_retrofitted.bin
 newsela_candidates	../data/newsela_candidates.txt
 eng_sub_lm	../data/english_subimdb_lm.bin
@@ -10,6 +10,8 @@ eng_std_freq	288581.810434
 eng_min_proportion	64.0
 eng_hard_simps	../data/english_hard_simplifications.txt
 eng_irreplaceable	../data/english_irreplaceable.txt
+eng_prohibited_phrase_edges	../data/english_prohibited_phrase_edges.txt
+eng_prohibited_phrase_chars	../data/english_prohibited_phrase_chars.txt
 nn_sr_model	../data/RegressionParallelNN_HIDDEN=8_LAYERS=4
 gal_embeddings	../data/galician_vectors_300_cbow.bin
 gal_lm	../data/galician_lm.bin

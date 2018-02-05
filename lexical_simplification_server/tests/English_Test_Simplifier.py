@@ -18,10 +18,37 @@ def loadResources(path):
 
 configurations = loadResources('../../configurations.txt')
 
+###############################################################
+
+#Test word:
+
 info = {}
-info['sentence'] = 'This, my friend, is an parents sentence mañana.'
-info['target'] = info['sentence'].split(' ')[5]
-info['index'] = '5'
+info['sentence'] = 'This is a sample sentence for parents .'
+info['target'] = info['sentence'].split(' ')[6]
+info['index'] = '6'
+info['lang'] = 'en'
+data = json.dumps(info)
+print data
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+print('Sending...')
+s.send(data+'\n')
+print('Receiving...')
+resp = s.recv(1024).decode('utf8')
+print resp
+s.close()
+
+###############################################################
+
+#Test phrase:
+
+info = {}
+info['sentence'] = 'This sentence is more difficult .'
+info['target'] = 'more difficult'
+info['index'] = '3'
 info['lang'] = 'en'
 data = json.dumps(info)
 print data

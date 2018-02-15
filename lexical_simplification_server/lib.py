@@ -835,9 +835,11 @@ class NNRegressionRanker:
 class SpanishTaggedGenerator:
 	def __init__(self, posw2vmodel):
 		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True)
+
 	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
 		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
 		return substitutions
+
 	def getInitialSet(self, data, tsents, amount):
 		trgs = []
 		for i in range(0, len(data)):
@@ -867,30 +869,12 @@ class SpanishTaggedGenerator:
 					most_sim = []
 			subs.append([word[0] for word in most_sim])
 			
-		subsr = subs
-		subs = []
-		for l in subsr:
-			lr = []
-			for inst in l:
-				cand = inst.split('|||')[0].strip()
-				encc = None
-				try:
-					encc = cand.encode('ascii')
-				except Exception:
-					encc = None
-				if encc:
-					cands.add(cand)
-					lr.append(inst)
-			subs.append(lr)
-			
-		cands = list(cands)
-		
 		subs_filtered = self.filterSubs(data, tsents, subs, trgs)
 		final_cands = {}
 		for i in range(0, len(data)):
 			target = data[i][1]
 			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
-			cands = [str(word.split('|||')[0].strip()) for word in cands]
+			cands = [word.split('|||')[0].strip() for word in cands]
 			if target not in final_cands:
 				final_cands[target] = set([])
 			final_cands[target].update(set(cands))
@@ -930,3 +914,97 @@ class SpanishTaggedGenerator:
 				return tag[0]
 			else:
 				return tag
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class GalicianTaggedGenerator:
+
+	def __init__(self, posw2vmodel):
+		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True, unicode_errors='ignore')
+		
+	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
+		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
+		return substitutions
+		
+	def getInitialSet(self, data, tsents, amount):
+		trgs = []
+		for i in range(0, len(data)):
+			d = data[i]
+			tags = tsents[i]
+			target = d[1].strip().lower()
+			head = int(d[2].strip())
+			tag = self.getClass(tags[head][1])
+			trgs.append(target)
+	
+		subs = []
+		cands = set([])
+		for i in range(0, len(data)):
+			d = data[i]
+			t = trgs[i]
+			tags = tsents[i]
+			head = int(d[2].strip())
+			tag = tags[head][1]
+			word = t+'|||'+self.getClass(tag)
+			most_sim = []
+			try:
+				most_sim = self.model.most_similar(positive=[word], topn=50)
+			except KeyError:
+				try:
+					most_sim = self.model.most_similar(positive=[word.lower()], topn=50)
+				except KeyError:
+					most_sim = []
+			subs.append([word[0] for word in most_sim])
+		
+		subs_filtered = self.filterSubs(data, tsents, subs, trgs)
+		final_cands = {}
+		for i in range(0, len(data)):
+			target = data[i][1]
+			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
+			cands = [word.split('|||')[0].strip() for word in cands]
+			if target not in final_cands:
+				final_cands[target] = set([])
+			final_cands[target].update(set(cands))
+		
+		return final_cands
+	
+	def filterSubs(self, data, tsents, subs, trgs):
+		result = []
+		for i in range(0, len(data)):
+			d = data[i]
+			t = trgs[i]
+			tags = tsents[i]
+			head = int(d[2].strip())
+			tag = self.getClass(tags[head][1])
+			word = t+'|||'+self.getClass(tag)
+			most_sim = subs[i]
+			most_simf = []
+			for cand in most_sim:
+				candd = cand.split('|||')
+				cword = candd[0].strip()
+				if len(candd)<2:
+					ctag = 'NONE'
+				else:
+					ctag = candd[1].strip()
+				if ctag==tag:
+					if cword not in t and t not in cword:
+						most_simf.append(cand)
+			result.append(most_simf)
+		return result
+	
+	def getClass(self, tag):
+		return tag

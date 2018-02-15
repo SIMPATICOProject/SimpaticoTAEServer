@@ -19,9 +19,10 @@ def loadResources(path):
 configurations = loadResources('../../configurations.txt')
 
 info = {}
+index = 14
 info['sentence'] = 'Os líquens que medran no residuo asfáltico suxiren a sua baixa toxicidade , que cabería comparar á dunha autoestrada .'
-info['target'] = info['sentence'].split(' ')[14]
-info['index'] = '14'
+info['target'] = info['sentence'].split(' ')[index]
+info['index'] = str(index)
 info['lang'] = 'gl'
 data = json.dumps(info)
 

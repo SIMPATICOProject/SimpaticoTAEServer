@@ -266,10 +266,11 @@ def getEnglishLexicalSimplifier(resources):
 
 def getGalicianLexicalSimplifier(resources):
 	#General purpose:
-	w2vpm_gal = resources['gal_embeddings']
+	w2vpm_gal = resources['gal_typical_embeddings']
+	w2vretro_gal = resources['gal_careretro_embeddings']
 
 	#Generator:
-	gg = MultilingualGlavasGenerator(w2vpm_gal, 'spanish')
+	gg = GalicianTaggedGenerator(w2vretro_gal)
 	
 	#Selector:
 	fe = FeatureEstimator()
@@ -287,7 +288,7 @@ def getGalicianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return MultilingualLexicalSimplifier(gg, bs, gr)
+	return EnhancedLexicalSimplifier(None, {}, gg, bs, gr)
 	
 def getItalianLexicalSimplifier(resources):
 	#General purpose:
@@ -367,7 +368,7 @@ while 1:
 	try:
 		if lang=='en':
 			#Tag sentence:
-			tagged_sents = getTaggedSentences([sent], configurations, lang)
+			tagged_sents = getTaggedSentences([sent], configurations, 'en')
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#CWI:
@@ -393,7 +394,7 @@ while 1:
 			sr_output = simplifier_ita.rankCandidates(ss_output)
 		elif lang=='es':
 			#Tag sentence:
-			tagged_sents = getTaggedSentences([sent], configurations, lang)
+			tagged_sents = getTaggedSentences([sent], configurations, 'es')
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#SG:
@@ -403,10 +404,14 @@ while 1:
 			#SR:
 			sr_output = simplifier_spa.rankCandidates(ss_output)
 		else:
+			#Tag sentence:
+                        tagged_sents = getTaggedSentences([sent], configurations, 'gl')
+			#Update request information:
+                        sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#SG:
-			sg_output = simplifier_gal.generateCandidates(sent, target, index)
+			sg_output = simplifier_gal.generateCandidates(sent, target, index, tagged_sents)
 			#SS:
-			ss_output = simplifier_gal.selectCandidates(sg_output)
+			ss_output = simplifier_gal.selectCandidates(sg_output, tagged_sents)
 			#SR:
 			sr_output = simplifier_gal.rankCandidates(ss_output)
 	except Exception as e:

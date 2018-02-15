@@ -45,10 +45,11 @@
 	
 		Go to the folder where you unpacked the Stanford Tagger and run the following command:
 		
-			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/wsj-0-18-bidirectional-distsim.tagger -port 2020 &
-			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./models/spanish-distsim.tagger -port 3030 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/english.tagger -port 2020 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model  ./data/spanish.tagger -port 3030 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/galician.tagger -port 4040 &
 			
-		Then you will have a tagging servers running at ports 2020 and 3030. The ports chosen MUST be the ones specified on the "configurations.txt" file.
+		Then you will have a tagging servers running at ports 2020, 3030, 4040. The ports chosen MUST be the ones specified on the "configurations.txt" file.
 		
 	3) How to run the Stanford parser servers:
 	

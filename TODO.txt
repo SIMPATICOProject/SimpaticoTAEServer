@@ -1,0 +1,15 @@
+Changes to request format:
+	- Add user ID to simplification request (no ID still produces simplification)
+	- Add a re-train command
+
+Changes to the simplification process:
+	- With ID, get simplifications judged good and bad (complex word/phrase, sentence, simplification)
+	- With ID, get profile (native language, age, etc), transform in one-hot vectors
+	- Using profile features and bad simplifications, produce candidates
+	- Create list of simplifications to send to IFE: all successful simplifications, then the best 5 generated candidates
+	
+Retrain process:
+	- Get all data from Common20LS
+	- Get all good and bad simplifications from UPM
+	- For each pair of good and bad simplifications for a given word, create a binary instance from UPM
+	- Retrain ridge regressor

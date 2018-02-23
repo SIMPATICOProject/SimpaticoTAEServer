@@ -8,6 +8,47 @@ from nltk.stem.snowball import SnowballStemmer
 import socket, sys
 
 #Classes:
+class MultilingualLexicalSimplifier:
+
+	def __init__(self, embeddingsgen, selector, ranker):
+		self.embeddingsgen = embeddingsgen
+		self.selector = selector
+		self.ranker = ranker
+		
+	def generateCandidates(self, sent, target, index):
+		#Produce candidates:
+		subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, 10)
+
+		#Create input data instance:
+		fulldata = [sent, target, index]
+		for sub in subs[target]:
+			fulldata.append('0:'+sub)
+		fulldata = [fulldata]
+		
+		#Return requested structures:
+		return fulldata
+	
+	def selectCandidates(self, data):		
+		#If there are not enough candidates to be selected, select none:
+		if len(data[0])<5:
+			selected = [[]]
+		else:
+			selected = self.selector.selectCandidates(data, 0.5, proportion_type='percentage')		
+
+		#Produce resulting data:
+		fulldata = [data[0][0], data[0][1], data[0][2]]
+		for sub in selected[0]:
+			fulldata.append('0:'+sub)
+		fulldata = [fulldata]
+		
+		#Return desired objects:
+		return fulldata
+	
+	def rankCandidates(self, data):
+		#Rank selected candidates:
+		ranks = self.ranker.getRankings(data)
+		return ranks
+		
 class EnhancedLexicalSimplifier:
 
 	def __init__(self, cwisystem, dictgen, embeddingsgen, selector, ranker, hard_simps={}, irreplaceable=set([])):
@@ -278,97 +319,127 @@ def getItalianLexicalSimplifier(resources):
 		
 	
 ################################################ MAIN ########################################################	
-if __name__ == '__main__':
 
-	#Load global resources and configurations:
-	configurations = loadResources('../configurations.txt')
-	resources = loadResources('../resources.txt')
+#Load global resources and configurations:
+configurations = loadResources('../configurations.txt')
+resources = loadResources('../resources.txt')
 
-	#Load simplifiers:
-	simplifier_eng = getEnglishLexicalSimplifier(resources)
-	simplifier_gal = getGalicianLexicalSimplifier(resources)
-	simplifier_ita = getItalianLexicalSimplifier(resources)
-	simplifier_spa = getSpanishLexicalSimplifier(resources)
+#Load English simplifier:
+simplifier_eng = getEnglishLexicalSimplifier(resources)
+simplifier_gal = getGalicianLexicalSimplifier(resources)
+simplifier_ita = getItalianLexicalSimplifier(resources)
+simplifier_spa = getSpanishLexicalSimplifier(resources)
 
-	#Create simplifier map:
-	simplifier_map = {}
-	simplifier_map['en'] = simplifier_eng
-	simplifier_map['gl'] = simplifier_gal
-	simplifier_map['it'] = simplifier_ita
-	simplifier_map['es'] = simplifier_spa
+#Wait for simplification requests:
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket.bind(('0.0.0.0', int(configurations['ls_local_server_port'])))
+serversocket.listen(5)
 
-	#Wait for simplification requests:
-	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serversocket.bind(('0.0.0.0', int(configurations['ls_local_server_port'])))
-	serversocket.listen(5)
+#Upon receival of simplification request, do:
+while 1:
+	#Open connection:
+	(conn, address) = serversocket.accept()
 
-	#Upon receival of simplification request, do:
-	while 1:
-		#Open connection:
-		(conn, address) = serversocket.accept()
-	
-		#Parse request:
+	#Parse request:
+	data = None
+	try:
+		data = conn.recv(1024)
+		data = data.decode('utf-8')
+		data = json.loads(data)
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error occurred while receiving/parsing a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
 		data = None
-		try:
-			data = conn.recv(1024)
-			data = data.decode('utf-8')
-			data = json.loads(data)
-		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'An error occurred while receiving/parsing a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
-			data = None
-	
-		try:
-			sent = data['sentence']
-			target = data['target']
-			index = data['index']
-			lang = data['lang']
-		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'An error occurred while checking the integrity of a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
-			data = None
-			sent = None
-			target = None
-			index = None
-			lang = None
 
-		#Simplify based on language:
-		sr_output = [[]]
-		try:
+	try:
+		sent = data['sentence']
+		target = data['target']
+		index = data['index']
+		lang = data['lang']
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error occurred while checking the integrity of a JSON request. Line: ', exc_tb.tb_lineno, ' Message: ', e
+		data = None
+		sent = None
+		target = None
+		index = None
+		lang = None
+
+	#Simplify based on language:
+	sr_output = [[]]
+	if 1:
+#	try:
+		if lang=='en':
 			#Tag sentence:
-			tagged_sents = getTaggedSentences([sent], configurations, lang)
+			tagged_sents = getTaggedSentences([sent], configurations, 'en')
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 			#CWI:
-			cwi_output = simplifier_map[lang].getSimplifiability(target)
+			cwi_output = simplifier_eng.getSimplifiability(target)
 			if cwi_output:
 				#SG:
-				sg_output = simplifier_map[lang].generateCandidates(sent, target, index, tagged_sents)
+				sg_output = simplifier_eng.generateCandidates(sent, target, index, tagged_sents)
 				#SS:
-				ss_output = simplifier_map[lang].selectCandidates(sg_output, tagged_sents)
+				ss_output = simplifier_eng.selectCandidates(sg_output, tagged_sents)
 				#SR:
-				sr_output = simplifier_map[lang].rankCandidates(ss_output)
+				sr_output = simplifier_eng.rankCandidates(ss_output)
 			else:
 				sr_output = [[]]
-		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e
-			sr_output = [[]]
+		elif lang=='it':
+			#Tag sentence:
+                        tagged_sents = getTaggedSentences([sent], configurations, 'it')
+                        #Update request information:
+                        sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+			#SG:
+			sg_output = simplifier_ita.generateCandidates(sent, target, index, tagged_sents)
+			print 'sg ', sg_output
+			#SS:
+			ss_output = simplifier_ita.selectCandidates(sg_output, tagged_sents)
+			print 'ss ', ss_output
+			#SR:
+			sr_output = simplifier_ita.rankCandidates(ss_output)
+			print 'sr ', sr_output
+		elif lang=='es':
+			#Tag sentence:
+			tagged_sents = getTaggedSentences([sent], configurations, 'es')
+			#Update request information:
+			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+			#SG:
+			sg_output = simplifier_spa.generateCandidates(sent, target, index, tagged_sents)
+			#SS:
+			ss_output = simplifier_spa.selectCandidates(sg_output, tagged_sents)
+			#SR:
+			sr_output = simplifier_spa.rankCandidates(ss_output)
+		else:
+			#Tag sentence:
+                        tagged_sents = getTaggedSentences([sent], configurations, 'gl')
+			#Update request information:
+                        sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+			#SG:
+			sg_output = simplifier_gal.generateCandidates(sent, target, index, tagged_sents)
+			#SS:
+			ss_output = simplifier_gal.selectCandidates(sg_output, tagged_sents)
+			#SR:
+			sr_output = simplifier_gal.rankCandidates(ss_output)
+#	except Exception as e:
+#		exc_type, exc_obj, exc_tb = sys.exc_info()
+#		print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e
+#		sr_output = [[]]
 
-		#Get final replacement:
-		replacement = 'NULL'
-		if len(sr_output[0])>0:
-			try:
-				replacement = sr_output[0][0].encode('utf8')
-			except Exception:
-				replacement = sr_output[0][0]
-	
-		#Send result:
+	#Get final replacement:
+	replacement = 'NULL'
+	if len(sr_output[0])>0:
 		try:
-			conn.send(replacement+'\n')
-			conn.close()
-		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'An error has ocurred while sending a response. Line: ', exc_tb.tb_lineno, ' Message: ', e
-			conn.send('NULL\n')
-			conn.close()
+			replacement = sr_output[0][0].encode('utf8')
+		except Exception:
+			replacement = sr_output[0][0]
+
+	#Send result:
+	try:
+		conn.send(replacement+'\n')
+		conn.close()
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		print 'An error has ocurred while sending a response. Line: ', exc_tb.tb_lineno, ' Message: ', e
+		conn.send('NULL\n')
+		conn.close()

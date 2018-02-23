@@ -19,7 +19,7 @@ def loadResources(path):
 configurations = loadResources('../../configurations.txt')
 
 info = {}
-index = 4
+index = 5
 info['sentence'] = 'Si pudieras formar un súper grupo , quién formaría parte de él ?'
 info['target'] = info['sentence'].split(' ')[index]
 info['index'] = str(index)

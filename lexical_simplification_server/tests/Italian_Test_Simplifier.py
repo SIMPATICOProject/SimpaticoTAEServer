@@ -19,9 +19,10 @@ def loadResources(path):
 configurations = loadResources('../../configurations.txt')
 
 info = {}
+index = 3
 info['sentence'] = 'gestione dati del nucleo familiare in caso di casa famiglia ( nucleo familiare ) - da collegamento all’ anagrafe .'
-info['target'] = info['sentence'].split(' ')[16]
-info['index'] = '16'
+info['target'] = info['sentence'].split(' ')[index]
+info['index'] = str(index)
 info['lang'] = 'it'
 data = json.dumps(info)
 

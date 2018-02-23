@@ -7,6 +7,7 @@ import codecs
 import os
 import pickle
 import gensim
+import unittest
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import SnowballStemmer
@@ -17,6 +18,8 @@ from sklearn.feature_selection import f_classif
 from sklearn import linear_model
 from keras.models import *
 import numpy as np
+
+################################################ COMPLEX WORD IDENTIFIERS #######################################################
 
 class EnglishComplexWordIdentifier:
 
@@ -54,37 +57,60 @@ class EnglishComplexWordIdentifier:
 		else:
 			return False
 
-class MultilingualGlavasGenerator:
 
-	def __init__(self, w2vmodel, language):
-		self.lemmatizer = WordNetLemmatizer()
-		self.stemmer = SnowballStemmer(language)
-		self.model = gensim.models.KeyedVectors.load_word2vec_format(
-			w2vmodel, binary=True, unicode_errors='ignore')
 
-	def getSubstitutionsSingle(self, sentence, target, index, amount):
-		substitutions = self.getInitialSet([[sentence, target, index]], amount)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################## SUBSTITUTION GENERATORS ###############################################
+
+class SIMPATICOGenerator:
+
+	def __init__(self, posw2vmodel, stemmer=None, prohibited_edges=set([]), prohibited_chars=set([]), tag_class_func=lambda x: x):
+		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True, unicode_errors='ignore')
+		self.stemmer = stemmer
+		self.prohibited_edges = prohibited_edges
+		self.prohibited_chars = prohibited_chars
+		self.tag_class_func = tag_class_func
+
+	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
+		#If target is a word:
+		if ' ' not in target:
+			substitutions = self.getInitialSetForWords([[sentence, target, index]], tagged_sents, amount)
+		#If target is a phrase:
+		else:
+			substitutions = self.getInitialSetForPhrases([[sentence, target, index]], tagged_sents, amount)
 		return substitutions
 
-	def getInitialSet(self, data, amount):
+	def getInitialSetForWords(self, data, tsents, amount):
 		trgs = []
 		trgsstems = []
-		trgslemmas = []
 		for i in range(0, len(data)):
 			d = data[i]
+			tags = tsents[i]
 			target = d[1].strip().lower()
 			head = int(d[2].strip())
+			tag = self.tag_class_func(tags[head][1])
 			trgs.append(target)
-		trgslemmas = self.lemmatizeWords(trgs)
 		trgsstems = self.stemWords(trgs)
-
 		trgmap = {}
-		for i in range(0, len(trgslemmas)):
+		for i in range(0, len(trgsstems)):
 			target = data[i][1].strip().lower()
 			head = int(data[i][2].strip())
-			lemma = trgslemmas[i]
+			tag = self.tag_class_func(tsents[i][head][1])
 			stem = trgsstems[i]
-			trgmap[target] = (lemma, stem)
+			trgmap[target] = stem
 
 		subs = []
 		cands = set([])
@@ -93,45 +119,31 @@ class MultilingualGlavasGenerator:
 
 			t = trgs[i]
 			tstem = trgsstems[i]
-			tlemma = trgslemmas[i]
 
-			word = t
+			tags = tsents[i]
+			head = int(d[2].strip())
+			tag = tags[head][1]
+
+			word = t + '|||' + self.tag_class_func(tag)
 
 			most_sim = []
 			try:
-				most_sim = self.model.most_similar(
-					positive=[word.decode('utf-8')], topn=50)
-			except Exception:
-				try:
-					most_sim = self.model.most_similar(
-						positive=[word], topn=50)
-				except Exception:
-					most_sim = []
-
-			subs.append([word[0] for word in most_sim])
-
-		subsr = subs
-		subs = []
-		for l in subsr:
-			lr = []
-			for inst in l:
-				cand = inst.split('|||')[0].strip()
-				cands.add(cand)
-				lr.append(inst)
-			subs.append(lr)
+				most_sim = self.model.most_similar(positive=[word], topn=50)
+			except KeyError:
+				most_sim = []
+			newcands = [word[0] for word in most_sim if '_' not in word[0] and '|||' in word[0]]
+			subs.append(newcands)
+			cands.update([cand.split('|||')[0] for cand in newcands])
 
 		cands = list(cands)
-		candslemmas = self.lemmatizeWords(cands)
 		candsstems = self.stemWords(cands)
 		candmap = {}
 		for i in range(0, len(cands)):
 			cand = cands[i]
-			lemma = candslemmas[i]
 			stem = candsstems[i]
-			candmap[cand] = (lemma, stem)
+			candmap[cand] = stem
 
-		subs_filtered = self.filterSubs(
-			data, subs, candmap, trgs, trgsstems, trgslemmas)
+		subs_filtered = self.filterSubsForWords(data, tsents, subs, candmap, trgs, trgsstems)
 
 		final_cands = {}
 		for i in range(0, len(data)):
@@ -144,184 +156,19 @@ class MultilingualGlavasGenerator:
 
 		return final_cands
 
-	def lemmatizeWords(self, words):
-		result = []
-		for word in words:
-			try:
-				result.append(self.lemmatizer.lemmatize(word))
-			except Exception:
-				result.append(word)
-		return result
-
-	def stemWords(self, words):
-		result = []
-		for word in words:
-			try:
-				result.append(self.stemmer.stem(word))
-			except Exception:
-				result.append(word)
-		return result
-
-	def filterSubs(self, data, subs, candmap, trgs, trgsstems, trgslemmas):
+	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsstems):
 		result = []
 		for i in range(0, len(data)):
 			d = data[i]
 
 			t = trgs[i]
 			tstem = trgsstems[i]
-			tlemma = trgslemmas[i]
-
-			word = t
-
-			most_sim = subs[i]
-			most_simf = []
-
-			for cand in most_sim:
-				cword = cand
-				clemma = candmap[cword][0]
-				cstem = candmap[cword][1]
-
-				if cstem != tstem:
-					#if cstem.decode('utf-8')!=tstem.decode('utf-8'):
-					most_simf.append(cand)
-
-			result.append(most_simf)
-		return result
-
-class PaetzoldGenerator:
-
-	def __init__(self, posw2vmodel, nc, prohibited_edges, prohibited_chars):
-		self.lemmatizer = WordNetLemmatizer()
-		self.stemmer = PorterStemmer()
-		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True)
-		self.nc = nc
-		self.prohibited_edges = prohibited_edges
-		self.prohibited_chars = prohibited_chars
-
-	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
-	#If target is a word:
-		if ' ' not in target:
-			substitutions = self.getInitialSetForWords([[sentence, target, index]], tagged_sents, amount)
-		else:
-			print 'Simplifying phrase...'
-			substitutions = self.getInitialSetForPhrases([[sentence, target, index]], tagged_sents, amount)
-		return substitutions
-
-	def getInitialSetForWords(self, data, tsents, amount):
-		trgs = []
-		trgsc = []
-		trgsstems = []
-		trgslemmas = []
-		trgscstems = []
-		trgsclemmas = []
-		for i in range(0, len(data)):
-			d = data[i]
-			tags = tsents[i]
-			target = d[1].strip().lower()
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-			targetc = self.nc.correct(target)
-			trgs.append(target)
-			trgsc.append(targetc)
-		trgslemmas = self.lemmatizeWords(trgs)
-		trgsclemmas = self.lemmatizeWords(trgsc)
-		trgsstems = self.stemWords(trgs)
-		trgscstems = self.stemWords(trgsc)
-		trgmap = {}
-		for i in range(0, len(trgslemmas)):
-			target = data[i][1].strip().lower()
-			head = int(data[i][2].strip())
-			tag = self.getClass(tsents[i][head][1])
-			lemma = trgslemmas[i]
-			stem = trgsstems[i]
-			trgmap[target] = (lemma, stem)
-
-		subs = []
-		cands = set([])
-		for i in range(0, len(data)):
-			d = data[i]
-
-			t = trgs[i]
-			tstem = trgsstems[i]
-			tlemma = trgslemmas[i]
-			tc = trgsc[i]
-			tcstem = trgscstems[i]
-			tclemma = trgsclemmas[i]
 
 			tags = tsents[i]
 			head = int(d[2].strip())
-			tag = tags[head][1]
+			tag = self.tag_class_func(tags[head][1])
 
-			word = t + '|||' + self.getClass(tag)
-			wordc = tc + '|||' + self.getClass(tag)
-
-			most_sim = []
-			try:
-				most_sim = self.model.most_similar(positive=[word], topn=50)
-			except KeyError:
-				try:
-					most_sim = self.model.most_similar(positive=[wordc], topn=50)
-				except KeyError:
-					most_sim = []
-			subs.append([word[0] for word in most_sim if '_' not in word[0]])
-
-		subsr = subs
-		subs = []
-		for l in subsr:
-			lr = []
-			for inst in l:
-				cand = inst.split('|||')[0].strip()
-				encc = None
-				try:
-					encc = cand.encode('ascii')
-				except Exception:
-					encc = None
-				if encc:
-					cands.add(cand)
-					lr.append(inst)
-			subs.append(lr)
-
-		cands = list(cands)
-		candslemmas = self.lemmatizeWords(cands)
-		candsstems = self.stemWords(cands)
-		candmap = {}
-		for i in range(0, len(cands)):
-			cand = cands[i]
-			lemma = candslemmas[i]
-			stem = candsstems[i]
-			candmap[cand] = (lemma, stem)
-
-		subs_filtered = self.filterSubsForWords(data, tsents, subs, candmap, trgs, trgsc, trgsstems, trgscstems, trgslemmas, trgsclemmas)
-
-		final_cands = {}
-		for i in range(0, len(data)):
-			target = data[i][1]
-			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
-			cands = [str(word.split('|||')[0].strip()) for word in cands]
-			if target not in final_cands:
-				final_cands[target] = set([])
-			final_cands[target].update(set(cands))
-
-		return final_cands
-
-	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsc, trgsstems, trgscstems, trgslemmas, trgsclemmas):
-		result = []
-		for i in range(0, len(data)):
-			d = data[i]
-
-			t = trgs[i]
-			tstem = trgsstems[i]
-			tlemma = trgslemmas[i]
-			tc = trgsc[i]
-			tcstem = trgscstems[i]
-			tclemma = trgsclemmas[i]
-
-			tags = tsents[i]
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-
-			word = t + '|||' + self.getClass(tag)
-			wordc = tc + '|||' + self.getClass(tag)
+			word = t + '|||' + self.tag_class_func(tag)
 
 			most_sim = subs[i]
 			most_simf = []
@@ -330,29 +177,12 @@ class PaetzoldGenerator:
 				candd = cand.split('|||')
 				cword = candd[0].strip()
 				ctag = candd[1].strip()
-				clemma = candmap[cword][0]
-				cstem = candmap[cword][1]
+				cstem = candmap[cword]
 
 				if ctag == tag:
-					if clemma != tlemma and clemma != tclemma and cstem != tstem and cstem != tcstem:
-						if cword not in t and cword not in tc and t not in cword and tc not in cword:
+					if cstem != tstem:
+						if cword not in t and t not in cword:
 							most_simf.append(cand)
-
-			class_filtered = []
-			for cand in most_simf:
-				candd = cand.split('|||')
-				cword = candd[0].strip()
-				ctag = candd[1].strip()
-				clemma = candmap[cword][0]
-				cstem = candmap[cword][1]
-
-				if tag == 'V':
-					if (t.endswith('ing') or tc.endswith('ing')) and cword.endswith('ing'):
-						class_filtered.append(cand)
-					elif (t.endswith('d') or tc.endswith('d')) and cword.endswith('d'):
-						class_filtered.append(cand)
-				else:
-					class_filtered.append(cand)
 
 			result.append(most_simf)
 		return result
@@ -365,15 +195,11 @@ class PaetzoldGenerator:
 
 			target = d[1].replace(' ', '_')
 
-			print 'Here is the target: ', target
-
 			most_sim = []
 			try:
 				most_sim = self.model.most_similar(positive=[target], topn=50)
 			except KeyError:
 				most_sim = []
-
-			print 'Cands found: ', most_sim
 
 			subs.append([w[0] for w in most_sim])
 
@@ -414,8 +240,6 @@ class PaetzoldGenerator:
 			firsttgt = targett[0]
 			lasttgt = targett[-1]
 
-			print 'More targets: ', target, ' ', targett
-
 			most_sim = subs[i]
 			most_simf = []
 
@@ -439,39 +263,40 @@ class PaetzoldGenerator:
 			result.append(most_simf)
 		return result
 
-
-	def lemmatizeWords(self, words):
-		result = []
-		for word in words:
-			result.append(self.lemmatizer.lemmatize(word))
-		return result
-
 	def stemWords(self, words):
 		result = []
 		for word in words:
-			result.append(self.stemmer.stem(word))
-		return result
-
-	def getClass(self, tag):
-		result = None
-		if tag.startswith('N'):
-			result = 'N'
-		elif tag.startswith('V'):
-			result = 'V'
-		elif tag.startswith('RB'):
-			result = 'A'
-		elif tag.startswith('J'):
-			result = 'J'
-		elif tag.startswith('W'):
-			result = 'W'
-		elif tag.startswith('PRP'):
-			result = 'P'
-		else:
-			result = tag.strip()
+			if self.stemmer:
+				result.append(self.stemmer.stem(word))
+			else:
+				result.append(word)
 		return result
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+############################################################# SUBSTITUTION SELECTORS ##############################################
 
 class BoundaryRanker:
 
@@ -685,6 +510,11 @@ class BoundarySelector:
 		return selected_substitutions
 
 
+
+
+
+###############################################################  SUBSTITUTION RANKERS #########################################################
+
 class GlavasRanker:
 
 	def __init__(self, fe):
@@ -810,201 +640,45 @@ class NNRegressionRanker:
 
 
 
+####################################################################### TAG TRANSFORMATION FUNCTIONS  ###################################################################
 
+def EnglishGetTagClass(tag):
+	result = None
+	if tag.startswith('N'):
+		result = 'N'
+	elif tag.startswith('V'):
+		result = 'V'
+	elif tag.startswith('RB'):
+		result = 'A'
+	elif tag.startswith('J'):
+		result = 'J'
+	elif tag.startswith('W'):
+		result = 'W'
+	elif tag.startswith('PRP'):
+		result = 'P'
+	else:
+		result = tag.strip()
+	return result
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class SpanishTaggedGenerator:
-	def __init__(self, posw2vmodel):
-		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True)
-
-	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
-		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
-		return substitutions
-
-	def getInitialSet(self, data, tsents, amount):
-		trgs = []
-		for i in range(0, len(data)):
-			d = data[i]
-			tags = tsents[i]
-			target = d[1].strip().lower()
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-			trgs.append(target)
-	
-		subs = []
-		cands = set([])
-		for i in range(0, len(data)):
-			d = data[i]
-			t = trgs[i]
-			tags = tsents[i]
-			head = int(d[2].strip())
-			tag = tags[head][1]
-			word = t+'|||'+self.getClass(tag)
-			most_sim = []
-			try:
-				most_sim = self.model.most_similar(positive=[word], topn=50)
-			except KeyError:
-				try:
-					most_sim = self.model.most_similar(positive=[word.lower()], topn=50)
-				except KeyError:
-					most_sim = []
-			subs.append([word[0] for word in most_sim])
-			
-		subs_filtered = self.filterSubs(data, tsents, subs, trgs)
-		final_cands = {}
-		for i in range(0, len(data)):
-			target = data[i][1]
-			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
-			cands = [word.split('|||')[0].strip() for word in cands]
-			if target not in final_cands:
-				final_cands[target] = set([])
-			final_cands[target].update(set(cands))
-		
-		return final_cands
-	
-	def filterSubs(self, data, tsents, subs, trgs):
-		result = []
-		for i in range(0, len(data)):
-			d = data[i]
-			t = trgs[i]
-			tags = tsents[i]
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-			word = t+'|||'+self.getClass(tag)
-			most_sim = subs[i]
-			most_simf = []
-			for cand in most_sim:
-				candd = cand.split('|||')
-				cword = candd[0].strip()
-				if len(candd)<2:
-					ctag = 'NONE'
-				else:
-					ctag = candd[1].strip()
-				if ctag==tag:
-					if cword not in t and t not in cword:
-						most_simf.append(cand)
-			result.append(most_simf)
-		return result
-	
-	def getClass(self, tag):
-		targets = set('anprv')
-		if tag.startswith('np'):
-			return tag
-		else:
-			if tag[0] in targets:
-				return tag[0]
-			else:
-				return tag
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class GalicianTaggedGenerator:
-
-	def __init__(self, posw2vmodel):
-		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True, unicode_errors='ignore')
-		
-	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
-		substitutions = self.getInitialSet([[sentence, target, index]], tagged_sents, amount)
-		return substitutions
-		
-	def getInitialSet(self, data, tsents, amount):
-		trgs = []
-		for i in range(0, len(data)):
-			d = data[i]
-			tags = tsents[i]
-			target = d[1].strip().lower()
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-			trgs.append(target)
-	
-		subs = []
-		cands = set([])
-		for i in range(0, len(data)):
-			d = data[i]
-			t = trgs[i]
-			tags = tsents[i]
-			head = int(d[2].strip())
-			tag = tags[head][1]
-			word = t+'|||'+self.getClass(tag)
-			most_sim = []
-			try:
-				most_sim = self.model.most_similar(positive=[word], topn=50)
-			except KeyError:
-				try:
-					most_sim = self.model.most_similar(positive=[word.lower()], topn=50)
-				except KeyError:
-					most_sim = []
-			subs.append([word[0] for word in most_sim])
-		
-		subs_filtered = self.filterSubs(data, tsents, subs, trgs)
-		final_cands = {}
-		for i in range(0, len(data)):
-			target = data[i][1]
-			cands = subs_filtered[i][0:min(amount, subs_filtered[i])]
-			cands = [word.split('|||')[0].strip() for word in cands]
-			if target not in final_cands:
-				final_cands[target] = set([])
-			final_cands[target].update(set(cands))
-		
-		return final_cands
-	
-	def filterSubs(self, data, tsents, subs, trgs):
-		result = []
-		for i in range(0, len(data)):
-			d = data[i]
-			t = trgs[i]
-			tags = tsents[i]
-			head = int(d[2].strip())
-			tag = self.getClass(tags[head][1])
-			word = t+'|||'+self.getClass(tag)
-			most_sim = subs[i]
-			most_simf = []
-			for cand in most_sim:
-				candd = cand.split('|||')
-				cword = candd[0].strip()
-				if len(candd)<2:
-					ctag = 'NONE'
-				else:
-					ctag = candd[1].strip()
-				if ctag==tag:
-					if cword not in t and t not in cword:
-						most_simf.append(cand)
-			result.append(most_simf)
-		return result
-	
-	def getClass(self, tag):
+def SpanishGetTagClass(tag):
+	targets = set('anprv')
+	if tag.startswith('np'):
 		return tag
+	else:
+		if tag[0] in targets:
+			return tag[0]
+		else:
+			return tag
+
+def GalicianGetTagClass(tag):
+        return tag
+
+def ItalianGetTagClass(tag):
+	return tag
+
+
+
+
+
+
+

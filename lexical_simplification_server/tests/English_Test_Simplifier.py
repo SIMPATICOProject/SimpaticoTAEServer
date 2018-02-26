@@ -46,7 +46,7 @@ s.close()
 #Test phrase:
 
 info = {}
-info['sentence'] = 'This sentence is more difficult .'
+info['sentence'] = 'This sentence is more_difficult .'
 info['target'] = 'more difficult'
 info['index'] = '3'
 info['lang'] = 'en'

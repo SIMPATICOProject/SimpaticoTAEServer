@@ -119,7 +119,7 @@ class TestSimplification(unittest.TestCase):
 
 	def test_in_vocab_phrase_embedsg(self):
 		sentence = 'mercury is a chemical_substance that is toxic'
-		target = 'chemical_substance'
+		target = 'chemical substance'
 		index = '3'
 		tagged_sents = [[('mercury', 'CC'), ('is', 'PP'), ('a', 'V'), ('chemical', 'DT'), ('substance', 'N'), ('that', '.'), ('is', '.'), ('toxic', '.')]]
 		amount = 10

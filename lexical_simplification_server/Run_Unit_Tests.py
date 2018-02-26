@@ -47,48 +47,48 @@ class TestSimplification(unittest.TestCase):
 
 	@classmethod
 	def setUpClass(cls):
-		#Load self.resources:
+		#Load cls.resources:
 		cls.resources = loadResources('../resources.txt')
 
 		#General purpose:
-		self.victor_corpus = self.resources['nnseval']
-		self.w2vpm_eng = self.resources['eng_caretro_embeddings']
-		self.w2vty_eng = self.resources['eng_typical_embeddings']
-		self.hardsimps_eng = getHardSimplifications(self.resources['eng_hard_simps'])
-		self.irrep_eng = set([line.strip() for line in open(self.resources['eng_irreplaceable'])])
-		self.proh_edges = set([line.strip() for line in open(self.resources['eng_prohibited_phrase_edges'])])
-		self.proh_chars = set([line.strip() for line in open(self.resources['eng_prohibited_phrase_chars'])])
+		cls.victor_corpus = cls.resources['nnseval']
+		cls.w2vpm_eng = cls.resources['eng_caretro_embeddings']
+		cls.w2vty_eng = cls.resources['eng_typical_embeddings']
+		cls.hardsimps_eng = getHardSimplifications(cls.resources['eng_hard_simps'])
+		cls.irrep_eng = set([line.strip() for line in open(cls.resources['eng_irreplaceable'])])
+		cls.proh_edges = set([line.strip() for line in open(cls.resources['eng_prohibited_phrase_edges'])])
+		cls.proh_chars = set([line.strip() for line in open(cls.resources['eng_prohibited_phrase_chars'])])
 
 		#Complex word identifier:
-		self.freq_map = shelve.open(self.resources['eng_sub_shelf'], protocol=pickle.HIGHEST_PROTOCOL)
-		self.mean_freq = float(self.resources['eng_mean_freq'])
-		self.std_freq = float(self.resources['eng_std_freq'])
-		self.min_proportion = float(self.resources['eng_min_proportion'])
-		self.cwi = EnglishComplexWordIdentifier(self.freq_map, self.mean_freq, self.std_freq, self.min_proportion)
+		cls.freq_map = shelve.open(cls.resources['eng_sub_shelf'], protocol=pickle.HIGHEST_PROTOCOL)
+		cls.mean_freq = float(cls.resources['eng_mean_freq'])
+		cls.std_freq = float(cls.resources['eng_std_freq'])
+		cls.min_proportion = float(cls.resources['eng_min_proportion'])
+		cls.cwi = EnglishComplexWordIdentifier(cls.freq_map, cls.mean_freq, cls.std_freq, cls.min_proportion)
 
 		#Generator:
-		self.ng = getNewselaCandidates(self.resources['newsela_candidates'])
-		self.kg = SIMPATICOGenerator(self.w2vpm_eng, stemmer=PorterStemmer(), prohibited_edges=self.proh_edges, prohibited_chars=self.proh_chars, tag_class_func=EnglishGetTagClass)
+		cls.ng = getNewselaCandidates(cls.resources['newsela_candidates'])
+		cls.kg = SIMPATICOGenerator(cls.w2vpm_eng, stemmer=PorterStemmer(), prohibited_edges=cls.proh_edges, prohibited_chars=cls.proh_chars, tag_class_func=EnglishGetTagClass)
 			
 		#Selector:
 		fe = FeatureEstimator()
-		fe.addCollocationalFeature(self.resources['eng_sub_lm'], 2, 2, 'Complexity')
-		fe.addWordVectorSimilarityFeature(self.w2vty_eng, 'Simplicity')
-		self.br = BoundaryRanker(fe)
-		self.bs = BoundarySelector(self.br)
-		self.bs.trainSelectorWithCrossValidation(self.victor_corpus, 2, 5, 0.25, k='all')
+		fe.addCollocationalFeature(cls.resources['eng_sub_lm'], 2, 2, 'Complexity')
+		fe.addWordVectorSimilarityFeature(cls.w2vty_eng, 'Simplicity')
+		cls.br = BoundaryRanker(fe)
+		cls.bs = BoundarySelector(cls.br)
+		cls.bs.trainSelectorWithCrossValidation(cls.victor_corpus, 2, 5, 0.25, k='all')
 
 		#Ranker:
 		fe = FeatureEstimator(norm=False)
-		fe.addCollocationalFeature(self.resources['eng_sub_lm'], 2, 2, 'Simplicity')
-		self.model_file = self.resources['nn_sr_model']
-		self.model = model_from_json(open(self.model_file+'.json').read())
-		self.model.load_weights(self.model_file+'.h5')
-		self.model.compile(loss='mean_squared_error', optimizer='adam')
-		self.nr = NNRegressionRanker(fe, self.model)
+		fe.addCollocationalFeature(cls.resources['eng_sub_lm'], 2, 2, 'Simplicity')
+		cls.model_file = cls.resources['nn_sr_model']
+		cls.model = model_from_json(open(cls.model_file+'.json').read())
+		cls.model.load_weights(cls.model_file+'.h5')
+		cls.model.compile(loss='mean_squared_error', optimizer='adam')
+		cls.nr = NNRegressionRanker(fe, cls.model)
 
 		#Return LexicalSimplifier object:
-		self.eng_simplifier = EnhancedLexicalSimplifier(self.cwi, self.ng, self.kg, self.bs, self.nr, hard_simps=self.hardsimps_eng, irreplaceable=self.irrep_eng)
+		cls.eng_simplifier = EnhancedLexicalSimplifier(cls.cwi, cls.ng, cls.kg, cls.bs, cls.nr, hard_simps=cls.hardsimps_eng, irreplaceable=cls.irrep_eng)
 
 	def test_complex_word_cwi(self):
 		self.assertTrue(self.cwi.getSimplifiability('refreshments'))

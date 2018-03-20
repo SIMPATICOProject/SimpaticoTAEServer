@@ -19,7 +19,6 @@
 		sklearn
 		keras
 		numpy
-		langdetect
 		h5py
 	
 	3) Download or clone the code from https://github.com/SIMPATICOProject/SimpaticoTAEServer onto a folder of choice (ex: /home/user/SimpaticoTAEServer).
@@ -35,21 +34,22 @@
 
 	1) In order to run a fully functional version of the SIMPATICO TAE server, you will have to run the following components:
 	
-		- The Stanford Tagger server for English and Spanish: Receives requests from the Lexical Simplification local server for tagging.
+		- The Stanford Tagger servers for English, Spanish, Galician and Italian: Receives requests from the Lexical Simplification local server for tagging.
 		- The Stanford Dependency Parser servers: Receives requests from the Syntactic Simplification local server for parsing.
 		- The Lexical Simplification local server: Receives requests from the main TAE web server for lexical simplifications.
 		- The Syntactic Simplification local server: Receives requests from the main TAE web server for syntactic simplifications.
 		- The main TAE web server: Receives requests from the web for Text Adaptation.
 		
-	2) How to run the Stanford Tagger servers for English and Spanish:
+	2) How to run the Stanford Tagger servers:
 	
 		Go to the folder where you unpacked the Stanford Tagger and run the following command:
 		
 			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/english.tagger -port 2020 &
-			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model  ./data/spanish.tagger -port 3030 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/spanish.tagger -port 3030 &
 			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/galician.tagger -port 4040 &
+			java -mx2G -cp "*:lib/*:models/*" edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -model ./data/italian.tagger -port 5050 &
 			
-		Then you will have a tagging servers running at ports 2020, 3030, 4040. The ports chosen MUST be the ones specified on the "configurations.txt" file.
+		Then you will have a tagging servers running at ports 2020, 3030, 4040, and 5050. The ports chosen MUST be the ones specified on the "configurations.txt" file.
 		
 	3) How to run the Stanford parser servers:
 	
@@ -99,7 +99,7 @@
 			python Italian_Test_Simplifier.py
 			
 		You should receive responses with simplifications after a few seconds.
-		You can also open the aforementoined scripts to see how they work.
+		You can also open the aforementioned scripts to see how they work.
 		
 	3) How to test the Syntactic Simplification local server:
 		Navigate to the "syntactic_simplification_server/tests" folder, then run the following commands:
@@ -109,7 +109,7 @@
 			python Spanish_Test_Simplifier.py
 			
 		You should receive responses with simplifications after a few seconds.
-		You can also open the aforementoined scripts to see how they work.
+		You can also open the aforementioned scripts to see how they work.
 	
 	4) How to test the main TAE web server:
 	
@@ -126,8 +126,8 @@
 		Then you will have a server receiving requests at the "main_tae_server_port" port specified in the "configurations.txt" file.
 		You can also test it from a web browser through URLs such as:
 		
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=unorthodox&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.&index=5
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=collegamento&sentence=gestione%20dati%20del%20nucleo%20familiare%20in%20caso%20di%20casa%20famiglia%20(%20nucleo%20familiare%20)%20-%20da%20collegamento%20all’%20anagrafe%20.&index=16'
-			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=medran&sentence=Os%20líquens%20que%20medran%20no%20residuo%20asfáltico%20suxiren%20a%20sua%20.&index=3
+			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=unorthodox&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.&index=5&lang=en
+			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=collegamento&sentence=gestione%20dati%20del%20nucleo%20familiare%20in%20caso%20di%20casa%20famiglia%20(%20nucleo%20familiare%20)%20-%20da%20collegamento%20all%20anagrafe%20.&index=16&lang=it
+			http://<server_ip>:<main_tae_server_port>/?type=lexical&target=medran&sentence=Os%20líquens%20que%20medran%20no%20residuo%20asfáltico%20suxiren%20a%20sua%20.&index=3&lang=spanish
 			http://<server_ip>:<main_tae_server_port>/?type=syntactic&sentence=His%20fighting%20technique%20is%20very%20unorthodox%20.
 			http://<server_ip>:<main_tae_server_port>/?type=syntactic&sentence=Os%20líquens%20que%20medran%20no%20residuo%20asfáltico%20suxiren%20a%20sua%20.

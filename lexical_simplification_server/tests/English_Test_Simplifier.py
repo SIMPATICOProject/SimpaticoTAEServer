@@ -46,8 +46,8 @@ s.close()
 #Test phrase:
 
 info = {}
-info['sentence'] = 'This sentence is more_difficult .'
-info['target'] = 'more difficult'
+info['sentence'] = 'This sentence is even ever more difficult .'
+info['target'] = 'even ever more difficult'
 info['index'] = '3'
 info['lang'] = 'en'
 data = json.dumps(info)

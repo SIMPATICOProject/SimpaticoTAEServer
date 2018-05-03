@@ -7,3 +7,6 @@ data
 get-pip.py
 .idea
 
+docker-data/*
+!docker-data/.gitkeep
+

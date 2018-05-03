@@ -26,6 +26,8 @@ for s in doc.readlines():
     info = {}
     info['sentence'] = s.strip()
     info['lang'] = 'en'
+    info['comp'] = 'False'
+    info['conf'] = 'True'
 
     data = json.dumps(info)
 

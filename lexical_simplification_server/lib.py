@@ -194,12 +194,15 @@ class SIMPATICOGenerator:
 			d = data[i]
 
 			target = d[1].replace(' ', '_')
+			head = int(d[2].strip())			
+			target_words = self.phraseToWords(target, head, tsents[i])
 
 			most_sim = []
 			try:
 				most_sim = self.model.most_similar(positive=[target], topn=50)
 			except KeyError:
-				most_sim = []
+				most_sim = self.simplifyIndividualPhraseWords(target_words)
+				print 'It worked: ', most_sim
 
 			subs.append([w[0] for w in most_sim])
 
@@ -261,6 +264,37 @@ class SIMPATICOGenerator:
 								most_simf.append(c)
 
 			result.append(most_simf)
+		return result
+
+	def simplifyIndividualPhraseWords(self, words):
+		canBeSimplified = True
+		for word in words:
+			if word not in self.model.vocab:
+				canBeSimplified = False
+		if canBeSimplified:
+			candmap = {}
+			for word in words:
+				candmap[word] = [w[0].split('|||')[0] for w in self.model.most_similar(positive=[word], topn=5)]
+			candset = set(candmap[words[0]])
+			for word in words[1:]:
+				cands = candmap[word]
+				newset = set([])
+				for c1 in candset:
+					for c2 in cands:
+						newset.add(c1+'_'+c2)
+				candset = newset
+			return [(w, '_') for w in list(candset)]
+		else:
+			return []
+
+	def phraseToWords(self, target, head, tags):
+		result = []
+		words = target.split('_')
+		for i in range(0, len(words)):
+			word = words[i]
+			index = head+i
+			tag = self.tag_class_func(tags[index][1])
+			result.append(word+'|||'+tag)
 		return result
 
 	def stemWords(self, words):

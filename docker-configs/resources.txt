@@ -32,3 +32,10 @@ corenlp_dir	/app/data/data/stanford-corenlp-full-2016-10-31
 spanish_ubr	/app/data/data/spanish_dataset_ubr.txt
 galician_ubr	/app/data/data/galician_dataset_ubr.txt
 italian_ubr	/app/data/data/italian_dataset_ubr.txt
+comp_model_en	/app/data/data/complex_classifier/en/model.pkl
+comp_model_es	/app/data/data/complex_classifier/es/model.pkl
+comp_model_it	/app/data/data/complex_classifier/it/model.pkl
+conf_model_en	/app/data/data/confidence_model/en/model.pkl
+lm_en	/app/data/data/training_full.blm.en
+true_it	/app/data/data/distributions.it.obj
+prop_it	/app/data/data/italian.myproperties.properties

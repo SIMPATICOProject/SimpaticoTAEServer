@@ -9,6 +9,7 @@
 
 ## Installation instructions:
 
+### Without docker
 	1) In order to run the servers, you will need a Python 2.6+ installation (preferably Anaconda), and a Java 1.8+ installation.
 
 	2) Install the following Python 2 libraries:
@@ -29,6 +30,13 @@
 	
 	6) The version 3.7.0 of the Stanford CoreNLP is already available in the data pack. 
 		- However, if you want to use a different version, you can download from http://stanfordnlp.github.io/CoreNLP/. In this case you will need to change the path to your CoreNLP version into the resources.txt file (corenlp_dir parameter).
+
+### With docker
+1. Clone the project
+2. Download archive from http://www.quest.dcs.shef.ac.uk/simpatico/simplifier_data.tar.gz and save into `docker-data` folder, uncompress the archive
+3. Download archive from http://nlp.stanford.edu/software/stanford-postagger-full-2015-04-20.zip and save into `docker-data` folder, uncompress the archive
+4. Create docker image `sudo docker build -t tae .`
+5. Create container `sudo docker run -v <PROJECT_PATH>/docker-data:/app/data --name tae-cont tae`
 
 ## Running instructions:
 

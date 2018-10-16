@@ -11,7 +11,7 @@
 
 ### Local Variables
 
-export PYTHONIOENCODING=utf8
+	export PYTHONIOENCODING=utf8
 
 ### Without docker
 	1) In order to run the servers, you will need a Python 2.6+ installation (preferably Anaconda), and a Java 1.8+ installation.

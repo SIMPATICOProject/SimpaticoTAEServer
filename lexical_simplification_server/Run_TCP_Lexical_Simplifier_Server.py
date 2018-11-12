@@ -160,26 +160,33 @@ def getLexicalInteractionData(configurations, token):
 	#Create URL request for UPM:
 	url = 'http://'+configurations['main_upm_server_host']+':'+configurations['main_upm_server_port']
 	url += '/?request_type=request_inter_data&token='+token+'&inter_type=lexical'
-	content = urllib2.urlopen(url).read().strip()
-	simplifications = json.loads(content)['target'][0]
-	bad = {}
-	for simp in simplifications:
-		target = simp[1].strip()
-		if target not in bad:
-			bad[target] = set([])
-		sub = simp[2].strip()
-		feedback = simp[5]
-		if feedback==0:
-			bad[target].add(sub)
+	try:
+		content = urllib2.urlopen(url).read().strip()
+		simplifications = json.loads(content)['target'][0]
+		bad = {}
+		for simp in simplifications:
+			target = simp[1].strip()
+			if target not in bad:
+				bad[target] = set([])
+			sub = simp[2].strip()
+			feedback = simp[5]
+			if feedback==0:
+				bad[target].add(sub)
+	except Exception:
+		simplifications = []
+		bad = {}
 	return simplifications, bad
 
 def getDemographicData(configurations, token):
 	#Create URL request for UPM:
 	url = 'http://'+configurations['main_upm_server_host']+':'+configurations['main_upm_server_port']
 	url += '/?request_type=request_demo_data&token='+token
-	content = urllib2.urlopen(url).read().strip()
-	demoinfo = json.loads(content)['target'][0]
-	demoinfo = formatDemographicDataForRanker(demoinfo)
+	try:
+		content = urllib2.urlopen(url).read().strip()
+		demoinfo = json.loads(content)['target'][0]
+		demoinfo = formatDemographicDataForRanker(demoinfo)
+	except Exception:
+		demoinfo = [['NULL'], ['NULL'], ['NULL'], ['NULL'], ['NULL'], ['NULL'], ['NULL']]
 	return demoinfo
 
 def getSpanishLexicalSimplifier(resources):

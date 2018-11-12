@@ -84,16 +84,16 @@ class SIMPATICOGenerator:
 		self.prohibited_chars = prohibited_chars
 		self.tag_class_func = tag_class_func
 
-	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount):
+	def getSubstitutionsSingle(self, sentence, target, index, tagged_sents, amount, negatives={}):
 		#If target is a word:
 		if ' ' not in target:
-			substitutions = self.getInitialSetForWords([[sentence, target, index]], tagged_sents, amount)
+			substitutions = self.getInitialSetForWords([[sentence, target, index]], tagged_sents, amount, negatives=negatives)
 		#If target is a phrase:
 		else:
-			substitutions = self.getInitialSetForPhrases([[sentence, target, index]], tagged_sents, amount)
+			substitutions = self.getInitialSetForPhrases([[sentence, target, index]], tagged_sents, amount, negatives=negatives)
 		return substitutions
 
-	def getInitialSetForWords(self, data, tsents, amount):
+	def getInitialSetForWords(self, data, tsents, amount, negatives={}):
 		trgs = []
 		trgsstems = []
 		for i in range(0, len(data)):
@@ -143,7 +143,7 @@ class SIMPATICOGenerator:
 			stem = candsstems[i]
 			candmap[cand] = stem
 
-		subs_filtered = self.filterSubsForWords(data, tsents, subs, candmap, trgs, trgsstems)
+		subs_filtered = self.filterSubsForWords(data, tsents, subs, candmap, trgs, trgsstems, negatives=negatives)
 
 		final_cands = {}
 		for i in range(0, len(data)):
@@ -156,7 +156,7 @@ class SIMPATICOGenerator:
 
 		return final_cands
 
-	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsstems):
+	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsstems, negatives={}):
 		result = []
 		for i in range(0, len(data)):
 			d = data[i]
@@ -173,13 +173,17 @@ class SIMPATICOGenerator:
 			most_sim = subs[i]
 			most_simf = []
 
+			filter_inter = set([])
+			if t in negatives:
+				filter_inter = negatives[t]
+
 			for cand in most_sim:
 				candd = cand.split('|||')
 				cword = candd[0].strip()
 				ctag = candd[1].strip()
 				cstem = candmap[cword]
 
-				if ctag == tag:
+				if ctag == tag and cword not in filter_inter:
 					if cstem != tstem:
 						if cword not in t and t not in cword:
 							most_simf.append(cand)
@@ -187,7 +191,7 @@ class SIMPATICOGenerator:
 			result.append(most_simf)
 		return result
 
-	def getInitialSetForPhrases(self, data, tsents, amount):
+	def getInitialSetForPhrases(self, data, tsents, amount, negatives={}):
 		subs = []
 		cands = set([])
 		for i in range(0, len(data)):
@@ -202,11 +206,10 @@ class SIMPATICOGenerator:
 				most_sim = self.model.most_similar(positive=[target], topn=50)
 			except KeyError:
 				most_sim = self.simplifyIndividualPhraseWords(target_words)
-				print 'It worked: ', most_sim
 
 			subs.append([w[0] for w in most_sim])
 
-		subs_filtered = self.filterSubsForPhrases(data, subs)
+		subs_filtered = self.filterSubsForPhrases(data, subs, negatives=negatives)
 				
 		final_cands = {}
 		for i in range(0, len(data)):
@@ -218,7 +221,7 @@ class SIMPATICOGenerator:
 
 		return final_cands
 				
-	def filterSubsForPhrases(self, data, subs):
+	def filterSubsForPhrases(self, data, subs, negatives={}):
 		result = []
 
 		vowels = set('aeiouyw')
@@ -246,6 +249,10 @@ class SIMPATICOGenerator:
 			most_sim = subs[i]
 			most_simf = []
 
+			filter_inter = set([])
+			if target in negatives:
+				filter_inter = negatives[target]
+
 			for cand in most_sim:
 				c = cand.replace('_', ' ')
 				if '|||' in c:
@@ -257,7 +264,7 @@ class SIMPATICOGenerator:
 				edges = set([first, last])
 				inter_edge = edges.intersection(self.prohibited_edges)
 				inter_chars = cchars.intersection(self.prohibited_chars)
-				if c not in target and target not in c and first!=prevtgt and last!=proxtgt:
+				if c not in target and target not in c and first!=prevtgt and last!=proxtgt and c not in filter_inter:
 					if len(inter_edge)==0 and len(inter_chars)==0:
 						if (firsttgt=='most' and first!='more') or (firsttgt=='more' and first!='most') or (firsttgt!='more' and firsttgt!='most'):
 							if (prevtgt=='an' and c[0] in vowels) or (prevtgt=='a' and c[0] in consonants) or (prevtgt!='an' and prevtgt!='a'):
@@ -549,6 +556,169 @@ class BoundarySelector:
 
 ###############################################################  SUBSTITUTION RANKERS #########################################################
 
+class DemographicFeatureFarm:
+
+	def __init__(self, ohage, ohcoun, ohlang, ohprof, ohedu, ohdis, ohfam):
+		self.ohage = ohage
+		self.ohcoun = ohcoun
+		self.ohlang = ohlang
+		self.ohprof = ohprof
+		self.ohedu = ohedu
+		self.ohdis = ohdis
+		self.ohfam = ohfam
+
+	def calculateDemoFeatures(self, simpdata, demodata):
+		result = []
+		for i, line in enumerate(demodata):
+			agev = self.ohage.getOneHot(line[0])
+			counv = self.ohcoun.getOneHot(line[1])
+			profv = self.ohprof.getOneHot(line[2])
+			eduv = self.ohedu.getOneHot(line[3])
+			disv = self.ohdis.getOneHot(line[4])
+			famv = self.ohfam.getOneHot(line[5])
+			resv = np.concatenate((agev, counv, profv, eduv, disv, famv))
+			for cand in simpdata[i][3:]:
+				result.append(resv)
+		return result
+
+class OneHotFarm:
+
+	def __init__(self):
+		self.label_to_index = {"NULL": 0}
+		self.index_to_label = {0: "NULL"}
+		self.curr_index = 1
+
+	def addLabel(self, label):
+		if label not in self.label_to_index:
+			self.index_to_label[self.curr_index] = label
+			self.label_to_index[label] = self.curr_index
+			self.curr_index += 1
+
+	def addLabels(self, labels):
+		for label in labels:
+			self.addLabel(label)
+
+	def getOneHot(self, labels):
+		vec = np.zeros(self.curr_index)
+		
+		for label in labels:
+			if label in self.label_to_index:
+				vec[self.label_to_index[label]] = 1.0
+			else:
+				vec[0] = 1.0
+		return vec
+
+
+class SIMPATICORidgeRegressionRanker:
+
+	def __init__(self, fe, demofarm, model=None):
+		self.demofarm = demofarm
+		self.fe = fe
+		self.model = model
+
+	def trainRegressionModel(self, simpdata, demodata):
+		#Transform data:
+		textdata = u''
+		for inst in simpdata:
+			for token in inst:
+				textdata += token.decode('utf8')+u'\t'
+			textdata += u'\n'
+		textdata = textdata.strip()
+
+		#Create matrix:
+		simpfeatures = np.array(self.fe.calculateFeatures(textdata, input='text'))
+		demofeatures = np.array(self.demofarm.calculateDemoFeatures(simpdata, demodata))
+		features = np.concatenate((simpfeatures, demofeatures), axis=1)
+
+		Xtr = []
+		Ytr = []
+		c = -1
+		for line in simpdata:
+			cands = [cand.strip().split(':')[1] for cand in line[3:]]
+			indexes = [int(cand.strip().split(':')[0]) for cand in line[3:]]
+			featmap = {}
+			for cand in cands:
+				c += 1
+				featmap[cand] = features[c]
+			for i in range(0, len(cands)-1):
+				for j in range(i+1, len(cands)):
+					indexi = indexes[i]
+					indexj = indexes[j]
+					indexdiffji = indexj-indexi
+					indexdiffij = indexi-indexj
+					positive = featmap[cands[i]]
+					negative = featmap[cands[j]]
+					v1 = np.concatenate((positive,negative))
+					v2 = np.concatenate((negative,positive))
+					Xtr.append(v1)
+					Xtr.append(v2)
+					Ytr.append(indexdiffji)
+					Ytr.append(indexdiffij)
+		Xtr = np.array(Xtr)
+		Ytr = np.array(Ytr)
+
+		self.model = linear_model.Ridge()
+		self.model.fit(Xtr, Ytr)
+		return self.model
+
+	def getRankings(self, simpdata, demodata):
+		#Transform data:
+		textdata = ''
+		for inst in simpdata:
+			for token in inst:
+				textdata += token+'\t'
+			textdata += '\n'
+		textdata = textdata.strip()
+
+		#Create matrix:
+		simpfeatures = np.array(self.fe.calculateFeatures(textdata, input='text'))
+		demofeatures = np.array(self.demofarm.calculateDemoFeatures(simpdata, demodata))
+		features = np.concatenate((simpfeatures, demofeatures), axis=1)
+
+		ranks = []
+		c = -1
+		for line in simpdata:
+			cands = [cand.strip().split(':')[1].strip() for cand in line[3:]]
+			featmap = {}
+			scoremap = {}
+			for cand in cands:
+				c += 1
+				featmap[cand] = features[c]
+				scoremap[cand] = 0.0
+			for i in range(0, len(cands)-1):
+				cand1 = cands[i]
+				for j in range(i+1, len(cands)):
+					cand2 = cands[j]
+					posneg = np.concatenate((featmap[cand1], featmap[cand2]))
+					probs = self.model.predict(np.array([posneg]))
+					score = probs[0]
+					scoremap[cand1] += score
+					negpos = np.concatenate((featmap[cand2], featmap[cand1]))
+					probs = self.model.predict(np.array([negpos]))
+					score = probs[0]
+					scoremap[cand1] -= score
+			rank = sorted(list(scoremap.keys()), key=scoremap.__getitem__, reverse=True)
+			if len(rank)>1:
+				if rank[0]==line[1].strip():
+					rank = rank[1:]
+			ranks.append(rank)
+		return ranks
+
+	def calculateDemoFeatures(self, simpdata, demodata):
+		result = []
+		for i, line in enumerate(demodata):
+			agev = self.ohage.getOneHot(line[0])
+			counv = self.ohcoun.getOneHot(line[1])
+			profv = self.ohprof.getOneHot(line[2])
+			eduv = self.ohedu.getOneHot(line[3])
+			disv = self.ohdis.getOneHot(line[4])
+			famv = self.ohfam.getOneHot(line[5])
+			resv = np.concatenate((agev, counv, profv, eduv, disv, famv))
+			for cand in simpdata[i][3:]:
+				result.append(resv)
+		return result
+
+
 class GlavasRanker:
 
 	def __init__(self, fe):
@@ -561,7 +731,7 @@ class GlavasRanker:
 		self.fe = fe
 		self.feature_values = None
 
-	def getRankings(self, alldata):
+	def getRankings(self, alldata, demodata=[]):
 
 		# Calculate features:
 		textdata = ''
@@ -630,7 +800,7 @@ class NNRegressionRanker:
 		self.fe = fe
 		self.model = model
 		
-	def getRankings(self, data):
+	def getRankings(self, data, demodata=[]):
 		#Transform data:
 		textdata = ''
 		for inst in data:
@@ -710,9 +880,21 @@ def GalicianGetTagClass(tag):
 def ItalianGetTagClass(tag):
 	return tag
 
+def getAgeBand(age):
+	try:
+		n = age//10
+		label = str(n*10)+'-'+str((n+1)*10)
+		return label
+	except Exception:
+		return "NULL"
 
-
-
-
-
-
+def formatDemographicDataForRanker(demoinfo):
+	age = [getAgeBand(demoinfo["age"])]
+	country = [demoinfo["country"]]
+	languages = [str(w) for w in demoinfo["languages"]]
+	proficiency = [str(demoinfo["proficiency"])]
+	education = [str(demoinfo["educational_level"])]
+	disability = [str(demoinfo["disability"])]
+	familiarity = [str(demoinfo["familiarity_PA"])]
+	demoinfo = [age, country, languages, proficiency, education, disability, familiarity]
+	return demoinfo

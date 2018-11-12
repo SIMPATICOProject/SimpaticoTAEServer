@@ -12,3 +12,5 @@ ss_local_server_host	localhost
 ss_local_server_port	1515
 main_tae_server_host	localhost
 main_tae_server_port	8080
+main_upm_server_host	localhost
+main_upm_server_port	9090

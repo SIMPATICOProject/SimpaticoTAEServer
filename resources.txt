@@ -3,6 +3,10 @@ nnseval	../data/paetzold_nns_dataset.txt
 eng_caretro_embeddings	../data/english_vectors_phrases_tagged_1300_cbow_retrofitted.bin
 eng_typical_embeddings	../data/english_vectors_300_cbow_retrofitted.bin
 newsela_candidates	../data/newsela_candidates.txt
+eng_ls_dataset_nodemo	../data/surveymonkey_LS_dataset_victor_nodemo.txt
+eng_ls_dataset_withdemo	../data/surveymonkey_LS_dataset_victor_withdemo.txt
+eng_ranker_model	../data/eng_ranker_model.pkl
+eng_ranker_demofarm	../data/eng_ranker_demofarm.pkl
 eng_sub_lm	../data/english_subimdb_lm.bin
 eng_sub_shelf	../data/english_frequency_shelf.bin
 eng_mean_freq	92548.493947

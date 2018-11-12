@@ -5,7 +5,7 @@ from lexenstein.features import *
 from langdetect import detect
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import SnowballStemmer
-import socket, sys
+import socket, sys, urllib2, json
 
 #Classes:
 class EnhancedLexicalSimplifier:
@@ -28,14 +28,14 @@ class EnhancedLexicalSimplifier:
 			#If not, assume the word is simplifiable:
 			return True
 
-	def generateCandidates(self, sent, target, index, tagged_sents):
+	def generateCandidates(self, sent, target, index, tagged_sents, negatives={}):
 		#If target is not irreplaceable:
 		if target not in self.irreplaceable and target not in self.hard_simps:
 			#Produce candidates based on dictionary map:
 			if target not in self.dictgen:
-				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 10)
+				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 10, negatives=negatives)
 			else:
-				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 3)
+				subs = self.embeddingsgen.getSubstitutionsSingle(sent, target, index, tagged_sents, 3, negatives=negatives)
 	
 			#Create input data instance:
 			fulldata = [sent, target, index]
@@ -73,9 +73,9 @@ class EnhancedLexicalSimplifier:
 		#Return desired objects:
 		return fulldata
 	
-	def rankCandidates(self, data):
+	def rankCandidates(self, simpdata, demodata):
 		#Rank selected candidates:
-		ranks = self.ranker.getRankings(data)
+		ranks = self.ranker.getRankings(simpdata, demodata)
 		return ranks
 
 #Functions:
@@ -156,6 +156,32 @@ def loadResources(path):
 	#Return resource database:
 	return resources
 
+def getLexicalInteractionData(configurations, token):
+	#Create URL request for UPM:
+	url = 'http://'+configurations['main_upm_server_host']+':'+configurations['main_upm_server_port']
+	url += '/?request_type=request_inter_data&token='+token+'&inter_type=lexical'
+	content = urllib2.urlopen(url).read().strip()
+	simplifications = json.loads(content)['target'][0]
+	bad = {}
+	for simp in simplifications:
+		target = simp[1].strip()
+		if target not in bad:
+			bad[target] = set([])
+		sub = simp[2].strip()
+		feedback = simp[5]
+		if feedback==0:
+			bad[target].add(sub)
+	return simplifications, bad
+
+def getDemographicData(configurations, token):
+	#Create URL request for UPM:
+	url = 'http://'+configurations['main_upm_server_host']+':'+configurations['main_upm_server_port']
+	url += '/?request_type=request_demo_data&token='+token
+	content = urllib2.urlopen(url).read().strip()
+	demoinfo = json.loads(content)['target'][0]
+	demoinfo = formatDemographicDataForRanker(demoinfo)
+	return demoinfo
+
 def getSpanishLexicalSimplifier(resources):
 	#General purpose:
 	victor_corpus = resources['spanish_ubr']
@@ -200,7 +226,7 @@ def getEnglishLexicalSimplifier(resources):
 	cwi = EnglishComplexWordIdentifier(freq_map, mean_freq, std_freq, min_proportion)
 
 	#Generator:
-	ng = getNewselaCandidates(resources['newsela_candidates'])
+	#ng = getNewselaCandidates(resources['newsela_candidates'])
 	kg = SIMPATICOGenerator(w2vpm_eng, stemmer=PorterStemmer(), prohibited_edges=proh_edges, prohibited_chars=proh_chars, tag_class_func=EnglishGetTagClass)
 
 	#Selector:
@@ -214,14 +240,22 @@ def getEnglishLexicalSimplifier(resources):
 	#Ranker:
 	fe = FeatureEstimator(norm=False)
 	fe.addCollocationalFeature(resources['eng_sub_lm'], 2, 2, 'Simplicity')
-	model_file = resources['nn_sr_model']
-	model = model_from_json(open(model_file+'.json').read())
-	model.load_weights(model_file+'.h5')
-	model.compile(loss='mean_squared_error', optimizer='adam')
-	nr = NNRegressionRanker(fe, model)
+	filehandler = open(resources['eng_ranker_model'], 'r')
+	regmodel = pickle.load(filehandler)
+	filehandler.close()
+	filehandler = open(resources['eng_ranker_demofarm'], 'r')
+	demofarm = pickle.load(filehandler)
+	filehandler.close()
+	rr = SIMPATICORidgeRegressionRanker(fe, demofarm)
+	rr.model = regmodel
+#	model_file = resources['nn_sr_model']
+#	model = model_from_json(open(model_file+'.json').read())
+#	model.load_weights(model_file+'.h5')
+#	model.compile(loss='mean_squared_error', optimizer='adam')
+#	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(None, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
+	return EnhancedLexicalSimplifier(None, {}, kg, bs, rr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 #	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 
 def getGalicianLexicalSimplifier(resources):
@@ -274,8 +308,7 @@ def getItalianLexicalSimplifier(resources):
 	gr = GlavasRanker(fe)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(None, {}, gg, bs, gr)
-		
+	return EnhancedLexicalSimplifier(None, {}, gg, bs, gr)		
 	
 ################################################ MAIN ########################################################	
 if __name__ == '__main__':
@@ -286,16 +319,16 @@ if __name__ == '__main__':
 
 	#Load simplifiers:
 	simplifier_eng = getEnglishLexicalSimplifier(resources)
-	simplifier_gal = getGalicianLexicalSimplifier(resources)
-	simplifier_ita = getItalianLexicalSimplifier(resources)
-	simplifier_spa = getSpanishLexicalSimplifier(resources)
+#	simplifier_gal = getGalicianLexicalSimplifier(resources)
+#	simplifier_ita = getItalianLexicalSimplifier(resources)
+#	simplifier_spa = getSpanishLexicalSimplifier(resources)
 
 	#Create simplifier map:
 	simplifier_map = {}
 	simplifier_map['en'] = simplifier_eng
-	simplifier_map['gl'] = simplifier_gal
-	simplifier_map['it'] = simplifier_ita
-	simplifier_map['es'] = simplifier_spa
+#	simplifier_map['gl'] = simplifier_gal
+#	simplifier_map['it'] = simplifier_ita
+#	simplifier_map['es'] = simplifier_spa
 
 	#Wait for simplification requests:
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -319,6 +352,7 @@ if __name__ == '__main__':
 			data = None
 	
 		try:
+			token = data['token']
 			sent = data['sentence']
 			target = data['target']
 			index = data['index']
@@ -339,15 +373,19 @@ if __name__ == '__main__':
 			tagged_sents = getTaggedSentences([sent], configurations, lang)
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
+			#Get lexical interaction data:
+			interdata, badsimps = getLexicalInteractionData(configurations, token)
+			#Get demographic data:
+			demodata = getDemographicData(configurations, token)
 			#CWI:
 			cwi_output = simplifier_map[lang].getSimplifiability(target)
 			if cwi_output:
 				#SG:
-				sg_output = simplifier_map[lang].generateCandidates(sent, target, index, tagged_sents)
+				sg_output = simplifier_map[lang].generateCandidates(sent, target, index, tagged_sents, negatives=badsimps)
 				#SS:
 				ss_output = simplifier_map[lang].selectCandidates(sg_output, tagged_sents)
 				#SR:
-				sr_output = simplifier_map[lang].rankCandidates(ss_output)
+				sr_output = simplifier_map[lang].rankCandidates(ss_output, [demodata])
 			else:
 				sr_output = [[]]
 		except Exception as e:

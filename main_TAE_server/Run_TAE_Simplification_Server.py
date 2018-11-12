@@ -17,6 +17,10 @@ class LexicalSimplifier:
 		info['target'] = parameters['target'][0]
 		info['index'] = parameters['index'][0]
 		info['lang'] = parameters['lang'][0]
+		if 'token' in parameters:
+			info['token'] = parameters['token'][0]
+		else:
+			info['token'] = ''
 		data = json.dumps(info)
 
 		try:
@@ -161,6 +165,8 @@ class SimpaticoTAEHandler(BaseHTTPRequestHandler):
 		# - index = the position of word in sentence (starts at 0)
 		#Mandatory SS parameters:
 		# - sentence = the sentence to be simplified
+		#Optional parameters:
+		# - token = token that allows for demographic and interaction data to be retrieved
 		if 'Error' not in parameters:
 			if 'type' not in parameters:
 				parameters = {'Error': ['Parameter "type" missing (available values = "lexical" and "syntactic")']}

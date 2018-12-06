@@ -262,7 +262,8 @@ def getEnglishLexicalSimplifier(resources):
 #	nr = NNRegressionRanker(fe, model)
 	
 	#Return LexicalSimplifier object:
-	return EnhancedLexicalSimplifier(None, {}, kg, bs, rr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
+	return EnhancedLexicalSimplifier(cwi, {}, kg, bs, rr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
+#	return EnhancedLexicalSimplifier(None, {}, kg, bs, rr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 #	return EnhancedLexicalSimplifier(cwi, ng, kg, bs, nr, hard_simps=hardsimps_eng, irreplaceable=irrep_eng)
 
 def getGalicianLexicalSimplifier(resources):
@@ -326,16 +327,16 @@ if __name__ == '__main__':
 
 	#Load simplifiers:
 	simplifier_eng = getEnglishLexicalSimplifier(resources)
-#	simplifier_gal = getGalicianLexicalSimplifier(resources)
-#	simplifier_ita = getItalianLexicalSimplifier(resources)
-#	simplifier_spa = getSpanishLexicalSimplifier(resources)
+	simplifier_gal = getGalicianLexicalSimplifier(resources)
+	simplifier_ita = getItalianLexicalSimplifier(resources)
+	simplifier_spa = getSpanishLexicalSimplifier(resources)
 
 	#Create simplifier map:
 	simplifier_map = {}
 	simplifier_map['en'] = simplifier_eng
-#	simplifier_map['gl'] = simplifier_gal
-#	simplifier_map['it'] = simplifier_ita
-#	simplifier_map['es'] = simplifier_spa
+	simplifier_map['gl'] = simplifier_gal
+	simplifier_map['it'] = simplifier_ita
+	simplifier_map['es'] = simplifier_spa
 
 	#Wait for simplification requests:
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

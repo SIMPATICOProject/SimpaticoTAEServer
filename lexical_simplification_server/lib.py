@@ -77,8 +77,9 @@ class EnglishComplexWordIdentifier:
 
 class SIMPATICOGenerator:
 
-	def __init__(self, posw2vmodel, stemmer=None, prohibited_edges=set([]), prohibited_chars=set([]), tag_class_func=lambda x: x):
+	def __init__(self, posw2vmodel, wn=None, stemmer=None, prohibited_edges=set([]), prohibited_chars=set([]), tag_class_func=lambda x: x):
 		self.model = gensim.models.KeyedVectors.load_word2vec_format(posw2vmodel, binary=True, unicode_errors='ignore')
+		self.wordnet = wn
 		self.stemmer = stemmer
 		self.prohibited_edges = prohibited_edges
 		self.prohibited_chars = prohibited_chars
@@ -123,15 +124,23 @@ class SIMPATICOGenerator:
 			tags = tsents[i]
 			head = int(d[2].strip())
 			tag = tags[head][1]
+			wntag = EnglishToWordnetTag(tag)
+			print('Resulting tag: ', wntag)
 
 			word = t + '|||' + self.tag_class_func(tag)
 
-			most_sim = []
-			try:
-				most_sim = self.model.most_similar(positive=[word], topn=50)
-			except KeyError:
+			wnsynonyms = self.getWordnetSynonyms(t, wntag)
+			if len(wnsynonyms)>0:
+				newcands = [w+'|||'+self.tag_class_func(tag) for w in list(wnsynonyms)]
+				print('Newcands: ', newcands)
+			else:
 				most_sim = []
-			newcands = [word[0] for word in most_sim if '_' not in word[0] and '|||' in word[0]]
+				try:
+					most_sim = self.model.most_similar(positive=[word], topn=50)
+				except KeyError:
+					most_sim = []
+				newcands = [word[0] for word in most_sim if '_' not in word[0] and '|||' in word[0]]
+
 			subs.append(newcands)
 			cands.update([cand.split('|||')[0] for cand in newcands])
 
@@ -155,6 +164,18 @@ class SIMPATICOGenerator:
 			final_cands[target].update(set(cands))
 
 		return final_cands
+
+	def getWordnetSynonyms(self,target, wntag):
+		try:
+			syns = wn.synsets(target, pos=wntag)
+		except Exception:
+			syns = []
+		
+		for syn in syns:
+			lemmas = syn.lemmas()
+			synonyms = [w.name().replace('_', ' ') for w in lemmas]
+			synonyms = [w for w in synonyms if ' ' not in synonyms]
+		return synonyms
 
 	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsstems, negatives={}):
 		result = []
@@ -879,6 +900,18 @@ def GalicianGetTagClass(tag):
 
 def ItalianGetTagClass(tag):
 	return tag
+
+def EnglishToWordnetTag(tag):
+	if tag.startswith('J'):
+		return 'a'
+	elif tag.startswith('V'):
+		return 'v'
+	elif tag.startswith('N'):
+		return 'n'
+	elif tag.startswith('R'):
+		return 'r'
+	else:
+		return 'n'
 
 def getAgeBand(age):
 	try:

@@ -91,3 +91,30 @@ print('Receiving...')
 resp = s.recv(1024).decode('utf8')
 print resp
 s.close()
+
+###########################################################
+
+instances = [line.strip().split('\t') for line in open('tough_examples.txt')]
+
+print('Challenging:')
+for instance in instances:
+	sent = instance[0].strip()
+	target = instance[1].strip()
+	index = instance[2].strip()
+	
+	info = {}
+	info['sentence'] = sent
+	info['target'] = target
+	info['index'] = index
+	info['lang'] = 'en'
+	info['token'] = token
+	data = json.dumps(info)
+	
+	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+	s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+	s.send(data+'\n')
+	resp = s.recv(1024).decode('utf8')
+	s.close()
+	print target, resp

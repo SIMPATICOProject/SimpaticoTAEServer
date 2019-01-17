@@ -3,6 +3,7 @@ from lexenstein.morphadorner import *
 from lexenstein.spelling import *
 from lexenstein.features import *
 from langdetect import detect
+from nltk.corpus import wordnet as wn
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import SnowballStemmer
 import socket, sys, urllib2, json
@@ -234,7 +235,7 @@ def getEnglishLexicalSimplifier(resources):
 
 	#Generator:
 	#ng = getNewselaCandidates(resources['newsela_candidates'])
-	kg = SIMPATICOGenerator(w2vpm_eng, stemmer=PorterStemmer(), prohibited_edges=proh_edges, prohibited_chars=proh_chars, tag_class_func=EnglishGetTagClass)
+	kg = SIMPATICOGenerator(w2vpm_eng, wn=wn, stemmer=PorterStemmer(), prohibited_edges=proh_edges, prohibited_chars=proh_chars, tag_class_func=EnglishGetTagClass)
 
 	#Selector:
 	fe = FeatureEstimator()

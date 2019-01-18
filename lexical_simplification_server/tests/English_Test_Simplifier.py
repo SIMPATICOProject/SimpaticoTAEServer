@@ -117,4 +117,4 @@ for instance in instances:
 	s.send(data+'\n')
 	resp = s.recv(1024).decode('utf8')
 	s.close()
-	print target, resp
+	print sent+'\t'+target+'\t'+index+'\t'+resp.strip()

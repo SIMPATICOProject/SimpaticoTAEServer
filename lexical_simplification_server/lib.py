@@ -125,15 +125,15 @@ class SIMPATICOGenerator:
 			head = int(d[2].strip())
 			tag = tags[head][1]
 			wntag = EnglishToWordnetTag(tag)
-			print('Resulting tag: ', wntag)
 
 			word = t + '|||' + self.tag_class_func(tag)
 
 			wnsynonyms = self.getWordnetSynonyms(t, wntag)
 			if len(wnsynonyms)>0:
+				print("Wordnet")
 				newcands = [w+'|||'+self.tag_class_func(tag) for w in list(wnsynonyms)]
-				print('Newcands: ', newcands)
 			else:
+				print("Embeddings")
 				most_sim = []
 				try:
 					most_sim = self.model.most_similar(positive=[word], topn=50)
@@ -170,11 +170,12 @@ class SIMPATICOGenerator:
 			syns = wn.synsets(target, pos=wntag)
 		except Exception:
 			syns = []
-		
+
+		synonyms = set([])		
 		for syn in syns:
 			lemmas = syn.lemmas()
-			synonyms = [w.name().replace('_', ' ') for w in lemmas]
-			synonyms = [w for w in synonyms if ' ' not in synonyms]
+			synonyms.update(lemmas)
+		synonyms = [w.name().replace('_', ' ') for w in synonyms]
 		return synonyms
 
 	def filterSubsForWords(self, data, tsents, subs, candmap, trgs, trgsstems, negatives={}):

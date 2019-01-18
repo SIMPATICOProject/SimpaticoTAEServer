@@ -328,16 +328,16 @@ if __name__ == '__main__':
 
 	#Load simplifiers:
 	simplifier_eng = getEnglishLexicalSimplifier(resources)
-	simplifier_gal = getGalicianLexicalSimplifier(resources)
-	simplifier_ita = getItalianLexicalSimplifier(resources)
-	simplifier_spa = getSpanishLexicalSimplifier(resources)
+#	simplifier_gal = getGalicianLexicalSimplifier(resources)
+#	simplifier_ita = getItalianLexicalSimplifier(resources)
+#	simplifier_spa = getSpanishLexicalSimplifier(resources)
 
 	#Create simplifier map:
 	simplifier_map = {}
 	simplifier_map['en'] = simplifier_eng
-	simplifier_map['gl'] = simplifier_gal
-	simplifier_map['it'] = simplifier_ita
-	simplifier_map['es'] = simplifier_spa
+#	simplifier_map['gl'] = simplifier_gal
+#	simplifier_map['it'] = simplifier_ita
+#	simplifier_map['es'] = simplifier_spa
 
 	#Wait for simplification requests:
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -377,7 +377,8 @@ if __name__ == '__main__':
 
 		#Simplify based on language:
 		sr_output = [[]]
-		try:
+		if 1:
+#		try:
 			#Tag sentence:
 			tagged_sents = getTaggedSentences([sent], configurations, lang)
 			#Update request information:
@@ -394,13 +395,16 @@ if __name__ == '__main__':
 				#SS:
 				ss_output = simplifier_map[lang].selectCandidates(sg_output, tagged_sents)
 				#SR:
-				sr_output = simplifier_map[lang].rankCandidates(ss_output, [demodata])
+				if len(ss_output[0])>3:
+					sr_output = simplifier_map[lang].rankCandidates(ss_output, [demodata])
+				else:
+					sr_output = [[]]
 			else:
 				sr_output = [[]]
-		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e
-			sr_output = [[]]
+#		except Exception as e:
+#			exc_type, exc_obj, exc_tb = sys.exc_info()
+#			print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e
+#			sr_output = [[]]
 
 		#Get final replacement:
 		replacement = 'NULL'

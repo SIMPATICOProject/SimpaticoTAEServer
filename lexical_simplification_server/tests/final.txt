@@ -1,0 +1,69 @@
+Each domestic property in Sheffield has a Council Tax charge , and there will only be one bill for each property .	domestic	1	NULL	Wordnet
+We calculate your Council Tax bill on the basis that there are at least two people aged 18 or over living in your home .	calculate	1	count	Wordnet
+We calculate your Council Tax bill on the basis that there are at least two people aged 18 or over living in your home .	aged	16	senior	Wordnet
+The bill may be addressed to just one of the people responsible for paying or to all of them if all the names are known .	addressed	4	handle	Wordnet
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	liable	8	nonresistant	Wordnet
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	discounts	17	deduction	Wordnet
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	exemptions	19	freedom	Wordnet
+Council Tax rules set out the order of who is liable for the charge .	liable	10	nonresistant	Wordnet
+The liable person is the person who appears first on the list :	liable	1	nonresistant	Wordnet
+someone who lives in the property and is a statutory or secure tenant	tenant	12	NULL	Wordnet
+someone who lives in the property and has a licence to live in the property	license	9	NULL	Wordnet
+Sometimes more than one person is responsible for paying the Council Tax , for example when 2 or more people live in the property and jointly own , rent or lease it .	jointly	25	together with	Wordnet
+Sometimes more than one person is responsible for paying the Council Tax , for example when 2 or more people live in the property and jointly own , rent or lease it .	lease	30	hire	Wordnet
+The only time this does not apply is when one resident is severely mentally impaired .	resident	10	occupier	Wordnet
+The only time this does not apply is when one resident is severely mentally impaired .	severely	12	badly	Wordnet
+The only time this does not apply is when one resident is severely mentally impaired .	impaired	14	NULL	Wordnet
+Joint responsibility also applies to a husband , wife , civil partner or opposite sex partner of the person who has to pay the bill providing they all live in the same property .	applies	4	NULL	Embeddings
+Joint responsibility also applies to a husband , wife , civil partner or opposite sex partner of the person who has to pay the bill providing they all live in the same property .	providing	26	NULL	Embeddings
+This applies even if they are not joint owners , leaseholders or tenants .	applies	1	use	Wordnet
+This applies even if they are not joint owners , leaseholders or tenants .	owners	8	possessor	Wordnet
+This applies even if they are not joint owners , leaseholders or tenants .	leaseholders	10	NULL	Wordnet
+This applies even if they are not joint owners , leaseholders or tenants .	tenants	12	NULL	Wordnet
+Council Tax bills cannot be split between joint council tax payers .	payers	10	NULL	Wordnet
+For example if three people live in the property , there will only be one bill issued to the household and not three bills for one third of the council tax .	issued	16	emerge	Wordnet
+For example if three people live in the property , there will only be one bill issued to the household and not three bills for one third of the council tax .	household	19	family	Wordnet
+We ca n't get involved in any arrangements that people with joint responsibility have made between themselves for payment and , if necessary will take legal action against each one separately if the council tax is not paid .	separately	30	individually	Wordnet
+This includes anyone who has paid, or been given full benefit for, the amount they consider to be their 'share' of the bill.	includes	1	admit	Wordnet
+If you are a landlord renting out a property , the responsibility for paying Council Tax depends on what sort of letting arrangement you have .	renting	5	hire	Wordnet
+If you are a landlord renting out a property , the responsibility for paying Council Tax depends on what sort of letting arrangement you have .	arrangement	22	organization	Wordnet
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	tenants	17	NULL	Wordnet
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	tenants	20	NULL	Wordnet
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	liable	22	nonresistant	Wordnet
+If all your tenants are students , your property is exempt and you will not be charged .	tenants	3	NULL	Wordnet
+If all your tenants are students , your property is exempt and you will not be charged .	exempt	10	NULL	Wordnet
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	tenancy	16	NULL	Wordnet
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	occupy	19	reside	Wordnet
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	liable	40	nonresistant	Wordnet
+The owner ( landlord ) of the property is liable to pay Council Tax where the property is a House in Multiple Occupation , or where the owner lives in the property and lets out rooms .	liable	9	nonresistant	Wordnet
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	tenants	1	NULL	Wordnet
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	liable	3	nonresistant	Wordnet
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	tenancy	9	NULL	Wordnet
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	naming	11	appoint	Wordnet
+If you are a full time student and you rent a property on your own or with others who are all classed as full time students , you are exempt from paying Council Tax .	classed	21	sort	Wordnet
+If you are a full time student and you rent a property on your own or with others who are all classed as full time students , you are exempt from paying Council Tax .	exempt	29	NULL	Wordnet
+Only the non-students who are joint tenants are liable .	tenants	6	NULL	Wordnet
+Only the non-students who are joint tenants are liable .	liable	8	nonresistant	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	sole	20	only	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	tenant	21	NULL	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	exempt	26	NULL	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	sole	20	only	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	tenant	21	NULL	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	counted	40	reckon	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	visible	42	NULL	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	purposes	47	function	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	sole	52	exclusive	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	leaseholder	55	NULL	Wordnet
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	liable	60	nonresistant	Wordnet
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	jointly	5	collectively	Wordnet
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	spouse	8	partner	Wordnet
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	tenancy	18	NULL	Wordnet
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	liable	31	nonresistant	Wordnet
+If both you and your spouse or civil partner are full time students you will be exempt from Council Tax .	spouse	5	partner	Wordnet
+If both you and your spouse or civil partner are full time students you will be exempt from Council Tax .	exempt	16	NULL	Wordnet
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	spouse	5	partner	Wordnet
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	spouse	27	partner	Wordnet
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	liable	33	nonresistant	Wordnet
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	dependants	3	NULL	Wordnet
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	liable	9	nonresistant	Wordnet
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	providing	13	leave	Wordnet

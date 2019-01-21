@@ -130,16 +130,15 @@ class SIMPATICOGenerator:
 
 			wnsynonyms = self.getWordnetSynonyms(t, wntag)
 			if len(wnsynonyms)>0:
-				print("Wordnet")
 				newcands = [w+'|||'+self.tag_class_func(tag) for w in list(wnsynonyms)]
 			else:
-				print("Embeddings")
-				most_sim = []
-				try:
-					most_sim = self.model.most_similar(positive=[word], topn=50)
-				except KeyError:
-					most_sim = []
-				newcands = [word[0] for word in most_sim if '_' not in word[0] and '|||' in word[0]]
+				newcands = []
+#				most_sim = []
+#				try:
+#					most_sim = self.model.most_similar(positive=[word], topn=50)
+#				except KeyError:
+#					most_sim = []
+#				newcands = [word[0] for word in most_sim if '_' not in word[0] and '|||' in word[0]]
 
 			subs.append(newcands)
 			cands.update([cand.split('|||')[0] for cand in newcands])

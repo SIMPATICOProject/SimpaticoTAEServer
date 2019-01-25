@@ -43,3 +43,4 @@ conf_model_en	../data/confidence_model/en/model.pkl
 lm_en	../data/training_full.blm.en
 true_it	../data/distributions.it.obj
 prop_it	../data/italian.myproperties.properties
+hardcoding	../data/hardcoding

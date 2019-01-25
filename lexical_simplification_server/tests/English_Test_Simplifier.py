@@ -22,6 +22,88 @@ token = 'b0fca5e6-557c-4281-ad57-460827535ea9'
 
 ###############################################################
 
+#Test word hardcoding:
+info = {}
+info['sentence'] = 'difficulties with your landlord , or keeping up your tenancy'
+info['target'] = info['sentence'].split(' ')[0]
+info['index'] = '0'
+info['lang'] = 'en'
+info['token'] = token
+data = json.dumps(info)
+print data
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+print('Sending...')
+s.send(data+'\n')
+print('Receiving...')
+resp = s.recv(1024).decode('utf8')
+print resp
+s.close()
+
+info = {}
+info['sentence'] = 'Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )'
+info['target'] = info['sentence'].split(' ')[3]
+info['index'] = '3'
+info['lang'] = 'en'
+info['token'] = token
+data = json.dumps(info)
+print data
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+print('Sending...')
+s.send(data+'\n')
+print('Receiving...')
+resp = s.recv(1024).decode('utf8')
+print resp
+s.close()
+
+info = {}
+info['sentence'] = 'If you have a child attending a Sheffield school or maintained nursery and receive these benefits , you may be entitled to free school meals :'
+info['target'] = info['sentence'].split(' ')[5]
+info['index'] = '5'
+info['lang'] = 'en'
+info['token'] = token
+data = json.dumps(info)
+print data
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+print('Sending...')
+s.send(data+'\n')
+print('Receiving...')
+resp = s.recv(1024).decode('utf8')
+print resp
+s.close()
+
+info = {}
+info['sentence'] = 'If you have a child attending a Sheffield school or maintained nursery and receive these benefits , you may be entitled to free school meals :'
+info['target'] = info['sentence'].split(' ')[10]
+info['index'] = '10'
+info['lang'] = 'en'
+info['token'] = token
+data = json.dumps(info)
+print data
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+s.connect(("localhost",int(configurations['ls_local_server_port'])))
+
+print('Sending...')
+s.send(data+'\n')
+print('Receiving...')
+resp = s.recv(1024).decode('utf8')
+print resp
+s.close()
+###############################################################
+
 #Test word:
 
 info = {}
@@ -94,7 +176,7 @@ s.close()
 
 ###########################################################
 
-instances = [line.strip().split('\t') for line in open('tough_examples.txt')]
+instances = [line.strip().split('\t') for line in open('cw_list_all_services_v2.txt')]
 
 print('Challenging:')
 for instance in instances:

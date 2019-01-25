@@ -139,6 +139,19 @@ def getHardSimplifications(file):
 	f.close()
 	return subs
 
+### START hardcoding
+def loadHardCoding(resources):
+    f = open(resources['hardcoding'], "r")
+    hard = {}
+    for s in f.readlines():
+        tokens = s.split(" ||| ")
+        if s.strip() != '':
+            hard[tokens[0].strip()] = tokens[1].strip()
+    return hard
+
+### FINISH hardcoding
+
+
 def loadResources(path):
 	#Open resource file:
 	f = open(path)
@@ -326,6 +339,16 @@ if __name__ == '__main__':
 	configurations = loadResources('../configurations.txt')
 	resources = loadResources('../resources.txt')
 
+        ### START hardcoding
+        hc = False
+        try:
+            if 'hardcoding' in resources.keys():
+                hard_ngram = loadHardCoding(resources)
+                hc = True
+        except Exception as e:
+            hc = False
+        ### FINISH hardcoding
+
 	#Load simplifiers:
 	simplifier_eng = getEnglishLexicalSimplifier(resources)
 #	simplifier_gal = getGalicianLexicalSimplifier(resources)
@@ -383,24 +406,51 @@ if __name__ == '__main__':
 			tagged_sents = getTaggedSentences([sent], configurations, lang)
 			#Update request information:
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
-			#Get lexical interaction data:
-			interdata, badsimps = getLexicalInteractionData(configurations, token)
-			#Get demographic data:
-			demodata = getDemographicData(configurations, token)
-			#CWI:
-			cwi_output = simplifier_map[lang].getSimplifiability(target)
-			if cwi_output:
-				#SG:
-				sg_output = simplifier_map[lang].generateCandidates(sent, target, index, tagged_sents, negatives=badsimps)
-				#SS:
-				ss_output = simplifier_map[lang].selectCandidates(sg_output, tagged_sents)
-				#SR:
-				if len(ss_output[0])>3:
-					sr_output = simplifier_map[lang].rankCandidates(ss_output, [demodata])
-				else:
-					sr_output = [[]]
-			else:
-				sr_output = [[]]
+
+                        ###START hardcoding
+                        if hc:
+                            tokens = sent.split(" ")
+                            pre = ""
+                            pos = ""
+                            if int(index)-1 >= 0:
+                                pre = tokens[int(index)-1]
+                            if int(index)+1 < len(tokens):
+                                pos = tokens[int(index)+1]
+
+                            k = target+"_"+str(index)+"_"+pre+"_"+pos
+
+                            #print k
+
+                            if k in hard_ngram.keys():
+                                print "**** HARDCODING ****"
+
+                                print target + "-->" + hard_ngram[k]
+                                if hard_ngram[k] != "NULL":
+                                    sr_output[0] = []
+                                    sr_output[0].append(hard_ngram[k])
+
+                        ###FINISH hardcoding
+
+                        else:
+
+                            #Get lexical interaction data:
+			    interdata, badsimps = getLexicalInteractionData(configurations, token)
+			    #Get demographic data:
+			    demodata = getDemographicData(configurations, token)
+			    #CWI:
+			    cwi_output = simplifier_map[lang].getSimplifiability(target)
+			    if cwi_output:
+				    #SG:
+				    sg_output = simplifier_map[lang].generateCandidates(sent, target, index, tagged_sents, negatives=badsimps)
+				    #SS:
+				    ss_output = simplifier_map[lang].selectCandidates(sg_output, tagged_sents)
+				    #SR:
+				    if len(ss_output[0])>3:
+					    sr_output = simplifier_map[lang].rankCandidates(ss_output, [demodata])
+				    else:
+					    sr_output = [[]]
+			    else:
+				    sr_output = [[]]
 #		except Exception as e:
 #			exc_type, exc_obj, exc_tb = sys.exc_info()
 #			print 'An error has ocurred while simplifying the complex word. Line: ', exc_tb.tb_lineno, ' Message: ', e

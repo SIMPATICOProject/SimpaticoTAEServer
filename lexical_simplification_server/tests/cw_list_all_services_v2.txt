@@ -1,0 +1,259 @@
+If you have a child attending a Sheffield school or maintained nursery and receive these benefits , you may be entitled to free school meals :	attending	5	going to
+If you have a child attending a Sheffield school or maintained nursery and receive these benefits , you may be entitled to free school meals :	maintained	10	NULL
+If you have a child attending a Sheffield school or maintained nursery and receive these benefits , you may be entitled to free school meals :	nursery	11	NULL
+Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )	provided	3	given
+Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )	assessed	18	evaluated
+Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )	earnings	20	salaries
+Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )	assessment	29	evaluation
+Universal Credit ( provided you have an annual net earned income of no more than # 7,400 , as assessed by earnings from up to three of your most recent assessment periods )	period	30	term
+the guaranteed element of State Pension Credit	guaranteed	1	assured
+the guaranteed element of State Pension Credit	element	2	factor
+Child Tax Credit as long as you have a yearly household income of less than # 16,190 ( as assessed by HM Revenue and Customs ) and do not get Working Tax Credit	household	10	family
+Child Tax Credit as long as you have a yearly household income of less than # 16,190 ( as assessed by HM Revenue and Customs ) and do not get Working Tax Credit	assessed	18	evaluated
+Working Tax Credit run-on ( paid for 4 weeks after you stop qualifying for Working Tax Credit )	qualifying	12	being eligible
+If you are unsure about your eligibility please contact us .	unsure	3	uncertain
+In addition , the following pupils will be protected against losing their free school meals as follows :	addition	1	NULL
+In addition , the following pupils will be protected against losing their free school meals as follows :	pupils	5	students
+In addition , the following pupils will be protected against losing their free school meals as follows :	follows	16	NULL
+from 1 April 2018 , all existing free school meals claimants will continue to receive free school meals whilst Universal Credit is rolled out .	existing	6	NULL
+from 1 April 2018 , all existing free school meals claimants will continue to receive free school meals whilst Universal Credit is rolled out .	rolled	22	NULL
+This will apply even if their earnings rise above the new threshold during that time .	earnings	6	salaries
+This will apply even if their earnings rise above the new threshold during that time .	threshold	11	limit
+in addition , any child gaining eligibility for free school meals after 1 April 2018 will be protected against losing free school meals during the Universal Credit rollout period .	addition	1	NULL
+in addition , any child gaining eligibility for free school meals after 1 April 2018 will be protected against losing free school meals during the Universal Credit rollout period .	gaining	5	getting
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	rolled	5	NULL
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	existing	9	NULL
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	criteria	17	guideline
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	earning	25	salaries
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	threshold	28	limit
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	primary	57	NULL
+once Universal Credit is fully rolled out , any existing claimants that no longer meet the eligibility criteria at that point ( because they are earning above the threshold or are no longer a recipient of Universal Credit ) will continue to receive free school meals until the end of their current phase of education ( i.e. primary or secondary ) .	secondary	59	NULL
+We have looked at the Housing Benefit information that we already hold and found that a significant number of households may meet the criteria for free school meals , but have not yet made an application .	significant	16	considerable
+We have looked at the Housing Benefit information that we already hold and found that a significant number of households may meet the criteria for free school meals , but have not yet made an application .	households	19	families
+We have looked at the Housing Benefit information that we already hold and found that a significant number of households may meet the criteria for free school meals , but have not yet made an application .	criteria	23	guideline
+We want to increase the Pupil Premium funding for all academies and locally maintained schools in Sheffield , so we 'll be using Housing Benefit data that we already have to automatically award free school meals during the months of November and December .	funding	7	financial support
+We want to increase the Pupil Premium funding for all academies and locally maintained schools in Sheffield , so we 'll be using Housing Benefit data that we already have to automatically award free school meals during the months of November and December .	maintained	13	NULL
+Those families who appear to qualify for free school meals , but have n't applied yet , are currently being contacted by letter to explain how the automatic award works Read the information sheet to find out more about the scheme to help you if you receive a letter .	qualify	5	be eligible
+Those families who appear to qualify for free school meals , but have n't applied yet , are currently being contacted by letter to explain how the automatic award works Read the information sheet to find out more about the scheme to help you if you receive a letter .	applied	14	put in an application
+Those families who appear to qualify for free school meals , but have n't applied yet , are currently being contacted by letter to explain how the automatic award works Read the information sheet to find out more about the scheme to help you if you receive a letter .	contacted	20	reached
+Those families who appear to qualify for free school meals , but have n't applied yet , are currently being contacted by letter to explain how the automatic award works Read the information sheet to find out more about the scheme to help you if you receive a letter .	automatic	27	NULL
+If your child attends a state funded infant school and is in Key Stage 1 ( reception , year 1 or year 2 ) , they are entitled to ` universal infant free school meals ' regardless of your income .	attends	3	goes to
+If your child attends a state funded infant school and is in Key Stage 1 ( reception , year 1 or year 2 ) , they are entitled to ` universal infant free school meals ' regardless of your income .	infant	7	NULL
+If your child attends a state funded infant school and is in Key Stage 1 ( reception , year 1 or year 2 ) , they are entitled to ` universal infant free school meals ' regardless of your income .	universal	30	NULL
+If your child attends a state funded infant school and is in Key Stage 1 ( reception , year 1 or year 2 ) , they are entitled to ` universal infant free school meals ' regardless of your income .	infant	31	NULL
+If your child attends a state funded infant school and is in Key Stage 1 ( reception , year 1 or year 2 ) , they are entitled to ` universal infant free school meals ' regardless of your income .	regardless	36	despite
+Please contact your child 's school to tell them you would like to have ` universal infant free school meals ' .	universal	14	NULL
+Please contact your child 's school to tell them you would like to have ` universal infant free school meals ' .	infant	15	NULL
+contacting us	contacting	0	getting in touch with
+Please make sure you have your National Insurance Number , names and date of births of your children .	births	14	NULL
+You can apply for free school meals if you think you might be entitled , because your school gets up to # 1,320 additional funding ( Pupil Premium ) to support your child 's education and can help to buy new equipment and resources .	funding	24	financial support
+If your claim is successful , the school will be notified that your child can have free school meals .	notified	10	informed
+Schools will ensure that this information is treated with the strictest confidence and handled sensitively .	ensure	2	guarantee
+Schools will ensure that this information is treated with the strictest confidence and handled sensitively .	strictest	10	total
+In Sheffield , parents and carers can access a range of groups that offer practical advice and support with parenting .	groups	11	NULL
+We deliver programmes that are evidence based , and tried and tested .	programmes	2	courses
+We deliver programmes that are evidence based , and tried and tested .	tested	11	NULL
+This means that the content is written by professional psychologists who have years of research into what works to manage behaviours and difficulties that we can all face as parents .	content	4	material
+This means that the content is written by professional psychologists who have years of research into what works to manage behaviours and difficulties that we can all face as parents .	behaviours	20	ways of acting
+This means that the content is written by professional psychologists who have years of research into what works to manage behaviours and difficulties that we can all face as parents .	difficulties	22	problems
+These programmes are delivered across the world and have over 30 years of research behind them .	programmes	1	courses
+Everyone has busy lives and we are all different , there are different types of groups you can access depending on your needs and the time you have to spare .	groups	15	NULL
+Everyone has busy lives and we are all different , there are different types of groups you can access depending on your needs and the time you have to spare .	depending	19	being based on
+Please read the information below about the types of groups you can access .	groups	9	NULL
+To find out what 's on and when in your area see our Sheffield Parenting What 's on in supporting information .	supporting	19	NULL
+Book your place on Eventbrite or by emailing or phoning us .	emailing	7	NULL
+Book your place on Eventbrite or by emailing or phoning us .	phoning	8	calling
+Course dates and details will also be posted as events on our Family Centres Facebook page .	posted	7	announced
+Triple P seminars are for those who are generally coping well but have one or two concerns , or would simply like to gather some tips .	generally	8	in general
+Triple P seminars are for those who are generally coping well but have one or two concerns , or would simply like to gather some tips .	coping	9	dealing
+Triple P seminars are for those who are generally coping well but have one or two concerns , or would simply like to gather some tips .	concerns	16	issues
+Raising confident and competent children ( under 12s )	12s	7	NULL
+Raising resilient children ( under 12s )	resilient	1	strong
+Raising resilient children ( under 12s )	12s	5	NULL
+Raising responsible teenagers	teenagers	2	adolescent
+Raising competent teenagers	teenagers	2	adolescent
+Getting teenagers connected	teenagers	1	adolescent
+Triple P discussion groups are for those who are mostly enjoying parenting , but who want to know how to deal with specific problem behaviour .	groups	3	NULL
+These are short small group sessions that offer practical advice for tackling a specific problem behaviour .	tackling	11	managing
+This discussion topic provides examples of common forms of disobedience and some reasons why children have difficulty learning to follow instructions .	topic	2	NULL
+This discussion topic provides examples of common forms of disobedience and some reasons why children have difficulty learning to follow instructions .	provides	3	gives
+This discussion topic provides examples of common forms of disobedience and some reasons why children have difficulty learning to follow instructions .	examples	4	NULL
+This discussion topic provides examples of common forms of disobedience and some reasons why children have difficulty learning to follow instructions .	difficulty	16	problem
+A number of positive parenting strategies are then introduced to help parents develop a personal plan to prevent disobedience , teach their child limits , and also to manage disobedience when necessary .	develop	12	start
+In this session , parents are encouraged to share their experiences of aggressive and destructive behaviour from their children and discuss some of the reasons children fight .	encouraged	6	motivated
+In this session , parents are encouraged to share their experiences of aggressive and destructive behaviour from their children and discuss some of the reasons children fight .	aggressive	12	violent
+This group covers the skills that children need to be able to cooperate and get along with others .	covers	2	describes
+This group covers the skills that children need to be able to cooperate and get along with others .	cooperate	12	collaborate
+Parents learn how to teach skills such as sharing , communicating , and being gentle .	communicating	10	NULL
+They also prepare plans to manage times when fighting and aggression do occur .	occur	12	happen
+This discussion topic explores different problems parents commonly face at bedtime and some of the reasons why they happen .	topic	2	NULL
+This discussion topic explores different problems parents commonly face at bedtime and some of the reasons why they happen .	explores	3	looks into
+This discussion topic explores different problems parents commonly face at bedtime and some of the reasons why they happen .	commonly	7	usually
+The approaches to encouraging children to stay in their own bed throughout the night are discussed : the gentle , the gradual , and the direct approach .	approaches	1	methods
+All approaches are evidence-based and parents choose which approach suits them best .	approaches	1	methods
+This discussion topic uses shopping trips as an example of one of the most common times parents have to deal with difficult behaviour in public .	topic	2	NULL
+This discussion topic uses shopping trips as an example of one of the most common times parents have to deal with difficult behaviour in public .	trips	5	NULL
+Positive parenting strategies are discussed as step-by-step suggestions for preventing problems and teaching children how to behave on shopping trips .	step-by-step	6	NULL
+Positive parenting strategies are discussed as step-by-step suggestions for preventing problems and teaching children how to behave on shopping trips .	suggestions	7	recommendations
+Positive parenting strategies are discussed as step-by-step suggestions for preventing problems and teaching children how to behave on shopping trips .	preventing	9	NULL
+Positive parenting strategies are discussed as step-by-step suggestions for preventing problems and teaching children how to behave on shopping trips .	trips	19	NULL
+Parents develop individualised plans to manage problem behaviour during their own shopping trips and are encouraged to transfer new parenting strategies to other potentially difficult community situations .	develop	1	start
+Parents develop individualised plans to manage problem behaviour during their own shopping trips and are encouraged to transfer new parenting strategies to other potentially difficult community situations .	individualised	2	personsalised
+Parents develop individualised plans to manage problem behaviour during their own shopping trips and are encouraged to transfer new parenting strategies to other potentially difficult community situations .	trips	12	NULL
+Parents develop individualised plans to manage problem behaviour during their own shopping trips and are encouraged to transfer new parenting strategies to other potentially difficult community situations .	encouraged	15	motivated
+Parents develop individualised plans to manage problem behaviour during their own shopping trips and are encouraged to transfer new parenting strategies to other potentially difficult community situations .	situations	26	NULL
+During this discussion , parents share some of their experiences and ideas about dealing with non-cooperation and discuss reasons why teenagers can be uncooperative .	teenagers	20	adolescents
+Several positive parenting strategies are introduced to help parents develop a plan to motivate their teenager to be cooperative at home .	develop	9	start
+Several positive parenting strategies are introduced to help parents develop a plan to motivate their teenager to be cooperative at home .	motivate	13	NULL
+Several positive parenting strategies are introduced to help parents develop a plan to motivate their teenager to be cooperative at home .	teenager	15	adolescent
+Several positive parenting strategies are introduced to help parents develop a plan to motivate their teenager to be cooperative at home .	cooperative	18	collaborative
+In this session parents discuss some of the reasons teenagers have emotional reactions and skills that teens need to calm themselves down .	teenagers	9	adolescents
+In this session parents discuss some of the reasons teenagers have emotional reactions and skills that teens need to calm themselves down .	reactions	12	NULL
+In this session parents discuss some of the reasons teenagers have emotional reactions and skills that teens need to calm themselves down .	teens	16	adolescents
+Several positive parenting strategies are introduced to help parents teach their teen to better manage their emotions .	teen	11	adolescent
+This discussion topic explores why teenagers sometimes make risky decisions and how they can learn to keep themselves safe while gradually developing independence .	topic	2	NULL
+This discussion topic explores why teenagers sometimes make risky decisions and how they can learn to keep themselves safe while gradually developing independence .	explores	3	looks into
+This discussion topic explores why teenagers sometimes make risky decisions and how they can learn to keep themselves safe while gradually developing independence .	teenagers	5	adolescents
+This discussion topic explores why teenagers sometimes make risky decisions and how they can learn to keep themselves safe while gradually developing independence .	risky	8	dangerous
+This discussion topic explores why teenagers sometimes make risky decisions and how they can learn to keep themselves safe while gradually developing independence .	developing	21	growing
+Parents are introduced to positive parenting strategies to help their teen plan for a situation which may potentially put their health or wellbeing at risk .	teen	10	adolescent
+Parents are introduced to positive parenting strategies to help their teen plan for a situation which may potentially put their health or wellbeing at risk .	wellbeing	22	NULL
+During this  , parents share some of their experiences of conflict with their teenager and discuss why sometimes this occurs in families .	conflict	11	fight
+During this  , parents share some of their experiences of conflict with their teenager and discuss why sometimes this occurs in families .	teenager	14	adolescent
+During this  , parents share some of their experiences of conflict with their teenager and discuss why sometimes this occurs in families .	occurs	20	happens
+Several positive parenting strategies are introduced to help parents teach their teens how to get along with other family members and resolve problems .	teens	11	adolescents
+Several positive parenting strategies are introduced to help parents teach their teens how to get along with other family members and resolve problems .	resolve	21	solve
+Ways to manage times when conflict affects the whole family are also discussed .	conflict	5	fight
+Ways to manage times when conflict affects the whole family are also discussed .	affects	6	disturb
+Group parenting programmes are for those who are finding being a parent a bit of a challenge and may find that three or more topics from the discussion groups would be helpful .	programmes	2	courses
+Group parenting programmes are for those who are finding being a parent a bit of a challenge and may find that three or more topics from the discussion groups would be helpful .	groups	28	NULL
+Group programmes range from 9 to 15 weeks in duration and cover the full range of parenting strategies with personalised support for people in the group to help you put these into practice back home .	programmes	1	course
+Group programmes range from 9 to 15 weeks in duration and cover the full range of parenting strategies with personalised support for people in the group to help you put these into practice back home .	duration	9	length of time
+Group programmes range from 9 to 15 weeks in duration and cover the full range of parenting strategies with personalised support for people in the group to help you put these into practice back home .	personalised	19	NULL
+There are different programmes depending on the age of your child/children and their needs :	programmes	3	courses
+There are different programmes depending on the age of your child/children and their needs :	depending	4	being conditional
+We have created the Sheffield Directory website to help you get the right information and support to help you stay independent and live well in your local area .	website	6	NULL
+The directory has advice on how you can help yourself or get support from local clubs , groups and services to keep you independent , safe and well .	groups	17	NULL
+If you need some information or advice to get you started , there are lots of organisations which are there to help you .	organisations	16	institutions
+You 'll find details of all these organisations on our Sheffield Directory , including :	organisations	7	institutions
+Disability Sheffield ( for people with disabilities or long-term health conditions )	disabilities	6	impairments
+Disability Sheffield ( for people with disabilities or long-term health conditions )	long-term	7	NULL
+Sheffield Mencap ( for people with learning disabilities )	disabilities	7	impairments
+You can talk to your local ' People Keeping Well ' organisation or your local Community Support Worker .	organisation	12	institution
+They also know what is going on locally and can suggest activities or groups you can join and enjoy .	activities	11	NULL
+They also know what is going on locally and can suggest activities or groups you can join and enjoy .	groups	13	NULL
+We also have a ` Health and Wellbeing ' and ` Things to Do ' section on the Sheffield Directory , where you can find a range of health and wellbeing , sport and leisure activities that you can join .	wellbeing	30	NULL
+We also have a ` Health and Wellbeing ' and ` Things to Do ' section on the Sheffield Directory , where you can find a range of health and wellbeing , sport and leisure activities that you can join .	activities	35	NULL
+Organisations like Age UK , MIND , Mencap , Disability Sheffield , Alzheimer 's Society and the Carers Centre also run support groups and activities .	groups	22	NULL
+Organisations like Age UK , MIND , Mencap , Disability Sheffield , Alzheimer 's Society and the Carers Centre also run support groups and activities .	activities	24	NULL
+fitting handrails and doing small repairs around the home	handrails	1	NULL
+fitting handrails and doing small repairs around the home	repairs	5	fixes
+meal deliveries - if you can 't prepare or cook a meal	deliveries	1	NULL
+There is also specialist equipment and services that can help you stay safe at home including :	specialist	3	professional
+Care Alarms Service - to alert friends and family or a dedicated call centre if someone has a fall or other emergency in the home	dedicated	11	exclusive
+our online equipment store -- where you can buy small pieces of equipment like handrails , bath seats and wide handled cutlery to help with daily living tasks	handrails	14	NULL
+our online equipment store -- where you can buy small pieces of equipment like handrails , bath seats and wide handled cutlery to help with daily living tasks	cutlery	21	eating utensil
+our online equipment store -- where you can buy small pieces of equipment like handrails , bath seats and wide handled cutlery to help with daily living tasks	tasks	27	activities
+Local community transport schemes -- local shopper buses, which take you from your door to the city centre, or your local shops and community cars which can take you to places like hospital	schemes	3	plans
+Local community transport schemes -- local shopper buses, which take you from your door to the city centre, or your local shops and community cars which can take you to places like hospital	buses	7	NULL
+Local community transport schemes -- local shopper buses, which take you from your door to the city centre, or your local shops and community cars which can take you to places like hospital	shops	23	stores
+Shopmobility - if you need a wheelchair or scooter to go shopping	scooter	8	NULL
+There are plenty of groups and organisations to help you get out, make friends , take part and learn something new in your local community .	groups	4	NULL
+There are plenty of groups and organisations to help you get out, make friends , take part and learn something new in your local community .	organisations	6	institutions
+gardening and allotments	allotments	2	NULL
+knit and natter	knit	0	NULL
+knit and natter	natter	2	chat
+The ' Welcome to Sheffield ' website also shows what events are going on around the city , with many of them being free to attend .	website	6	NULL
+There 's hundreds of volunteering activities you can take part in .	activities	5	NULL
+If you 're feeling lonely but would prefer to have someone visit you or talk with you on the phone , you 'll find help in the loneliness support part of the Directory 's Health and Wellbeing section .	loneliness	26	solitariness
+The Sheffield Directory offers advice and help on money problems , with organisations that can help with :	offers	3	gives
+The Sheffield Directory offers advice and help on money problems , with organisations that can help with :	organisations	12	institutions
+debt , benefits and budgeting - Your local Citizens Advice can help you with these problems and can refer you to a food bank or furniture store if you need help	refer	18	NULL
+getting a bank account or loan - Sheffield Credit Union and Sheffield Money give advice about bank accounts and loans with low interest rates	rates	23	NULL
+the cost of energy - South Yorkshire Energy Centre ( SYEC ) gives energy efficiency advice and help with getting the best energy deal and swapping to it	swapping	23	switching
+difficulties with your landlord , or keeping up your tenancy	difficulties	0	problems
+housing advice - from Shelter or your local Citizens Advice	housing	0	accommodation
+housing and tenancy support - from organisations like South Yorkshire Housing Association and Roundabout	housing	0	accommodation
+supported accommodation if you can't stay in your own home - like Sheltered Accommodation and Extra Care schemes	supported	0	NULL
+supported accommodation if you can't stay in your own home - like Sheltered Accommodation and Extra Care schemes	accommodation	1	NULL
+supported accommodation if you can't stay in your own home - like Sheltered Accommodation and Extra Care schemes	schemes	18	plans
+The team helps hundreds of people every week , connecting people to activities , groups and services , all in your local area .	connecting	9	linking
+The team helps hundreds of people every week , connecting people to activities , groups and services , all in your local area .	activities	12	NULL
+The team helps hundreds of people every week , connecting people to activities , groups and services , all in your local area .	groups	14	NULL
+From simple solutions to help with daily living , to 24 hour monitoring from our City Wide Alarm Service , there are lots of low cost solutions that can help you live well in your community .	solutions	2	NULL
+From simple solutions to help with daily living , to 24 hour monitoring from our City Wide Alarm Service , there are lots of low cost solutions that can help you live well in your community .	solutions	26	NULL
+The team will explain how we can assess your needs and help you plan support if you think you need help to organise or pay for some services .	assess	7	evaluate
+The team will explain how we can assess your needs and help you plan support if you think you need help to organise or pay for some services .	organise	22	arrange
+If you have care and support needs then we will talk to you about your finances and work out what you can afford to pay towards your care an support , and if we can contribute .	finances	15	money matters
+If you have care and support needs then we will talk to you about your finances and work out what you can afford to pay towards your care an support , and if we can contribute .	contribute	35	help
+Each domestic property in Sheffield has a Council Tax charge , and there will only be one bill for each property .	domestic	1	NULL
+We calculate your Council Tax bill on the basis that there are at least two people aged 18 or over living in your home .	calculate	1	quantify
+We calculate your Council Tax bill on the basis that there are at least two people aged 18 or over living in your home .	aged	16	NULL
+The bill may be addressed to just one of the people responsible for paying or to all of them if all the names are known .	addressed	4	sent
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	liable	8	responsible
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	discounts	17	reduction
+Once we know who in the property is liable to pay , we can decide if any discounts or exemptions apply .	exemptions	19	exception
+Council Tax rules set out the order of who is liable for the charge .	liable	10	responsible
+The liable person is the person who appears first on the list :	liable	1	responsible
+someone who lives in the property and is a statutory or secure tenant	tenant	12	renter
+someone who lives in the property and has a licence to live in the property	license	9	permit
+Sometimes more than one person is responsible for paying the Council Tax , for example when 2 or more people live in the property and jointly own , rent or lease it .	jointly	25	together
+Sometimes more than one person is responsible for paying the Council Tax , for example when 2 or more people live in the property and jointly own , rent or lease it .	lease	30	NULL
+The only time this does not apply is when one resident is severely mentally impaired .	resident	10	occupier
+The only time this does not apply is when one resident is severely mentally impaired .	severely	12	badly
+The only time this does not apply is when one resident is severely mentally impaired .	impaired	14	NULL
+Joint responsibility also applies to a husband , wife , civil partner or opposite sex partner of the person who has to pay the bill providing they all live in the same property .	applies	4	NULL
+Joint responsibility also applies to a husband , wife , civil partner or opposite sex partner of the person who has to pay the bill providing they all live in the same property .	providing	26	giving
+This applies even if they are not joint owners , leaseholders or tenants .	applies	1	NULL
+This applies even if they are not joint owners , leaseholders or tenants .	owners	8	possessors
+This applies even if they are not joint owners , leaseholders or tenants .	leaseholders	10 	NULL
+This applies even if they are not joint owners , leaseholders or tenants .	tenants	12	renters
+Council Tax bills cannot be split between joint council tax payers .	payers	10	NULL
+For example if three people live in the property , there will only be one bill issued to the household and not three bills for one third of the council tax .	issued	16	sent
+For example if three people live in the property , there will only be one bill issued to the household and not three bills for one third of the council tax .	household	19	NULL
+We ca n't get involved in any arrangements that people with joint responsibility have made between themselves for payment and , if necessary will take legal action against each one separately if the council tax is not paid .	separately	30	individually
+This includes anyone who has paid, or been given full benefit for, the amount they consider to be their 'share' of the bill.	includes	1	take into account
+If you are a landlord renting out a property , the responsibility for paying Council Tax depends on what sort of letting arrangement you have .	renting	5	NULL
+If you are a landlord renting out a property , the responsibility for paying Council Tax depends on what sort of letting arrangement you have .	arrangement	22	deal
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	tenants	17	renters
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	tenants	20	renters
+If you rent the whole of your property to one person or family , or to joint tenants , your tenants are liable for the Council Tax and we will send the bill to them .	liable	22	responsible
+If all your tenants are students , your property is exempt and you will not be charged .	tenants	3	occupiers
+If all your tenants are students , your property is exempt and you will not be charged .	exempt	10	except
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	tenancy	16	occupancy
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	occupy	19	NULL
+If you rent out your property to several people , and they each have an individual tenancy agreement to occupy only part of the building - called a ` House in Multiple Occupation ' ( HMO ) - you are liable for the Council Tax and we 'll send the bill to you .	liable	40	responsible
+The owner ( landlord ) of the property is liable to pay Council Tax where the property is a House in Multiple Occupation , or where the owner lives in the property and lets out rooms .	liable	9	responsible
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	tenants	1	renters
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	liable	3	responsible
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	tenancy	9	occupancy
+Student tenants are liable if there is a single tenancy agreement naming everyone who lives in the property and the owner lives elsewhere .	naming	11	mentioning the name of
+If you are a full time student and you rent a property on your own or with others who are all classed as full time students , you are exempt from paying Council Tax .	classed	21	classified
+If you are a full time student and you rent a property on your own or with others who are all classed as full time students , you are exempt from paying Council Tax .	exempt	29	except
+Only the non-students who are joint tenants are liable .	tenants	6	renters
+Only the non-students who are joint tenants are liable .	liable	8	responsible
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	sole	20	only
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	tenant	21	renter
+If you are a full time student and you own the home you live in , or you are the sole tenant , you will be exempt from paying Council Tax .	exempt	26	except
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	sole	20	only
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	tenant	21	renter
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	counted	40	NULL
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	visible	42	NULL
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	purposes	47	NULL
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	sole	52	only
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	leaseholder	55	NULL
+If you are a full time student and you own the home you live in , or you are the sole tenant , but you let out a room or part of your property to non-students , they will be counted as visible adults for Council Tax purposes , and as the sole owner or leaseholder you will be personally liable for the Council Tax charge .	liable	60	responsible
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	jointly	5	together
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	spouse	8	partner
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	tenancy	18	occupancy
+If you own your home jointly with your spouse or civil partner , or you have a joint tenancy , and they are not a full-time student , they will be liable for the Council Tax but you will not .	liable	31	responsible
+If both you and your spouse or civil partner are full time students you will be exempt from Council Tax .	spouse	5	partner
+If both you and your spouse or civil partner are full time students you will be exempt from Council Tax .	exempt	16	except
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	spouse	5	partner
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	spouse	27	partner
+If both you and your spouse or civil partner are full time students , but there are non-student adults living in your home , you and your spouse or civil partner will be liable for Council Tax but the non-students wo n't be .	liable	33	responsible
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	dependants	3	NULL
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	liable	9	responsible
+Foreign partners or dependants of a student are not liable for Council Tax providing they are not a British Citizen and they are not allowed to work or claim benefit in this country .	providing	13	giving
+Council Tax is a daily charge so if your own circumstances or your household's circumstances change at any time, the liability and charge to Council Tax may also change .	liability	22	responsibility
+Council Tax is a daily charge so if your own circumstances or your household's circumstances change at any time, the liability and charge to Council Tax may also change .	household	13	house

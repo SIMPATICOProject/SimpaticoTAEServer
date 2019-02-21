@@ -408,6 +408,7 @@ if __name__ == '__main__':
 			sent, index = updateRequest(sent, target, int(index), tagged_sents[0])
 
                         ###START hardcoding
+                        hc_pass = False
                         if hc:
                             tokens = sent.split(" ")
                             pre = ""
@@ -423,7 +424,7 @@ if __name__ == '__main__':
 
                             if k in hard_ngram.keys():
                                 print "**** HARDCODING ****"
-
+                                hc_pass = True
                                 print target + "-->" + hard_ngram[k]
                                 if hard_ngram[k] != "NULL":
                                     sr_output[0] = []
@@ -431,8 +432,8 @@ if __name__ == '__main__':
 
                         ###FINISH hardcoding
 
-                        else:
-
+                        if not hc_pass:
+                            print "*** Not hardcoded ****"
                             #Get lexical interaction data:
 			    interdata, badsimps = getLexicalInteractionData(configurations, token)
 			    #Get demographic data:

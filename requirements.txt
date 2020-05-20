@@ -41,7 +41,7 @@ h5py==2.5.0
 HMMEd==0.8
 hmmlearn==0.1.1
 html5lib==0.9999999
-httplib2==0.9
+httplib2==0.18.0
 idna==2.5
 imagesize==0.7.1
 iotop==0.6

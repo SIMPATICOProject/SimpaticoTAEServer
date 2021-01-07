@@ -55,7 +55,7 @@ Landscape-Client==14.12
 langdetect==1.0.7
 Lasagne==0.1
 latexcodec==1.0.5
-lxml==3.3.3
+lxml==4.6.2
 Mako==0.9.1
 Markdown==2.6.9
 MarkupSafe==0.18

@@ -47,7 +47,7 @@ imagesize==0.7.1
 iotop==0.6
 ipdb==0.8
 ipython==1.2.1
-Jinja2==2.7.2
+Jinja2==2.11.3
 jsonrpclib==0.1.7
 kenlm==0.0.0
 Keras==2.0.8

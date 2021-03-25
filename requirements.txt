@@ -113,7 +113,7 @@ python-dateutil==1.5
 python-debian===0.1.21-nmu2ubuntu2
 pytz==2012rc0
 pywsd==1.0
-PyYAML==3.12
+PyYAML==5.4
 pyzmq==14.0.1
 recurrentshop==1.0.0
 requests==2.18.1

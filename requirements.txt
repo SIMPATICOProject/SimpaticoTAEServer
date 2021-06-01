@@ -154,7 +154,7 @@ typing==3.6.2
 ujson==1.35
 Unidecode==0.4.18
 uritemplate==0.6
-urllib3==1.21.1
+urllib3==1.26.5
 virtualenv==1.11.6
 watchdog==0.8.3
 webkit-server==1.0

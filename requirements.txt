@@ -69,7 +69,7 @@ mord==0.4
 Morfessor==2.0.1
 murmurhash==0.26.4
 MySQL-python==1.2.3
-nltk==3.2
+nltk==3.6.3
 nose==1.3.4
 nosy==1.1.2
 numpy==1.13.1

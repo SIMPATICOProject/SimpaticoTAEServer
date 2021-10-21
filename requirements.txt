@@ -3,7 +3,7 @@ alabaster==0.7.10
 appdirs==1.4.3
 apt-xapian-index==0.45
 argh==0.26.1
-Babel==2.5.1
+Babel==2.9.1
 backports.weakref==1.0.post1
 beautifulsoup4==4.4.1
 bleach==1.5.0

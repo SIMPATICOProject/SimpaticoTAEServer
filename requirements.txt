@@ -14,7 +14,7 @@ certifi==2017.4.17
 chardet==3.0.4
 colorama==0.2.5
 configobj==4.7.2
-cvxopt==1.1.7
+cvxopt==1.2.7
 cymem==1.31.2
 Cython==0.22.1
 cytoolz==0.8.2

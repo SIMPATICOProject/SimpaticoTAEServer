@@ -151,7 +151,7 @@ tqdm==4.11.2
 treetaggerwrapper==2.2.4
 Twisted-Core==13.2.0
 typing==3.6.2
-ujson==1.35
+ujson==5.2.0
 Unidecode==0.4.18
 uritemplate==0.6
 urllib3==1.21.1
